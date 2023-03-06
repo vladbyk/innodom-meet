@@ -7,8 +7,13 @@ import "./chat.css";
 const config = {
   iceServers: [
     {
-      urls: "stun:stun.l.google.com:19302",
+      urls: "stun:stun.rims.by:5349",
     },
+    {
+      "url": "turn:turn.rims.by:5349",
+      "username": "guest",
+      "credential": "somepassword"
+    }
   ],
 };
 //   const SOCKET_SERVER_URL = "http://localhost:8080";
