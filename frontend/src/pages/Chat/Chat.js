@@ -46,7 +46,7 @@ function Chat() {
   };
 
   const connectSocket = () => {
-    callSocket = new WebSocket("ws://192.168.25.192:8000/room/name");
+    callSocket = new WebSocket("wss://62.217.182.186:8000/room");
     callSocket.onopen = (e) => {
       callSocket.send(
         JSON.stringify({
