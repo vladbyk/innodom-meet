@@ -28,7 +28,7 @@ function Chat() {
   let [myName, setMyName] = useState("");
   let localStream;
   let remoteStream;
-  let peerConnection
+  let peerConnection=useRef()
   let callSocket=useRef()
   let remoteRtcMessage;
   let iceCandidatesFromCaller = [];
@@ -91,7 +91,7 @@ function Chat() {
 
   const onCallAnswered=(data)=>{
     remoteRtcMessage=data.rtcMessage
-    peerConnection.setRemoteDescription(new RTCSessionDescription(remoteRtcMessage))
+    peerConnection.current.setRemoteDescription(new RTCSessionDescription(remoteRtcMessage))
     callProgress()
   }
 
@@ -101,25 +101,25 @@ function Chat() {
       sdpMLineIndex:message.label,
       candidate:message.candidate
     })
-    if(peerConnection){
-      peerConnection.addIceCandidate(candidate)
+    if(peerConnection.current){
+      peerConnection.current.addIceCandidate(candidate)
     }else{
       iceCandidatesFromCaller.push(candidate)
     }
   }
 
   const processAccept = () => {
-    peerConnection.setRemoteDescription(
+    peerConnection.current.setRemoteDescription(
       new RTCSessionDescription(remoteRtcMessage)
     );
     console.log(remoteRtcMessage)
-    peerConnection.createAnswer((session) => {
-      peerConnection.setLocalDescription(session);
+    peerConnection.current.createAnswer((session) => {
+      peerConnection.current.setLocalDescription(session);
       if (iceCandidatesFromCaller.length > 0) {
         for (let i = 0; i < iceCandidatesFromCaller.length; i++) {
           let candidate = iceCandidatesFromCaller[i];
           try {
-            peerConnection
+            peerConnection.current
               .addIceCandidate(candidate)
               .then((done) => {
                 console.log(done);
@@ -153,9 +153,9 @@ function Chat() {
   };
 
   const processCall = (username) => {
-    peerConnection.createOffer(
+    peerConnection.current.createOffer(
       (session) => {
-        peerConnection.setLocalDescription(session);
+        peerConnection.current.setLocalDescription(session);
         sendCall({
           name: username,
           rtcMessage: session,
@@ -193,16 +193,16 @@ function Chat() {
 
   const createConnectionAndAddStream = () => {
     createPeerConnection();
-    peerConnection.addStream(localStream);
+    peerConnection.current.addStream(localStream);
     return true;
   };
 
   const createPeerConnection = () => {
     try {
-      peerConnection = new RTCPeerConnection(config);
-      peerConnection.onicecandidate = handleIceCandidate;
-      peerConnection.onaddstream = handleRemoteStreamAdded;
-      peerConnection.onremovestream = handleRemoteStreamRemoved;
+      peerConnection.current = new RTCPeerConnection(config);
+      peerConnection.current.onicecandidate = handleIceCandidate;
+      peerConnection.current.onaddstream = handleRemoteStreamAdded;
+      peerConnection.current.onremovestream = handleRemoteStreamRemoved;
       console.log("create rtc peer connection");
       return;
     } catch (e) {
@@ -235,8 +235,8 @@ function Chat() {
       track.stop()
     });
     setCallProgress(false)
-    peerConnection.close()
-    peerConnection=null
+    peerConnection.current.close()
+    peerConnection.current=null
     otherUser=null
   }
 
