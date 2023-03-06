@@ -209,6 +209,7 @@ function Chat() {
   const handleRemoteStreamAdded = (event) => {
     console.log("Remote stream added.");
     console.log(event.stream)
+    console.log(localStream)
     remoteStream = event.stream;
     remoteVideo.current.srcObject = remoteStream;
   };
