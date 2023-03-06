@@ -62,6 +62,7 @@ function Chat() {
       let response = JSON.parse(e.data);
       let type = response.type;
 
+      console.log(response)
       if (type == "connection") {
         console.log(response.data.message);
       }
