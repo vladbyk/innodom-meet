@@ -46,8 +46,8 @@ function Chat() {
   };
 
   const connectSocket = async() => {
-    callSocket.current.srcObject=new WebSocket("wss://rims.by/room/");
-    callSocket.current.srcObject.onopen = async(e) => {
+    callSocket.current=new WebSocket("wss://rims.by/room/");
+    callSocket.current.onopen = async(e) => {
       await callSocket.current.srcObject.send(
         JSON.stringify({
           type: "login",
@@ -58,7 +58,7 @@ function Chat() {
       );
     };
 
-    callSocket.current.srcObject.onmessage = (e) => {
+    callSocket.current.onmessage = (e) => {
       let response = JSON.parse(e.data);
       let type = response.type;
 
@@ -132,7 +132,7 @@ function Chat() {
   };
 
   const answerCall = (data) => {
-    callSocket.current.srcObject.send(
+    callSocket.current.send(
       JSON.stringify({
         type: "answer_call",
         data,
@@ -162,7 +162,7 @@ function Chat() {
 
   const sendCall = (data) => {
     console.log("sendCall");
-    callSocket.current.srcObject.send(
+    callSocket.current.send(
       JSON.stringify({
         type: "call",
         data,
@@ -250,7 +250,7 @@ function Chat() {
 
   const sendIceCandidate = (data) => {
     console.log("send ice candadati",callSocket);
-    callSocket.current.srcObject.send(
+    callSocket.current.send(
       JSON.stringify({
         type: "ICEcandidate",
         data,
