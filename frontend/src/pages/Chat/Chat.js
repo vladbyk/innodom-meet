@@ -45,10 +45,11 @@ function Chat() {
     });
   };
 
-  const connectSocket = async() => {
+  const connectSocket = () => {
     callSocket.current=new WebSocket("wss://rims.by/room/");
-    callSocket.current.onopen = async(e) => {
-      await callSocket.current.srcObject.send(
+    callSocket.current.onopen = (e) => {
+      console.log('onopen')
+      callSocket.current.send(
         JSON.stringify({
           type: "login",
           data: {
@@ -106,6 +107,7 @@ function Chat() {
     peerConnection.setRemoteDescription(
       new RTCSessionDescription(remoteRtcMessage)
     );
+    console.log(remoteRtcMessage)
     peerConnection.createAnswer((session) => {
       peerConnection.setLocalDescription(session);
       if (iceCandidatesFromCaller.length > 0) {
