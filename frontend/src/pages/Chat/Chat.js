@@ -24,7 +24,7 @@ function Chat() {
   let localStream;
   let remoteStream;
   let peerConnection
-  let callSocket=new WebSocket("ws://192.168.25.192:8000/room/name");;
+  let callSocket=new WebSocket("ws://62.217.182.186:8000/room/name");;
   let remoteRtcMessage;
   let iceCandidatesFromCaller = [];
   let [callProg, setCallProgress] = useState(false);
