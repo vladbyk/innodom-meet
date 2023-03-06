@@ -29,10 +29,6 @@ function Chat() {
   let iceCandidatesFromCaller = [];
   let [callProg, setCallProgress] = useState(false);
 
-  useEffect(()=>{
-    callSocket = new WebSocket("wss://rims.by/room/");
-  },[])
-
   const call = () => {
     let userToCall = perName;
     otherUser = userToCall;
@@ -49,9 +45,10 @@ function Chat() {
     });
   };
 
-  const connectSocket = () => {
-    callSocket.onopen = (e) => {
-      callSocket.send(
+  const connectSocket = async() => {
+    callSocket = new WebSocket("wss://rims.by/room/");
+    callSocket.onopen = async(e) => {
+      await callSocket.send(
         JSON.stringify({
           type: "login",
           data: {
