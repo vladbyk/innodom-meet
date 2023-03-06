@@ -205,13 +205,14 @@ function Chat() {
 
   const handleRemoteStreamAdded = (event) => {
     console.log("Remote stream added.");
+    console.log(event.stream)
     remoteStream = event.stream;
-    remoteVideo.srcObject = remoteStream;
+    remoteVideo.current.srcObject = remoteStream;
   };
   const handleRemoteStreamRemoved = (event) => {
     console.log("Remote stream removed. Event: ", event);
-    remoteVideo.srcObject = null;
-    localVideo.srcObject = null;
+    remoteVideo.current.srcObject = null;
+    localVideo.current.srcObject = null;
 
     window.onbeforeunload=()=>{
       if(callProg){
