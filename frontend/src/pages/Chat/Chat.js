@@ -24,7 +24,7 @@ function Chat() {
   let localStream;
   let remoteStream;
   let peerConnection
-  let callSocket
+  let callSocket=useRef()
   let remoteRtcMessage;
   let iceCandidatesFromCaller = [];
   let [callProg, setCallProgress] = useState(false);
