@@ -24,10 +24,14 @@ function Chat() {
   let localStream;
   let remoteStream;
   let peerConnection
-  const callSocket= new WebSocket("wss://rims.by/room/");
+  let callSocket
   let remoteRtcMessage;
   let iceCandidatesFromCaller = [];
   let [callProg, setCallProgress] = useState(false);
+
+  useEffect(()=>{
+    callSocket = new WebSocket("wss://rims.by/room/");
+  },[])
 
   const call = () => {
     let userToCall = perName;
