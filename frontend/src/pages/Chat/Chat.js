@@ -24,7 +24,7 @@ function Chat() {
   let localStream;
   let remoteStream;
   let peerConnection
-  let callSocket
+  const callSocket= new WebSocket("wss://rims.by/room/");
   let remoteRtcMessage;
   let iceCandidatesFromCaller = [];
   let [callProg, setCallProgress] = useState(false);
@@ -46,7 +46,6 @@ function Chat() {
   };
 
   const connectSocket = () => {
-    callSocket = new WebSocket("wss://rims.by/room/");
     callSocket.onopen = (e) => {
       callSocket.send(
         JSON.stringify({
