@@ -113,7 +113,8 @@ function Chat() {
       new RTCSessionDescription(remoteRtcMessage)
     );
     console.log(remoteRtcMessage)
-    peerConnection.current.createAnswer((session) => {
+    peerConnection.current.createAnswer()
+    .then((session) => {
       peerConnection.current.setLocalDescription(session);
       console.log(iceCandidatesFromCaller)
       console.log(session)
@@ -139,7 +140,34 @@ function Chat() {
         caller: otherUser,
         rtcMessage: session,
       });
-    });
+    })
+    // peerConnection.current.createAnswer((session) => {
+    //   peerConnection.current.setLocalDescription(session);
+    //   console.log(iceCandidatesFromCaller)
+    //   console.log(session)
+    //   if (iceCandidatesFromCaller.length > 0) {
+    //     for (let i = 0; i < iceCandidatesFromCaller.length; i++) {
+    //       let candidate = iceCandidatesFromCaller[i];
+    //       console.log('ice cand ')
+    //       try {
+    //         peerConnection.current
+    //           .addIceCandidate(candidate)
+    //           .then((done) => {
+    //             console.log(candidate)
+    //             console.log(done);
+    //           })
+    //           .catch((err) => console.log(err));
+    //       } catch (err) {
+    //         console.log(err);
+    //       }
+    //     }
+    //     iceCandidatesFromCaller = [];
+    //   }
+    //   answerCall({
+    //     caller: otherUser,
+    //     rtcMessage: session,
+    //   });
+    // });
   };
 
   const answerCall = (data) => {
