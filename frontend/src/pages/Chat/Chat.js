@@ -118,10 +118,12 @@ function Chat() {
       if (iceCandidatesFromCaller.length > 0) {
         for (let i = 0; i < iceCandidatesFromCaller.length; i++) {
           let candidate = iceCandidatesFromCaller[i];
+          console.log('ice cand ')
           try {
             peerConnection.current
               .addIceCandidate(candidate)
               .then((done) => {
+                console.log(candidate)
                 console.log(done);
               })
               .catch((err) => console.log(err));
