@@ -41,7 +41,11 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
 
             # we will use this as room name as well
             self.my_name = name
-
+            if name != 'vlad':
+                await self.channel_layer.group_add(
+                    'room1',
+                    self.channel_name
+                )
             # Join room
             await self.channel_layer.group_add(
                 self.my_name,
@@ -74,7 +78,7 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
             # print(self.my_name, "is answering", caller, "calls.")
 
             await self.channel_layer.group_send(
-                caller,
+                'room1',
                 {
                     'type': 'call_answered',
                     'data': {
