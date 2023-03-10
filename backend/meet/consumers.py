@@ -42,6 +42,7 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
             # we will use this as room name as well
             self.my_name = name
             if name != 'vlad':
+                clients.append({'name':self.my_name})
                 await self.channel_layer.group_add(
                     'room1',
                     self.channel_name
@@ -55,10 +56,9 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
         if eventType == 'call':
             name = text_data_json['data']['name']
             print(self.my_name, "is calling", name)
-            # print(text_data_json)
-
-            # to notify the callee we sent an event to the group name
-            # and their's groun name is the name
+            for client in clients:
+                if client['name'] == name:
+                    client['rtcMessage'] = text_data_json['data']['rtcMessage']=
             await self.channel_layer.group_send(
                 name,
                 {
@@ -71,18 +71,14 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
             )
 
         if eventType == 'answer_call':
-            # has received call from someone now notify the calling user
-            # we can notify to the group with the caller name
-
-            caller = text_data_json['data']['caller']
-            # print(self.my_name, "is answering", caller, "calls.")
-
+            name = text_data_json['data']['name']
+            new_cients = [client for client in clients if client['name']!=name]
             await self.channel_layer.group_send(
                 'room1',
                 {
                     'type': 'call_answered',
                     'data': {
-                        'rtcMessage': text_data_json['data']['rtcMessage']
+                        'clients': new_cients
                     }
                 }
             )
