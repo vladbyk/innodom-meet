@@ -18,7 +18,7 @@ const config = {
 };
 //   const SOCKET_SERVER_URL = "http://localhost:8080";
 
-function Chat(myName,perName,localVideo,peerConnection) {
+function Chat() {
   let [perName, setName] = useState('');
   // let localVideo = useRef();
   // let remoteVideo = useRef();
