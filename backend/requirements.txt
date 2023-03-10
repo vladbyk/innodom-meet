@@ -5,4 +5,3 @@ djoser
 channels
 channels-redis
 django-rest-framework
-redis
