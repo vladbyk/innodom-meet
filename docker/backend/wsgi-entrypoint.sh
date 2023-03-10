@@ -13,4 +13,4 @@ done
 
 ./manage.py collectstatic --noinput
 
-gunicorn backend.wsgi --bind 0.0.0.0:8000 --workers 6 --threads 6
+daphne -b 0.0.0.0 -p 8000 backend.asgi:application
