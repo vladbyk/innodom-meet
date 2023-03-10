@@ -18,14 +18,14 @@ const config = {
 };
 //   const SOCKET_SERVER_URL = "http://localhost:8080";
 
-function Chat() {
-  let [perName, setName] = useState("");
+function Chat(myName,perName,localVideo,peerConnection) {
+  let [perName, setName] = useState('');
   // let localVideo = useRef();
   // let remoteVideo = useRef();
-  let localVideo = useRef();
+  let localVideo = localVideo;
   let remoteVideo = useRef();
   let otherUser;
-  let [myName, setMyName] = useState("");
+  let [myName, setMyName] = useState('');
   let localStream;
   let remoteStream;
   let peerConnection=useRef()
@@ -137,37 +137,10 @@ function Chat() {
         iceCandidatesFromCaller = [];
       }
       answerCall({
-        caller: otherUser,
+        name: myName,
         rtcMessage: session,
       });
     })
-    // peerConnection.current.createAnswer((session) => {
-    //   peerConnection.current.setLocalDescription(session);
-    //   console.log(iceCandidatesFromCaller)
-    //   console.log(session)
-    //   if (iceCandidatesFromCaller.length > 0) {
-    //     for (let i = 0; i < iceCandidatesFromCaller.length; i++) {
-    //       let candidate = iceCandidatesFromCaller[i];
-    //       console.log('ice cand ')
-    //       try {
-    //         peerConnection.current
-    //           .addIceCandidate(candidate)
-    //           .then((done) => {
-    //             console.log(candidate)
-    //             console.log(done);
-    //           })
-    //           .catch((err) => console.log(err));
-    //       } catch (err) {
-    //         console.log(err);
-    //       }
-    //     }
-    //     iceCandidatesFromCaller = [];
-    //   }
-    //   answerCall({
-    //     caller: otherUser,
-    //     rtcMessage: session,
-    //   });
-    // });
   };
 
   const answerCall = (data) => {
