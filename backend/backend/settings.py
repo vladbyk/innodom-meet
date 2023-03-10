@@ -181,11 +181,6 @@ DJOSER = {
 #     }
 # }
 
-
-REDIS_HOST = os.environ.get('REDIS_HOST', 'webrtc-redis-server')
-
-REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
-
 ASGI_APPLICATION = "backend.asgi.application"
 
 
@@ -193,7 +188,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(REDIS_HOST, REDIS_PORT)],
+            "hosts": [(webrtc-redis-server, '6379')],
         },
     },
 }
