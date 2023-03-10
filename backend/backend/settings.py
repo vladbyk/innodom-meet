@@ -188,7 +188,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('webrtc-redis-layer', '6379')],
+            "hosts": [("0.0.0.0", 6379)],
         },
     },
 }
