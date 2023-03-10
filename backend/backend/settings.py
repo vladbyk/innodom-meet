@@ -182,9 +182,9 @@ DJOSER = {
 # }
 
 
-# REDIS_HOST = os.environ.get('REDIS_HOST', 'webrtc-redis-server')
-#
-# REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
+REDIS_HOST = os.environ.get('REDIS_HOST', 'webrtc-redis-server')
+
+REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
 
 ASGI_APPLICATION = "backend.asgi.application"
 
