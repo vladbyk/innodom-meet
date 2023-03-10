@@ -22,7 +22,7 @@ function Chat() {
   let [perName, setName] = useState('');
   // let localVideo = useRef();
   // let remoteVideo = useRef();
-  let localVideo;
+  let localVideo = useRef()
   let remoteVideo = useRef();
   let otherUser;
   let [myName, setMyName] = useState('');
