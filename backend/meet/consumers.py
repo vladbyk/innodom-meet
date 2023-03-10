@@ -58,7 +58,7 @@ class ConferenceConsumer(AsyncWebsocketConsumer):
             print(self.my_name, "is calling", name)
             for client in clients:
                 if client['name'] == name:
-                    client['rtcMessage'] = text_data_json['data']['rtcMessage']=
+                    client['rtcMessage'] = text_data_json['data']['rtcMessage']
             await self.channel_layer.group_send(
                 name,
                 {
