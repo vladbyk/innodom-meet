@@ -1,306 +1,148 @@
-import { useEffect, useRef, useState } from "react";
-// import logo from '../../assets/inno.png'
-// import { Socket, io } from "engine.io-client";
-import { w3cwebsocket } from "websocket";
-import "./chat.css";
+// Импортирование необходимых модулей
+import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 
-const config = {
-  iceServers: [
-    {
-      urls: "stun:stun.rims.by:5349",
-    },
-    {
-      "url": "turn:turn.rims.by:5349",
-      "username": "guest",
-      "credential": "somepassword"
-    }
-  ],
-};
-//   const SOCKET_SERVER_URL = "http://localhost:8080";
-
+// Создание компонента приложения
 function Chat() {
-  let [perName, setName] = useState('');
-  // let localVideo = useRef();
-  // let remoteVideo = useRef();
-  let localVideo = useRef()
-  let remoteVideo = useRef();
-  let otherUser;
-  let [myName, setMyName] = useState('');
-  let localStream;
-  let remoteStream;
-  let peerConnection=useRef()
-  let callSocket=useRef()
-  let remoteRtcMessage;
-  let iceCandidatesFromCaller = [];
-  let [callProg, setCallProgress] = useState(false);
-
-  const call = () => {
-    let userToCall = perName;
-    otherUser = userToCall;
-    console.log(myName)
-
-    beReady().then((bool) => {
-      processCall(userToCall);
-    });
-  };
-
-  const answer = () => {
-    beReady().then((bool) => {
-      processAccept();
-    });
-  };
-
-  const connectSocket = () => {
-    callSocket.current=new WebSocket("wss://rims.by/room/");
-    callSocket.current.onopen = (e) => {
-      console.log('onopen')
-      callSocket.current.send(
-        JSON.stringify({
-          type: "login",
-          data: {
-            name: myName,
-          },
-        })
-      );
+  const [peerConnections, setPeerConnections] = useState([]); // Список установленных соединений с другими пользователями
+  const [socket, setSocket] = useState(null); // WebSocket для обмена сообщениями с сервером
+  const [roomId, setRoomId] = useState(''); // Идентификатор комнаты, в которой находится пользователь
+  const localVideoRef = useRef(null); // Ссылка на локальный видеоэлемент
+  const remoteVideosRef = useRef([]); // Ссылки на удаленные видеоэлементы
+  
+  // Установка соединения с сервером WebSocket
+  useEffect(() => {
+    const newSocket = io(`wss://rims.by/ws/video_chat/${roomId}/`);
+    setSocket(newSocket);
+    
+    return () => {
+      newSocket.disconnect();
     };
-
-    callSocket.current.onmessage = (e) => {
-      let response = JSON.parse(e.data);
-      let type = response.type;
-
-      console.log(response)
-      if (type == "connection") {
-        console.log(response.data.message);
-      }
-      if (type == "call_received") {
-        onNewCall(response.data);
-      }
-      if (type == "call_answered") {
-        onCallAnswered(response.data);
-      }
-      if (type == "ICEcandidate") {
-        onICECandidate(response.data);
-      }
-    };
-  };
-
-  const onNewCall=(data)=>{
-    otherUser=data.caller
-    remoteRtcMessage=data.rtcMessage
-  }
-
-  const onCallAnswered=(data)=>{
-    remoteRtcMessage=data.rtcMessage
-    peerConnection.current.setRemoteDescription(new RTCSessionDescription(remoteRtcMessage))
-    callProgress()
-  }
-
-  const onICECandidate=(data)=>{
-    let message=data.rtcMessage
-    let candidate=new RTCIceCandidate({
-      sdpMLineIndex:message.label,
-      candidate:message.candidate
-    })
-    if(peerConnection.current){
-      peerConnection.current.addIceCandidate(candidate)
-    }else{
-      iceCandidatesFromCaller.push(candidate)
-    }
-  }
-
-  const processAccept = () => {
-    peerConnection.current.setRemoteDescription(
-      new RTCSessionDescription(remoteRtcMessage)
-    );
-    console.log(remoteRtcMessage)
-    peerConnection.current.createAnswer()
-    .then((session) => {
-      peerConnection.current.setLocalDescription(session);
-      console.log(iceCandidatesFromCaller)
-      console.log(session)
-      if (iceCandidatesFromCaller.length > 0) {
-        for (let i = 0; i < iceCandidatesFromCaller.length; i++) {
-          let candidate = iceCandidatesFromCaller[i];
-          console.log('ice cand ')
-          try {
-            peerConnection.current
-              .addIceCandidate(candidate)
-              .then((done) => {
-                console.log(candidate)
-                console.log(done);
-              })
-              .catch((err) => console.log(err));
-          } catch (err) {
-            console.log(err);
-          }
-        }
-        iceCandidatesFromCaller = [];
-      }
-      answerCall({
-        name: myName,
-        rtcMessage: session,
-      });
-    })
-  };
-
-  const answerCall = (data) => {
-    callSocket.current.send(
-      JSON.stringify({
-        type: "answer_call",
-        data,
-      })
-    );
-    callProgress();
-  };
-
-  const callProgress = () => {
-    setCallProgress(true);
-  };
-
-  const processCall = (username) => {
-    peerConnection.current.createOffer(
-      (session) => {
-        peerConnection.current.setLocalDescription(session);
-        sendCall({
-          name: username,
-          rtcMessage: session,
-        });
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-  };
-
-  const sendCall = (data) => {
-    console.log("sendCall");
-    callSocket.current.send(
-      JSON.stringify({
-        type: "call",
-        data,
-      })
-    );
-    //окошко вызова
-  };
-
-  const beReady = () => {
-       return navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      }).then((stream)=>{
-      localStream = stream;
-      localVideo.current.srcObject = stream;
-      return createConnectionAndAddStream();
-    }).catch( (err)=>{
-      console.log(err);
-    })
-  };
-
-  const createConnectionAndAddStream = () => {
-    createPeerConnection();
-    peerConnection.current.addStream(localStream);
-    return true;
-  };
-
-  const createPeerConnection = () => {
-    try {
-      peerConnection.current = new RTCPeerConnection(config);
-      peerConnection.current.onicecandidate = handleIceCandidate;
-      peerConnection.current.onaddstream = handleRemoteStreamAdded;
-      peerConnection.current.onremovestream = handleRemoteStreamRemoved;
-      console.log("create rtc peer connection");
-      return;
-    } catch (e) {
-      console.log("faild peer ", e.message);
-      return;
+  }, []);
+  
+  // Установка локального потока медиа
+  useEffect(() => {
+    const getLocalMediaStream = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localVideoRef.current.srcObject = stream;
+      localVideoRef.current.muted = true;
+      
+       // Создание RTCPeerConnection и добавление локального потока медиа
+  const peerConnection = new RTCPeerConnection();
+  peerConnection.addStream(stream);
+  
+  // Обработка события icecandidate и отправка кандидата на сервер
+  peerConnection.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.emit('candidate', { roomId, candidate: event.candidate });
     }
   };
-
-  const handleRemoteStreamAdded = (event) => {
-    console.log("Remote stream added.");
-    console.log(event.stream)
-    console.log(localStream)
-    remoteStream = event.stream;
-    remoteVideo.current.srcObject = remoteStream;
-  };
-  const handleRemoteStreamRemoved = (event) => {
-    console.log("Remote stream removed. Event: ", event);
-    remoteVideo.current.srcObject = null;
-    localVideo.current.srcObject = null;
-
-    window.onbeforeunload=()=>{
-      if(callProg){
-        stop()
-      }
-    }
-  };
-
-  const stop=()=>{
-    localStream.getTracks().forEach(track => {
-      track.stop()
-    });
-    setCallProgress(false)
-    peerConnection.current.close()
-    peerConnection.current=null
-    otherUser=null
-  }
-
-  const handleIceCandidate = (e) => {
-    if (e.candidate) {
-      console.log("local ice candidate");
-      sendIceCandidate({
-        user: otherUser,
-        rtcMessage: {
-          label: e.candidate.sdpMLineIndex,
-          id: e.candidate.sdpMid,
-          candidate: e.candidate.candidate,
-        },
-      });
+  
+  // Обработка события addstream и добавление удаленного потока медиа
+  peerConnection.onaddstream = (event) => {
+    const remoteVideoRef = remoteVideosRef.current.find(ref => ref.id === event.stream.id);
+    if (remoteVideoRef) {
+      remoteVideoRef.srcObject = event.stream;
     } else {
-      console.log("end candidate");
+      const newRemoteVideoRef = useRef(null);
+      remoteVideosRef.current = [...remoteVideosRef.current, newRemoteVideoRef];
+      setPeerConnections(prevState => [...prevState, { id: event.stream.id, peerConnection }]);
     }
   };
+  
+  // Отправка запроса на создание комнаты и получение идентификатора комнаты
+  socket.emit('createRoom', (roomId) => {
+    setRoomId(roomId);
+  });
+};
 
-  const sendIceCandidate = (data) => {
-    console.log("send ice candadati",callSocket);
-    callSocket.current.send(
-      JSON.stringify({
-        type: "ICEcandidate",
-        data,
-      })
-    );
-  };
+getLocalMediaStream();
+}, []);
 
-  const login =()=>{
-    connectSocket()
-  }
-
-  return (
-    <div>
-      <label>who</label>
-      <input
-        onChange={(e) => {
-          setMyName(e.target.value);
-        }}
-        value={myName}
-      />
-      <div onClick={login}>login</div>
-
-      <label>whom</label>
-      <input
-        onChange={(e) => {
-          setName(e.target.value);
-        }}
-        value={perName}
-      />
-      <div onClick={call}>call</div>
-
-      <div onClick={answer}>answer</div>
-
-      <video muted autoPlay ref={localVideo}></video>
-      <video autoPlay ref={remoteVideo}></video>
-    </div>
-  );
+// Обработка события приема кандидата и добавление его в соответствующий RTCPeerConnection
+useEffect(() => {
+if (socket) {
+socket.on('candidate', ({ senderId, candidate }) => {
+const senderConnection = peerConnections.find(connection => connection.id === senderId).peerConnection;
+senderConnection.addIceCandidate(new RTCIceCandidate(candidate));
+});
 }
+}, [socket, peerConnections]);
 
-export default Chat;
+// Обработка события подключения нового пользователя к комнате
+useEffect(() => {
+if (socket) {
+socket.on('userConnected', ({ userId }) => {
+// Создание нового RTCPeerConnection и отправка кандидатов
+const newPeerConnection = new RTCPeerConnection();
+peerConnections.forEach(({ peerConnection }) => {
+newPeerConnection.addIceCandidate(new RTCIceCandidate(peerConnection.localDescription));
+peerConnection.addIceCandidate(new RTCIceCandidate(newPeerConnection.localDescription));
+peerConnection.createOffer()
+.then((description) => {
+peerConnection.setLocalDescription(description);
+newPeerConnection.setRemoteDescription(description);
+newPeerConnection.createAnswer()
+.then((description) => {
+newPeerConnection.setLocalDescription(description);
+peerConnection.setRemoteDescription(description);
+});
+});
+});
+  // Добавление нового видеоэлемента для отображения удаленного потока медиа
+  const newRemoteVideoRef = useRef(null);
+  remoteVideosRef.current = [...remoteVideosRef.current, newRemoteVideoRef];
+  setPeerConnections(prevState => [...prevState, { id: userId, peerConnection: newPeerConnection }]);
+});
+}
+}, [socket, peerConnections]);
+
+// Обработка события отключения пользователя от комнаты
+useEffect(() => {
+if (socket) {
+socket.on('userDisconnected', ({ userId }) => {
+// Удаление RTCPeerConnection и связанного видеоэлемента
+// const removedConnection = peerConnections.find(connection => connection.id === userId);
+// removedConnection.peerConnection.close();
+// setPeerConnections(prevState => prevState.filter(connection => connection.id !== userId)
+
+      // Удаление связанного видеоэлемента
+      remoteVideosRef.current = remoteVideosRef.current.filter(ref => ref.id !== removedConnection.peerConnection.stream.id);
+      setPeerConnections(prevState => prevState.filter(connection => connection.id !== userId));
+    });
+  }
+}, [socket, peerConnections])
+// Отправка сообщения через WebSocket
+const sendMessage = (message) => {
+  if (socket) {
+  socket.emit('message', { roomId, message });
+  }
+  };
+  
+  // Обработка события приема сообщения через WebSocket
+  useEffect(() => {
+  if (socket) {
+  socket.on('message', ({ senderId, message }) => {
+  const senderName = peerConnections.find(connection => connection.id === senderId)?.name || 'Unknown';
+  const formattedMessage = {senderName}+':'+{message};
+  setMessages(prevState => [...prevState, formattedMessage]);
+  });
+  }
+  }, [socket, peerConnections]);
+  
+  return (
+  <div>
+  <video ref={localVideoRef} autoPlay muted />
+  {remoteVideosRef.current.map((ref) => (
+  <video key={ref.id} ref={ref} autoPlay />
+  ))}
+  <input type="text" value={message} onChange={(event) => setMessage(event.target.value)} />
+  <button onClick={() => sendMessage(message)}>Send</button>
+  {messages.map((message, index) => (
+  <div key={index}>{message}</div>
+  ))}
+  </div>
+  );
+  };
+  
+  export default Chat;
