@@ -19,6 +19,7 @@ function Chat() {
       newSocket.disconnect();
     };
   }, []);
+  const newRemoteVideoRef = useRef(null);
   
   // Установка локального потока медиа
   useEffect(() => {
@@ -44,7 +45,6 @@ function Chat() {
     if (remoteVideoRef) {
       remoteVideoRef.srcObject = event.stream;
     } else {
-      const newRemoteVideoRef = useRef(null);
       remoteVideosRef.current = [...remoteVideosRef.current, newRemoteVideoRef];
       setPeerConnections(prevState => [...prevState, { id: event.stream.id, peerConnection }]);
     }
@@ -90,7 +90,6 @@ peerConnection.setRemoteDescription(description);
 });
 });
   // Добавление нового видеоэлемента для отображения удаленного потока медиа
-  const newRemoteVideoRef = useRef(null);
   remoteVideosRef.current = [...remoteVideosRef.current, newRemoteVideoRef];
   setPeerConnections(prevState => [...prevState, { id: userId, peerConnection: newPeerConnection }]);
 });
@@ -102,7 +101,7 @@ useEffect(() => {
 if (socket) {
 socket.on('userDisconnected', ({ userId }) => {
 // Удаление RTCPeerConnection и связанного видеоэлемента
-// const removedConnection = peerConnections.find(connection => connection.id === userId);
+const removedConnection = peerConnections.find(connection => connection.id === userId);
 // removedConnection.peerConnection.close();
 // setPeerConnections(prevState => prevState.filter(connection => connection.id !== userId)
 
@@ -119,6 +118,8 @@ const sendMessage = (message) => {
   }
   };
   
+  const [messages,setMessages]=useState()
+  const [message,setMessage]=useState()
   // Обработка события приема сообщения через WebSocket
   useEffect(() => {
   if (socket) {
