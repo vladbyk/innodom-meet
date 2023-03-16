@@ -4,7 +4,7 @@ const WebRTCVideoConference = () => {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [peerConnections, setPeerConnections] = useState([]);
-  const [roomId, setRoomId] = useState("");
+  const [roomId, setRoomId] = useState("1");
 
   const localVideoRef = useRef(null);
   const remoteVideosRef = useRef([]);
