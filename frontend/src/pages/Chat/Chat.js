@@ -64,20 +64,21 @@ const WebRTCVideoConference = () => {
                 const message = JSON.parse(event.data);
                 switch (message.type) {
                     case "joined_room":
-                        console.log(`Joined room ${message.roomId}`);
+                        console.log(`Joined room ${message.room_id}`);
                         break;
                     case "peer_joined":
                       console.log(event)
                       console.log(message)
-                        console.log(`Peer ${message.peerId} joined the room`);
+                        console.log(`Peer ${message.peer_id} joined the room`);
                         createPeerConnection(remoteStreams.length);
+                        console.log(remoteStreams)
                         peerConnections[remoteStreams.length].createOffer().then((offer) => {
                             peerConnections[remoteStreams.length].setLocalDescription(offer);
                             socket.send(
                                 JSON.stringify({
                                     type: "offer",
                                     offer,
-                                    receiver: message.peerId,
+                                    receiver: message.peer_id,
                                 })
                             );
                         });
