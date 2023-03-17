@@ -9,7 +9,7 @@ const WebRTCVideoConference = () => {
     const localVideoRef = useRef(null);
     const remoteVideosRef = useRef([]);
 
-    useEffect(() => {
+    // useEffect(() => {
         const getLocalStream = async () => {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: true,
@@ -19,7 +19,7 @@ const WebRTCVideoConference = () => {
             localVideoRef.current.srcObject = stream;
         };
         getLocalStream();
-    }, []);
+    // }, []);
 
     // useEffect(() => {
         const createPeerConnection = (index) => {
