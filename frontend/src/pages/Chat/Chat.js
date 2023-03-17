@@ -21,7 +21,7 @@ const WebRTCVideoConference = () => {
         getLocalStream();
     }, []);
 
-    useEffect(() => {
+    // useEffect(() => {
         const createPeerConnection = (index) => {
             const peer = new RTCPeerConnection({
                 iceServers: [
@@ -146,7 +146,7 @@ const WebRTCVideoConference = () => {
             };
         };
         handleJoinRoom();
-    }, [roomId, localStream, peerConnections, remoteStreams]);
+    // }, [roomId, localStream, peerConnections, remoteStreams]);
 
     const handleRoomIdChange = (event) => {
         setRoomId(event.target.value);
