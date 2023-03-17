@@ -25,9 +25,14 @@ const WebRTCVideoConference = () => {
         const createPeerConnection = (index) => {
             const peer = new RTCPeerConnection({
                 iceServers: [
-                    {
-                        urls: "stun:stun.l.google.com:19302",
-                    },
+                  {
+                    urls: "stun:stun.rims.by:5349",
+                  },
+                  {
+                    "url": "turn:turn.rims.by:5349",
+                    "username": "guest",
+                    "credential": "somepassword"
+                  }          
                 ],
             });
 
@@ -51,7 +56,9 @@ const WebRTCVideoConference = () => {
                 });
             }
 
-            setPeerConnections((prev) => [...prev, peer]);
+            console.log(peer)
+            setPeerConnections((prev) => {return [...prev, peer]});
+            console.log(peerConnections)
         };
 
         const handleJoinRoom = () => {
@@ -72,6 +79,7 @@ const WebRTCVideoConference = () => {
                         console.log(`Peer ${message.peer_id} joined the room`);
                         createPeerConnection(remoteStreams.length);
                         console.log(remoteStreams)
+                        console.log('peerConn',peerConnections)
                         peerConnections[remoteStreams.length].createOffer().then((offer) => {
                             peerConnections[remoteStreams.length].setLocalDescription(offer);
                             socket.send(
@@ -109,8 +117,8 @@ const WebRTCVideoConference = () => {
                         peerCandidate.addIceCandidate(new RTCIceCandidate(message.candidate));
                         break;
                     case "peer_left":
-                        console.log(`Peer ${message.peerId} left the room`);
-                        const index = remoteStreams.findIndex((stream) => stream.peerId === message.peerId);
+                        console.log(`Peer ${message.peer_id} left the room`);
+                        const index = remoteStreams.findIndex((stream) => stream.peer_id === message.peer_id);
                         if (index !== -1) {
                             const updatedRemoteStreams = [...remoteStreams];
                             updatedRemoteStreams.splice(index, 1);
@@ -166,7 +174,7 @@ const WebRTCVideoConference = () => {
             <div>
                 <h2>Remote Streams</h2>
                 {remoteStreams.map((stream, index) => (
-                    <video key={stream.peerId} ref={(el) => (remoteVideosRef.current[index] = el)} autoPlay
+                    <video key={stream.peer_id} ref={(el) => (remoteVideosRef.current[index] = el)} autoPlay
                            playsInline/>
                 ))}
             </div>
