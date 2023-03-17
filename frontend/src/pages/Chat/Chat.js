@@ -57,7 +57,7 @@ const WebRTCVideoConference = () => {
             }
 
             console.log(peer)
-            setPeerConnections((prev) => [...prev, peer]);
+            setPeerConnections((prev) => {return [...prev, peer]});
             console.log(peerConnections)
         };
 
