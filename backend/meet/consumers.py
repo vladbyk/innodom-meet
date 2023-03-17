@@ -1,10 +1,10 @@
 import json
-import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class WebRTCVideoConferenceConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print(self.scope)
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = f'videoconference_{self.room_id}'
 
