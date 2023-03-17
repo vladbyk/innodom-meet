@@ -67,6 +67,8 @@ const WebRTCVideoConference = () => {
                         console.log(`Joined room ${message.roomId}`);
                         break;
                     case "peer_joined":
+                      console.log(event)
+                      console.log(message)
                         console.log(`Peer ${message.peerId} joined the room`);
                         createPeerConnection(remoteStreams.length);
                         peerConnections[remoteStreams.length].createOffer().then((offer) => {
