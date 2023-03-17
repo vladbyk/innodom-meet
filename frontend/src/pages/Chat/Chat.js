@@ -99,7 +99,7 @@ const WebRTCVideoConference = () => {
                         const peerOffer = peerConnections.find((p) => p.localDescription.sdp === message.offer.sdp);
                         console.log(peerOffer)
                         console.log(peerConnections)
-                        peerOffer.setRemoteDescription(new RTCSessionDescription(message.offer.sdp));
+                        peerOffer.setRemoteDescription(new RTCSessionDescription(message.offer));
                         peerOffer.createAnswer().then((answer) => {
                             peerOffer.setLocalDescription(answer);
                             socket.send(
