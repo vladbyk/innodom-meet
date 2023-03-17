@@ -4,7 +4,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class WebRTCVideoConferenceConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print(self.scope)
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = f'videoconference_{self.room_id}'
 
@@ -26,6 +25,7 @@ class WebRTCVideoConferenceConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         message = json.loads(text_data)
+        print(message)
         if message['type'] == 'join_room':
             await self.channel_layer.group_send(
                 self.room_group_name,
