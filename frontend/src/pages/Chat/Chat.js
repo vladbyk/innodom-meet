@@ -25,9 +25,14 @@ const WebRTCVideoConference = () => {
         const createPeerConnection = (index) => {
             const peer = new RTCPeerConnection({
                 iceServers: [
-                    {
-                        urls: "stun:stun.l.google.com:19302",
-                    },
+                  {
+                    urls: "stun:stun.rims.by:5349",
+                  },
+                  {
+                    "url": "turn:turn.rims.by:5349",
+                    "username": "guest",
+                    "credential": "somepassword"
+                  }          
                 ],
             });
 
@@ -52,6 +57,7 @@ const WebRTCVideoConference = () => {
             }
 
             setPeerConnections((prev) => [...prev, peer]);
+            console.log(peerConnections)
         };
 
         const handleJoinRoom = () => {
