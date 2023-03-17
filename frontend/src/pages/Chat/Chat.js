@@ -59,6 +59,8 @@ const WebRTCVideoConference = () => {
             console.log(peer)
             setPeerConnections((prev) => {return [...prev, peer]});
             console.log(peerConnections)
+
+            return peer
         };
 
         const handleJoinRoom = () => {
@@ -95,6 +97,8 @@ const WebRTCVideoConference = () => {
                         console.log("Received offer from peer", message.sender);
                         console.log("mess", message);
                         const peerOffer = peerConnections.find((p) => p.connectionId === message.sender);
+                        console.log(peerOffer)
+                        console.log(peerConnections)
                         peerOffer.setRemoteDescription(new RTCSessionDescription(message.offer.sdp));
                         peerOffer.createAnswer().then((answer) => {
                             peerOffer.setLocalDescription(answer);
