@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import SimplePeer from 'simple-peer';
 import { Button, Modal } from 'react-bootstrap';
 
-const socket = io('http://localhost:8000');
+const socket = io('wss://rims.by/ws/videoconference/1/');
 
 const Chat = () => {
   const [myStream, setMyStream] = useState(null);
