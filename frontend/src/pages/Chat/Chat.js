@@ -146,7 +146,7 @@ const WebRTCVideoConference = () => {
             };
         };
         handleJoinRoom();
-    }, [roomId, localStream, peerConnections, remoteStreams]);
+    }, []);
 
     const handleRoomIdChange = (event) => {
         setRoomId(event.target.value);
