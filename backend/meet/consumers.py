@@ -1,53 +1,80 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
+from asgiref.sync import async_to_sync
 
+class ConferenceConsumer(WebsocketConsumer):
+    def connect(self):
+        self.room_name = 'my-room'
+        self.room_group_name = 'conference_%s' % self.room_name
 
-class WebRTCVideoConferenceConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        # join the conference room
-        await self.channel_layer.group_add('my-room', self.channel_name)
+        # Join room group
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name,
+            self.channel_name
+        )
 
-        await self.accept()
+        self.accept()
 
-    async def disconnect(self, close_code):
-        # leave the conference room
-        await self.channel_layer.group_discard('my-room', self.channel_name)
+    def disconnect(self, close_code):
+        # Leave room group
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name,
+            self.channel_name
+        )
 
-    async def receive(self, text_data):
+    def receive(self, text_data):
         data = json.loads(text_data)
+        message_type = data['type']
+        payload = data['payload']
 
-        if data['action'] == 'join':
-            await self.channel_layer.group_send(
-                'my-room',
+        if message_type == 'join':
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
                 {
                     'type': 'user.joined',
-                    'userId': self.channel_name,
+                    'payload': {
+                        'userId': self.channel_name
+                    }
                 }
             )
-        elif data['action'] == 'signal':
-            await self.channel_layer.group_send(
-                'my-room',
+
+        elif message_type == 'signal':
+            userId = payload['userId']
+            signal = payload['signal']
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
                 {
                     'type': 'user.signaling',
-                    'userId': self.channel_name,
-                    'signal': data['signal'],
+                    'payload': {
+                        'userId': self.channel_name,
+                        'signal': signal
+                    }
                 }
             )
 
-    async def user_joined(self, event):
-        # notify all peers in the conference room that a new user has joined
-        await self.send(text_data=json.dumps({
-            'action': 'user joined',
-            'userId': event['userId'],
+    # Receive message from room group
+    def user_joined(self, event):
+        userId = event['payload']['userId']
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'type': 'user.joined',
+            'payload': {
+                'userId': userId
+            }
         }))
 
-    async def user_signaling(self, event):
-        # forward signaling messages to the appropriate peer
-        await self.send(text_data=json.dumps({
-            'action': 'signal',
-            'userId': event['userId'],
-            'signal': event['signal'],
+    def user_signaling(self, event):
+        userId = event['payload']['userId']
+        signal = event['payload']['signal']
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'type': 'user.signaling',
+            'payload': {
+                'userId': userId,
+                'signal': signal
+            }
         }))
+
 
 # import json
 # from channels.generic.websocket import AsyncWebsocketConsumer

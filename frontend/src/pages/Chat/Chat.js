@@ -3,9 +3,9 @@ import io from 'socket.io-client';
 import SimplePeer from 'simple-peer';
 import { Button, Modal } from 'react-bootstrap';
 
-const socket = io('wss://rims.by/ws/videoconference/1/');
+const socket = io('http://localhost:8000');
 
-const Chat = () => {
+const Conference = () => {
   const [myStream, setMyStream] = useState(null);
   const [peers, setPeers] = useState({});
   const [showModal, setShowModal] = useState(false);
@@ -87,4 +87,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default Conference;
