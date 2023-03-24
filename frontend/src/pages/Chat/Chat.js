@@ -9,7 +9,7 @@ const WebRTCVideoConference = () => {
     const localVideoRef = useRef(null);
     const remoteVideosRef = useRef([]);
 
-    // useEffect(() => {
+    useEffect(() => {
         const getLocalStream = async () => {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: true,
@@ -19,9 +19,9 @@ const WebRTCVideoConference = () => {
             localVideoRef.current.srcObject = stream;
         };
         getLocalStream();
-    // }, []);
+    }, []);
 
-    // useEffect(() => {
+    useEffect(() => {
         const createPeerConnection = (index) => {
             const peer = new RTCPeerConnection({
                 iceServers: [
@@ -146,7 +146,7 @@ const WebRTCVideoConference = () => {
             };
         };
         handleJoinRoom();
-    // }, [roomId, localStream, peerConnections, remoteStreams]);
+    }, [roomId, localStream, peerConnections, remoteStreams]);
 
     const handleRoomIdChange = (event) => {
         setRoomId(event.target.value);
