@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-class ConferenceConsumer(WebsocketConsumer):
+class WebRTCVideoConferenceConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = 'my-room'
         self.room_group_name = 'conference_%s' % self.room_name
