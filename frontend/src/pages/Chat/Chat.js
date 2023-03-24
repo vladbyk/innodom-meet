@@ -116,7 +116,8 @@
                     break;
                 case "answer":
                     console.log("Received answer from peer", message.sender);
-                    const peerAnswer = peerConnections.find((p) => p.connectionId === message.sender);
+                    const peerAnswer = peerConnections[0];
+                    // const peerAnswer = peerConnections.find((p) => p.connectionId === message.sender);
                     peerAnswer.setRemoteDescription(new RTCSessionDescription(message.answer));
                     break;
                 case "candidate":
