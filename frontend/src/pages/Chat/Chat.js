@@ -1,90 +1,189 @@
-import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
-import SimplePeer from 'simple-peer';
-import { Button, Modal } from 'react-bootstrap';
-
-const socket = io('wss://rims.by/ws/videoconference/1/');
+import React, {useState, useEffect, useRef} from "react";
 
 const Chat = () => {
-  const [myStream, setMyStream] = useState(null);
-  const [peers, setPeers] = useState({});
-  const [showModal, setShowModal] = useState(false);
+    const [localStream, setLocalStream] = useState(null);
+    const [remoteStreams, setRemoteStreams] = useState([]);
+    const [peerConnections, setPeerConnections] = useState([]);
+    const [roomId, setRoomId] = useState("1");
 
-  const myVideoRef = useRef();
-  const peersRef = useRef({});
+    const localVideoRef = useRef(null);
+    const remoteVideosRef = useRef([]);
 
-  useEffect(() => {
-    // get user media
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then(stream => {
-        setMyStream(stream);
-        myVideoRef.current.srcObject = stream;
+    useEffect(() => {
+       getLocalStream();
+       createPeerConnection()
+    },[])
 
-        // join the conference room
-        socket.emit('join', { room: 'my-room' });
+    const createPeerConnection = (index) => {
+       const peer = new RTCPeerConnection({
+           iceServers: [
+             {
+               urls: "stun:stun.rims.by:5349",
+             },
+             {
+               "url": "turn:turn.rims.by:5349",
+               "username": "guest",
+               "credential": "somepassword"
+             }          
+           ],
+       });
 
-        // listen for new peer connections
-        socket.on('user joined', ({ userId }) => {
-          // create a new SimplePeer instance
-          const peer = new SimplePeer({ initiator: true, stream });
+       peer.onicecandidate = (event) => {
+           if (event.candidate) {
+               const candidate = event.candidate;
+               // send candidate to other peers
+           }
+       };
 
-          // listen for signaling messages from the server
-          peer.on('signal', data => {
-            socket.emit('signal', { userId, signal: data });
-          });
+       peer.ontrack = (event) => {
+           const remoteVideo = remoteVideosRef.current[index];
+           if (remoteVideo) {
+               remoteVideo.srcObject = event.streams[0];
+           }
+       };
 
-          // add the peer to the peers dictionary
-          peersRef.current[userId] = peer;
-          setPeers(peersRef.current);
+       if (localStream) {
+           localStream.getTracks().forEach((track) => {
+               peer.addTrack(track, localStream);
+           });
+       }
 
-          // when the peer stream is ready, add it to the video conference
-          peer.on('stream', stream => {
-            const peerVideo = document.createElement('video');
-            peerVideo.srcObject = stream;
-            peerVideo.play();
-            document.getElementById('peer-videos').appendChild(peerVideo);
-          });
-        });
+       console.log(peer)
+       setPeerConnections((prev) => {return [...prev, peer]});
+       console.log(peerConnections)
+   };
 
-        // listen for signaling messages from other peers
-        socket.on('signal', ({ userId, signal }) => {
-          const peer = peersRef.current[userId];
-          if (peer) peer.signal(signal);
-        });
+   const getLocalStream = async () => {
+           const stream = await navigator.mediaDevices.getUserMedia({
+               audio: true,
+               video: true,
+           });
+           setLocalStream(stream);
+           localVideoRef.current.srcObject = stream;
+       };
 
-        // listen for peer disconnections
-        socket.on('user left', ({ userId }) => {
-          const peer = peersRef.current[userId];
-          if (peer) peer.destroy();
-          delete peersRef.current[userId];
-          setPeers(peersRef.current);
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        setShowModal(true);
-      });
-  }, []);
+    const handleRoomIdChange = (event) => {
+       setRoomId(event.target.value);
+   };
 
-  const handleCloseModal = () => setShowModal(false);
+   const connectRoom = () => {
+       const socket = new WebSocket(`wss://rims.by/ws/videoconference/${roomId}/`);
+       socket.onopen = () => {
+           console.log("WebSocket connection established");
+           socket.send(JSON.stringify({type: "join_room", roomId}));
+       };
+       socket.onmessage = (event) => {
+           const message = JSON.parse(event.data);
+           switch (message.type) {
+               case "joined_room":
+                   console.log(`Joined room ${message.room_id}`);
+                   break;
+               case "peer_joined":
+                 console.log(event)
+                 console.log(message)
+                   console.log(`Peer ${message.peer_id} joined the room`);
+                   createPeerConnection(remoteStreams.length);
+                   console.log(remoteStreams)
+                   console.log('peerConn',peerConnections)
+                   peerConnections[remoteStreams.length].createOffer().then((offer) => {
+                       peerConnections[remoteStreams.length].setLocalDescription(offer);
+                       socket.send(
+                           JSON.stringify({
+                               type: "offer",
+                               offer,
+                               receiver: message.peer_id,
+                           })
+                       );
+                   });
+                   break;
+               case "offer":
+                   console.log("Received offer from peer", message.sender);
+                   console.log("mess", message);
+                   const peerOffer = peerConnections.find((p) => p.localDescription.sdp === message.offer.sdp);
+                   console.log(peerOffer)
+                   console.log(peerConnections)
+                   peerOffer.setRemoteDescription(new RTCSessionDescription(message.offer));
+                   peerOffer.createAnswer().then((answer) => {
+                       peerOffer.setLocalDescription(answer);
+                       socket.send(
+                           JSON.stringify({
+                               type: "answer",
+                               answer,
+                               receiver: message.sender,
+                           })
+                       );
+                   });
+                   break;
+               case "answer":
+                   console.log("Received answer from peer", message.sender);
+                   const peerAnswer = peerConnections[0];
+                   // const peerAnswer = peerConnections.find((p) => p.connectionId === message.sender);
+                   peerAnswer.setRemoteDescription(new RTCSessionDescription(message.answer));
+                   break;
+               case "candidate":
+                   console.log("Received candidate from peer", message.sender);
+                   const peerCandidate = peerConnections.find((p) => p.connectionId === message.sender);
+                   peerCandidate.addIceCandidate(new RTCIceCandidate(message.candidate));
+                   break;
+               case "peer_left":
+                   console.log(`Peer ${message.peer_id} left the room`);
+                   const index = remoteStreams.findIndex((stream) => stream.peer_id === message.peer_id);
+                   if (index !== -1) {
+                       const updatedRemoteStreams = [...remoteStreams];
+                       updatedRemoteStreams.splice(index, 1);
+                       setRemoteStreams(updatedRemoteStreams);
+                       const updatedPeerConnections = [...peerConnections];
+                       updatedPeerConnections.splice(index, 1);
+                       setPeerConnections(updatedPeerConnections);
+                       const videoElement = remoteVideosRef.current[index];
+                       if (videoElement) {
+                           videoElement.srcObject = null;
+                       }
+                   }
+                   break;
+               default:
+                   break;
+           }
+       };
+       return () => {
+           socket.close();
+       };
+   };
 
-  return (
-    <>
-      <div className="video-container">
-        <video ref={myVideoRef} autoPlay muted />
-        <div id="peer-videos" />
-      </div>
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Error</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Could not access camera and microphone.</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
-};
+   const handleLeaveRoom = () => {
+       // send leave room message to server and close peer connections
+               peerConnections.forEach((peer) => peer.close());
+               setPeerConnections([]);
+               setRemoteStreams([]);
+           };
+
+    return (
+       <div>
+           <h1>WebRTC Video Conference</h1>
+           <div>
+               <label htmlFor="room-id-input">Room ID:</label>
+               <input
+                   id="room-id-input"
+                   type="text"
+                   value={roomId}
+                   onChange={handleRoomIdChange}
+               />
+               <button onClick={connectRoom}>connect</button>
+               <button onClick={handleLeaveRoom}>Leave Room</button>
+           </div>
+           <div>
+               <h2>Local Stream</h2>
+               <video ref={localVideoRef} autoPlay playsInline muted/>
+           </div>
+           <div>
+               <h2>Remote Streams</h2>
+               {remoteStreams.map((stream, index) => (
+                   <video key={stream.peer_id} ref={(el) => (remoteVideosRef.current[index] = el)} autoPlay
+                          playsInline/>
+               ))}
+           </div>
+       </div>
+   );
+}
 
 export default Chat;
