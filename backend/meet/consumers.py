@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
+
 class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room = self.scope['url_route']['kwargs']['room']
