@@ -86,12 +86,20 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # }
 
 # DATABASES = {"default": DATABASES_ALL[os.environ.get("DJANGO_DB", DB_POSTGRESQL)]}
-DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+DB_POSTGRESQL = "postgresql"
+
+DATABASES_ALL = {
+    DB_POSTGRESQL: {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "NAME": os.environ.get("POSTGRES_NAME", "postgres"),
+        "USER": os.environ.get("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
+        "PORT": int(os.environ.get("POSTGRES_PORT", "5432")),
+    },
 }
+
+DATABASES = {"default": DATABASES_ALL[os.environ.get("DJANGO_DB", DB_POSTGRESQL)]}
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100
 
@@ -134,15 +142,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/django_static/'
+STATIC_ROOT = BASE_DIR / 'django_static'
 
 # For Local Development
 # STATICFILES_DIRS = [
 #     BASE_DIR / "static",
 # ]
-
-# For Deployments
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
