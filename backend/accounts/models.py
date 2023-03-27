@@ -11,7 +11,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=40, unique=True, verbose_name='Электронная почта')
     name = models.CharField(max_length=50, verbose_name='Имя')
     surname = models.CharField(max_length=50, verbose_name='Фамилия', null=True)
-    group = models.ForeignKey(Room, on_delete=models.CASCADE)
+    group = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
