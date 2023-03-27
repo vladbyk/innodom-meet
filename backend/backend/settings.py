@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'channels',
 
     'accounts',
+    'meet'
 ]
 
 MIDDLEWARE = [

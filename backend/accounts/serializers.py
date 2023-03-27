@@ -5,6 +5,8 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    group = serializers.StringRelatedField(source='group.group')
+
     class Meta:
         model = User
-        fields = ['name', 'email', 'surname']
+        fields = ['name', 'email', 'surname', 'group']
