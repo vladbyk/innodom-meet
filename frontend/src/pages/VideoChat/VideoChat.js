@@ -1,40 +1,48 @@
 import axios from "axios";
-import React, {useState, useEffect, useRef, useCallback} from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import Lobby from "../Lobby/Lobby";
+import Room from "../Room/Room";
 
 const VideoChat = () => {
-    const [email,setEmail]=useState('')
-    const handleUserEmailChange = useCallback((event) => {
-        setEmail(event.target.value);
-      }, []);
-    let [UserInfo,setUserInfo]=useState()
-    let [ErrMessage,setErrMessage]=useState('')
-    const ConnectionRoom=()=>{
-        if(email.length>3){
-            axios.post('https://rims.by/api/user/',{email:email})
-            .then((data)=>{
-                console.log(data)
-                setUserInfo(data)
-            })
-            .catch((err)=>{
-                setErrMessage('У пользователя с этой почтой нет доступа')
-                console.log(err)
-            })
-        }
+  const [email, setEmail] = useState("");
+  const handleUserEmailChange = useCallback((event) => {
+    setEmail(event.target.value);
+  }, []);
+  let [UserInfo, setUserInfo] = useState();
+  let [ErrMessage, setErrMessage] = useState("");
+  const ConnectionRoom = () => {
+    if (email.length > 3) {
+      axios
+        .post("https://rims.by/api/user/", { email: email })
+        .then((data) => {
+        setErrMessage("Привет,"+data.data.name+' !');
+          console.log(data);
+          setUserInfo(data);
+          // window.location.assign('room')
+        })
+        .catch((err) => {
+          setErrMessage("У пользователя с этой почтой нет доступа");
+          console.log(err);
+        });
+    }else{
+        setErrMessage("Почта указана неверно");
     }
-    return (
-       <div>
-           <h1>InnoDOM Video Conference</h1>
-        <label htmlFor="email">Name:</label>
-           <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={handleUserEmailChange}
-          required
+  };
+  return (
+    <div>
+      <h1>InnoDOM Video Conference</h1>
+      <p>{ErrMessage}</p>
+      {UserInfo ? (
+        <Room data={UserInfo}/>
+      ) : (
+        <Lobby
+          email={email}
+          handleUserEmailChange={handleUserEmailChange}
+          ConnectionRoom={ConnectionRoom}
         />
-        <button onClick={ConnectionRoom}>Connect</button>
-       </div>
-   );
-}
+      )}
+    </div>
+  );
+};
 
 export default VideoChat;
