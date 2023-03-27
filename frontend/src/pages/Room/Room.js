@@ -25,6 +25,7 @@ const Room = (data) => {
          video: true,
        }).then((stream)=>{
        localStream = stream;
+       console.log(stream)
        localVideo.current.srcObject = stream;
        return createConnectionAndAddStream();
      }).catch( (err)=>{
