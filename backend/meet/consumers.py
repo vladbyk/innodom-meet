@@ -4,8 +4,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_id = self.scope['url_route']['kwargs']['room_id']
-        self.room_group_name = f'videoconference_{self.room_id}'
+        self.room = self.scope['url_route']['kwargs']['room']
+        self.room_group_name = f'videoconference_{self.room}'
 
         await self.channel_layer.group_add(
             self.room_group_name,
