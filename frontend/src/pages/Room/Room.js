@@ -41,7 +41,6 @@ const Room = (data) => {
     try {
       peerConnection.current = new RTCPeerConnection(config);
     //   peerConnection.current.onicecandidate = handleIceCandidate;
-      peerConnection.current.onaddstream = handleRemoteStreamAdded;
     //   peerConnection.current.onremovestream = handleRemoteStreamRemoved;
       console.log("create rtc peer connection");
       return;
@@ -50,13 +49,13 @@ const Room = (data) => {
       return;
     }
   };
-  const handleRemoteStreamAdded = (event) => {
-    console.log("Remote stream added.");
-    console.log(event.stream)
-    console.log(localStream)
-    remoteStream = event.stream;
-    remoteVideo.current.srcObject = remoteStream;
-  };
+//   const handleRemoteStreamAdded = (event) => {
+//     console.log("Remote stream added.");
+//     console.log(event.stream)
+//     console.log(localStream)
+//     remoteStream = event.stream;
+//     remoteVideo.current.srcObject = remoteStream;
+//   };
 
   const processCall = (username) => {
     peerConnection.current.createOffer(
