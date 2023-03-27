@@ -142,9 +142,6 @@ STATIC_ROOT = BASE_DIR / 'django_static'
 #     BASE_DIR / "static",
 # ]
 
-# For Deployments
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
