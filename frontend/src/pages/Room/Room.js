@@ -18,6 +18,7 @@ const Room = (data) => {
     let localVideo = useRef()
     let localStream;
     let peerConnection=useRef()
+    let callSocket=useRef()
     const beReady = () => {
         return navigator.mediaDevices.getUserMedia({
          audio: true,
@@ -48,13 +49,26 @@ const Room = (data) => {
       return;
     }
   };
+  const processCall = (username) => {
+    peerConnection.current.createOffer(
+      (session) => {
+        peerConnection.current.setLocalDescription(session);
+        console.log(session)
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  };
 
     const connectRoom = () => {
         console.log('sok',data.data)
         const socket = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/`);
         socket.onopen = () => {
             console.log("WebSocket connection established");
-            beReady()
+            beReady().then((bool)=>{
+                processCall()
+            })
             // socket.send(JSON.stringify({type: "join_room", roomId}));
         };
         // socket.onmessage = (event) => {
