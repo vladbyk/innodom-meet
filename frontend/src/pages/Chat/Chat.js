@@ -51,6 +51,7 @@ const Chat = () => {
        console.log(peer)
        setPeerConnections((prev) => {return [...prev, peer]});
        console.log(peerConnections)
+       console.log('fhfb')
    };
 
    const getLocalStream = async () => {

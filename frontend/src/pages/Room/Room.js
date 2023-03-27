@@ -59,8 +59,7 @@ const Room = (data) => {
         console.log(err);
       }
     );
-  };
-
+  }
     const connectRoom = () => {
         console.log('sok',data.data)
         const socket = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/`);
