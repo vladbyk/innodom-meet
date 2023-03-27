@@ -33,7 +33,7 @@ const VideoChat = () => {
       <h1>InnoDOM Video Conference</h1>
       <p>{ErrMessage}</p>
       {UserInfo ? (
-        <Room data={UserInfo}/>
+        <Room data={UserInfo.data}/>
       ) : (
         <Lobby
           email={email}
