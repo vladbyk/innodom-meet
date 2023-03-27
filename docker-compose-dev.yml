@@ -10,8 +10,7 @@ services:
             - "82:82"
         volumes:
             - static_volume:/app/backend/django_static
-            - ./docker/nginx/development:/etc/nginx/conf.d
-            - static_images:/app/backend/images
+            - ./docker/nginx/production:/etc/nginx/conf.d
         depends_on:
             - backend
     backend:
@@ -22,7 +21,6 @@ services:
         entrypoint: /app/docker/backend/wsgi-entrypoint.sh
         volumes:
             - static_volume:/app/backend/django_static
-            - static_images:/app/backend/images
         expose:
             - 8000
         environment:
@@ -79,8 +77,6 @@ services:
             context: .
             dockerfile: ./docker/parser/Dockerfile
         entrypoint: /app/docker/parser/parser-entrypoint.sh
-        volumes:
-            - static_images:/app/backend/images
         environment:
             DEBUG: "True"
             ALLOWED_HOSTS: "62.217.181.16"
@@ -96,6 +92,5 @@ services:
             - backend
             - db
 volumes:
-    static_images: {}
     static_volume: {}
     postgres_data: {}
