@@ -77,11 +77,13 @@ const Room = (data) => {
           })
           socket.send(JSON.stringify({
             type:'joinRoom',
-            userID:data.data.id
+            user:data.data.id
           }))
           // socket.send(JSON.stringify({type: "join_room", roomId}));
       };
-      socket.current.onmessage = (e) => {
+      callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
+
+      callSocket.current.onmessage = (e) => {
         let response = JSON.parse(e.data);
         let type = response.type;
   
