@@ -31,3 +31,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+
+class Conference(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    channel_name = models.CharField(max_length=100, verbose_name='Название канала')
+
+    def __str__(self):
+        return f"{self.user}<->{self.sdp}"
+
+    class Meta:
+        verbose_name = "Конференция"
+        verbose_name_plural = "Конференции"
