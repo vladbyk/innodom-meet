@@ -38,7 +38,7 @@ class Conference(models.Model):
     channel_name = models.CharField(max_length=100, verbose_name='Название канала')
 
     def __str__(self):
-        return f"{self.user}<->{self.sdp}"
+        return f"{self.user}<->{self.channel_name}"
 
     class Meta:
         verbose_name = "Конференция"
