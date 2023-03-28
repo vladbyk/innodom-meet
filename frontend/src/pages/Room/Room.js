@@ -81,6 +81,15 @@ const Room = (data) => {
           }))
           // socket.send(JSON.stringify({type: "join_room", roomId}));
       };
+      callSocket.current.onmessage = (e) => {
+        let response = JSON.parse(e.data);
+        let type = response.type;
+  
+        if (type == "sender") {
+          console.log(response);
+        }
+      };
+  
       // socket.onmessage = (event) => {
       //     const message = JSON.parse(event.data);
       // };
