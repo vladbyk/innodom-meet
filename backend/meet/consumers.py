@@ -25,7 +25,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         self.room = self.scope['url_route']['kwargs']['room']
         self.user = parse_qs(self.scope['query_string'].decode())['user'][-1]
         Conference(user=User.objects.get(id=self.user), channel_name=self.channel_name)
-        # await self.accept()
+        await self.accept()
 
     async def disconnect(self, close_code):
         Conference.objects.filter(channel_name=self.channel_name).delete()
