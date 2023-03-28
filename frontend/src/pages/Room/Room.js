@@ -69,7 +69,7 @@ const Room = (data) => {
   }
   const connectRoom = () => {
       console.log('sok',data.data)
-      const socket = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.user}`);
+      const socket = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
       socket.onopen = () => {
           console.log("WebSocket connection established");
           beReady().then((bool)=>{
@@ -77,7 +77,7 @@ const Room = (data) => {
           })
           socket.send(JSON.stringify({
             type:'joinRoom',
-            userID:data.data.user
+            userID:data.data.id
           }))
           // socket.send(JSON.stringify({type: "join_room", roomId}));
       };
