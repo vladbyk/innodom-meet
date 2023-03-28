@@ -1,16 +1,18 @@
-import json
-from urllib.parse import parse_qs
-
 import django
 import os
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+django.setup()
+
+import json
+from urllib.parse import parse_qs
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from accounts.models import Conference
 from accounts.models import User
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'InnoDomFreeEdu.settings')
-os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
-django.setup()
+
 
 
 class VideoConferenceConsumer(AsyncWebsocketConsumer):
