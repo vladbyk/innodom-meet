@@ -13,8 +13,6 @@ from accounts.models import Conference
 from accounts.models import User
 
 
-
-
 class VideoConferenceConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -47,8 +45,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'user': message['user']
                     })
 
-    async def sender(self,event):
-        print(event)
+    async def sender(self, event):
+        print(event, flush=True)
 
         # elif message['type'] == 'senderOffer':
         #     await self.channel_layer.group_send(
