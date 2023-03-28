@@ -46,6 +46,10 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'type': 'sender',
                         'user': message['user']
                     })
+
+    async def sender(self,event):
+        print(event)
+
         # elif message['type'] == 'senderOffer':
         #     await self.channel_layer.group_send(
         #         self.room,
