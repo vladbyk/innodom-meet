@@ -69,7 +69,7 @@ const Room = (data) => {
   }
   const connectRoom = () => {
       console.log('sok',data.data)
-      const socket = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/`);
+      const socket = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.user}`);
       socket.onopen = () => {
           console.log("WebSocket connection established");
           beReady().then((bool)=>{
