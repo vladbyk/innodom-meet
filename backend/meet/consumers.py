@@ -22,7 +22,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room = self.scope['url_route']['kwargs']['room']
         self.user = parse_qs(self.scope['query_string'].decode())['user'][-1]
-        print(self.user, parse_qs(self.scope['query_string'].decode()))
         Conference(user=User.objects.get(id=self.user), channel_name=self.channel_name).save()
         await self.accept()
 
