@@ -12,11 +12,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'InnoDomFreeEdu.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 django.setup()
 
-receiverPCs = {}
-senderPCs = {}
-users = {}
-socketToRoom = {}
-
 
 class VideoConferenceConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
