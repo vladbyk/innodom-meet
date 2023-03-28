@@ -24,8 +24,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room = self.scope['url_route']['kwargs']['room']
         self.user = parse_qs(self.scope['query_string'].decode())['user'][-1]
-        Conference(user=User.objects.get(id=self.user), channel_name=self.channel_name)
-        # await self.accept()
+        print(self.user, parse_qs(self.scope['query_string'].decode()))
+        Conference(user=User.objects.get(id=self.user), channel_name=self.channel_name).save()
+        await self.accept()
 
     async def disconnect(self, close_code):
         Conference.objects.filter(channel_name=self.channel_name).delete()
@@ -38,7 +39,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
 
         channel_layer = get_channel_layer()
         if message['type'] == 'joinRoom':
-            for user in Conference.objects.exclude(user=User.obgects.get(id=message['user'])):
+            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
                 await channel_layer.send(
                     user.channel_name,
                     {
