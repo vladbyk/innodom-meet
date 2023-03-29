@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
+// import Video from "./Video";
 const pc_config = {
         iceServers: [
           {
@@ -128,8 +129,8 @@ const Room = (data) => {
         let type = response.type;
         if (type == "getJoinRoom") {
           console.log('get join room',response);
-          if(response.length>0){
-            response.map(item=>{
+          if(response.allUsers.length>0){
+            response.allUsers.map(item=>{
               createPeerConnection(item.chanel_name,item.email,localStream)
               let pc=pcs[item.chanel_name]
               if(pc){
@@ -239,6 +240,9 @@ const Room = (data) => {
      <div>
          <h1>room {data.data.group}</h1>
          <video muted autoPlay ref={localVideo}></video>
+         {/* {users.map((user,index)=>(
+          <Video key={index} email={user.email} stream={user.stream}/>
+         ))} */}
      </div>
   );
 }
