@@ -42,7 +42,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     user.channel_name,
                     {
                         'type': 'getJoinRoom',
-                        'user': [conf_user for conf_user in Conference.objects.all() if conf_user.user.group.group == user.group.group]
+                        'user': Conference.objects.filter(user__group__group=message['group'])
                     })
         elif message['type'] == 'senderOffer':
             for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
