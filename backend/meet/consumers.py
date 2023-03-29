@@ -36,8 +36,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         print(message, flush=True)
         channel_layer = get_channel_layer()
         if message['type'] == 'joinRoom':
-            for user in Conference.objects.get(user=User.objects.get(id=message['user'])):
-                await channel_layer.send(
+            user = Conference.objects.get(user=User.objects.get(id=message['user']))
+            await channel_layer.send(
                     user.channel_name,
                     {
                         'type': 'getJoinRoom',
