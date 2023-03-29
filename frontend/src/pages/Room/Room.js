@@ -158,7 +158,7 @@ const Room = (data) => {
           createPeerConnection(response.channel_name,response.email,localStream)
           let pc = pcs[response.channel_name]
           if(pc){
-            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp.sdp))
+            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
             .then(()=>{
               pc.createAnswer({
                 offerToReceiveAudio: true,
@@ -179,7 +179,7 @@ const Room = (data) => {
           console.log('get answeer',response);
           let pc = pcs[response.channel_name]
           if(pc){
-            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp.sdp))
+            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
           }
         }
         if (type == "getCandidate") {
