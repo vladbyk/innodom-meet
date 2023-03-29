@@ -76,13 +76,14 @@ const Room = (data) => {
   const processCall = (username) => {
     callSocket.current.send(JSON.stringify({
             type:'joinRoom',
+            group:data.data.group,
             user:data.data.id,
           }))
   let pc=new RTCPeerConnection(pc_config)
   if(localStream){
     console.log('lockal streem add',localVideo)
     localStream.getTracks().forEach(track => {
-      pc.addTrack(track,localVideo)
+      pc.addTrack(track,localStream)
     });
   }
 
