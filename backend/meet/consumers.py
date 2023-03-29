@@ -40,26 +40,28 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 await channel_layer.send(
                     user.channel_name,
                     {
-                        'type': 'sender',
+                        'type': 'getjoinRoom',
                         'user': message['user']
                     })
+        elif message['type'] == 'senderOffer':
+            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
+                await channel_layer.send(
+                    user.channel_name,
+                    {
+                        'type': 'getSenderOffer',
+                        'roomID': message['roomID'],
+                        'senderSocketID': message['senderSocketID'],
+                        'sdp': message['sdp']
+                    }
+                )
 
-    async def sender(self, event):
+    async def getjoinRoom(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'user': event['user']
         }))
 
-        # elif message['type'] == 'senderOffer':
-        #     await self.channel_layer.group_send(
-        #         self.room,
-        #         {
-        #             'type': 'getSenderOffer',
-        #             'roomID': message['roomID'],
-        #             'senderSocketID': message['senderSocketID'],
-        #             'sdp': message['sdp']
-        #         }
-        #     )
+        #
         # elif message['type'] == 'senderAnswer':
         #     await self.channel_layer.group_send(
         #         self.room,
