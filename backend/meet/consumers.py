@@ -35,30 +35,36 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         message = json.loads(text_data)
         print(message, flush=True)
         channel_layer = get_channel_layer()
-        if message['type'] == 'joinRoom':
-            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
-                await channel_layer.send(
-                    user.channel_name,
-                    {
-                        'type': 'getJoinRoom',
-                        'user': user.user.name
-                    })
-        elif message['type'] == 'senderOffer':
+        if message['type'] == 'senderOffer':
             for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
                 await channel_layer.send(
                     user.channel_name,
                     {
                         'type': 'getSenderOffer',
-                        'roomID': message['roomID'],
-                        'senderSocketID': message['senderSocketID'],
-                        'sdp': message['sdp']
+                        'sdp': message['sdp'],
+                        'channel_name': user.channel_name
+                    })
+        elif message['type'] == 'senderCandidate':
+            await channel_layer.send(
+                    message['channel_name'],
+                    {
+                        'type': 'getSenderCandidate',
+                        'candidate': message['candidate']
                     }
                 )
+        elif
 
     async def getJoinRoom(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'user': event['user']
+            'sdp': event['sdp'],
+            'channel_name': event['channel_name']
+        }))
+
+    async def getSenderCandidate(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'user': event['candidate']
         }))
 
         #
