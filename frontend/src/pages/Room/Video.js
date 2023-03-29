@@ -11,6 +11,7 @@ const Video = ({
     useEffect(() => {
         if (ref.current) ref.current.srcObject = stream;
         console.log(email)
+        console.log(ref)
     });
     return (
        <div>

@@ -54,6 +54,7 @@ const Room = (data) => {
   }
 
   pc.ontrack=(e)=>{
+    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers((oldUsers)=>[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}])
     console.log(users)
   }
