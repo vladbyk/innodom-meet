@@ -78,6 +78,7 @@ const Room = (data) => {
           callSocket.current.send(JSON.stringify({
             type:'joinRoom',
             user:data.data.id,
+            group:data.data.group
           }))
           // socket.send(JSON.stringify({type: "join_room", roomId}));
       };
