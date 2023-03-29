@@ -8,6 +8,7 @@ django.setup()
 import json
 from urllib.parse import parse_qs
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 
 from accounts.models import Conference
 from accounts.models import User
@@ -33,8 +34,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         message = json.loads(text_data)
         print(message, flush=True)
-        from channels.layers import get_channel_layer
-
         channel_layer = get_channel_layer()
         if message['type'] == 'joinRoom':
             for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
@@ -42,7 +41,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     user.channel_name,
                     {
                         'type': 'getJoinRoom',
-                        'user': Conference.objects.filter(user__group__group=message['group'])
+                        'user': user.name
                     })
         elif message['type'] == 'senderOffer':
             for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
