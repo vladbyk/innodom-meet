@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
-// import Video from "./Video";
+import Video from "./Video";
 const pc_config = {
         iceServers: [
           {
@@ -192,7 +192,6 @@ const Room = (data) => {
             .then(()=>{console.log('candidate yes')})
           }
         }
-        console.log(users)
         // if (type == "getSenderOffer") {
         //   console.log('get sender offer',response);
         //   let pc=new RTCPeerConnection(pc_config)
@@ -243,9 +242,9 @@ const Room = (data) => {
      <div>
          <h1>room {data.data.group}</h1>
          <video muted autoPlay ref={localVideo}></video>
-         {/* {users.map((user,index)=>(
+         {users.map((user,index)=>(
           <Video key={index} email={user.email} stream={user.stream}/>
-         ))} */}
+         ))}
      </div>
   );
 }

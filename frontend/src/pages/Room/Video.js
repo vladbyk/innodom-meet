@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, {useState, useEffect, useRef, useCallback} from "react";
 
 const Video = ({
@@ -6,9 +5,15 @@ const Video = ({
     stream
 }) => {
     // const
+    const ref = useRef(null);
+    const [isMuted, setIsMuted] = useState(false);
+
+    useEffect(() => {
+        if (ref.current) ref.current.srcObject = stream;
+    });
     return (
        <div>
-        <video muted />
+        <video ref={ref} autoPlay muted />
        </div>
    );
 }
