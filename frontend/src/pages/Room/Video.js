@@ -5,11 +5,12 @@ const Video = ({
     stream
 }) => {
     // const
-    const ref = useRef(null);
-    const [isMuted, setIsMuted] = useState(false);
+    const ref = useRef();
+    // const [isMuted, setIsMuted] = useState(false);
 
     useEffect(() => {
         if (ref.current) ref.current.srcObject = stream;
+        console.log(email)
     });
     return (
        <div>
