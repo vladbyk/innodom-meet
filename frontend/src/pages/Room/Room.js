@@ -158,6 +158,8 @@ const Room = (data) => {
           createPeerConnection(response.channel_name,response.email,localStream)
           let pc = pcs[response.channel_name]
           if(pc){
+            console.log(pc)
+            console.log(pcs)
             pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
             .then(()=>{
               pc.createAnswer({
