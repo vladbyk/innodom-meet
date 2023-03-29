@@ -13,8 +13,6 @@ from accounts.models import Conference
 from accounts.models import User
 
 
-
-
 class VideoConferenceConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -24,7 +22,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room = self.scope['url_route']['kwargs']['room']
         self.user = parse_qs(self.scope['query_string'].decode())['user'][-1]
-        print(self.user, parse_qs(self.scope['query_string'].decode()))
         Conference(user=User.objects.get(id=self.user), channel_name=self.channel_name).save()
         await self.accept()
 
@@ -43,19 +40,28 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 await channel_layer.send(
                     user.channel_name,
                     {
-                        'type': 'sender',
+                        'type': 'getjoinRoom',
                         'user': message['user']
                     })
-        # elif message['type'] == 'senderOffer':
-        #     await self.channel_layer.group_send(
-        #         self.room,
-        #         {
-        #             'type': 'getSenderOffer',
-        #             'roomID': message['roomID'],
-        #             'senderSocketID': message['senderSocketID'],
-        #             'sdp': message['sdp']
-        #         }
-        #     )
+        elif message['type'] == 'senderOffer':
+            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
+                await channel_layer.send(
+                    user.channel_name,
+                    {
+                        'type': 'getSenderOffer',
+                        'roomID': message['roomID'],
+                        'senderSocketID': message['senderSocketID'],
+                        'sdp': message['sdp']
+                    }
+                )
+
+    async def getjoinRoom(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'user': event['user']
+        }))
+
+        #
         # elif message['type'] == 'senderAnswer':
         #     await self.channel_layer.group_send(
         #         self.room,
