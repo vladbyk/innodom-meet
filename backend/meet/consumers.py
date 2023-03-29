@@ -8,6 +8,7 @@ django.setup()
 import json
 from urllib.parse import parse_qs
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.layers import get_channel_layer
 
 from accounts.models import Conference
 from accounts.models import User
@@ -32,105 +33,65 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         message = json.loads(text_data)
-        print(message)
-        from channels.layers import get_channel_layer
-
+        print(message, flush=True)
         channel_layer = get_channel_layer()
         if message['type'] == 'joinRoom':
-            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
+            for user in Conference.objects.get(user=User.objects.get(id=message['user'])):
                 await channel_layer.send(
                     user.channel_name,
                     {
                         'type': 'getJoinRoom',
-                        'user': Conference.objects.filter(user__group__group=message['group'])
+                        'allUsers': [{'channel_name': conf_user.channel_name, 'id': conf_user.user.id,
+                                      'email': conf_user.user.email, 'name': conf_user.user.name,
+                                      'surname': conf_user.user.surname}
+                                     for
+                                     conf_user in Conference.objects.filter(user__group__group=message['group'])]
                     })
-        elif message['type'] == 'senderOffer':
-            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
-                await channel_layer.send(
-                    user.channel_name,
-                    {
-                        'type': 'getSenderOffer',
-                        'roomID': message['roomID'],
-                        'senderSocketID': message['senderSocketID'],
-                        'sdp': message['sdp']
-                    }
-                )
+        elif message['type'] == 'offer':
+            await channel_layer.send(
+                message['channel_name'],
+                {
+                    'type': 'getOffer',
+                    'sdp': message['sdp'],
+                    'channel_name': message['channel_name'],
+                })
+        elif message['type'] == 'answer':
+            await channel_layer.send(
+                message['channel_name'],
+                {
+                    'type': 'getAnswer',
+                    'sdp': message['sdp']
+                })
+        elif message['type'] == 'candidate':
+            await channel_layer.send(
+                message['channel_name'],
+                {
+                    'type': 'getCandidate',
+                    'candidate': message['candidate']
+                }
+            )
+
+    async def getOffer(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'sdp': event['sdp'],
+            'channel_name': event['channel_name'],
+        }))
+
+    async def getAnswer(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'sdp': event['sdp']
+        }))
+
+    async def getCandidate(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'candidate': event['candidate']
+        }))
 
     async def getJoinRoom(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'user': event['user']
+            'allUsers': event['allUsers']
         }))
-
-        #
-        # elif message['type'] == 'senderAnswer':
-        #     await self.channel_layer.group_send(
-        #         self.room,
-        #         {
-        #             'type': 'getSenderAnswer',
-        #             'sdp': message['sdp']
-        #         }
-        #     )
-        # elif message['type'] == 'senderCandidate':
-        #     await self.channel_layer.group_send(
-        #         self.room,
-        #         {
-        #             'type': 'getSenderCandidate',
-        #             'senderSocketID': message['senderSocketID'],
-        #             'candidate': message['candidate'],
-        #         }
-        #     )
-        # elif message['type'] == 'receiverOffer':
-        #     await self.channel_layer.group_send(
-        #         self.room,
-        #         {
-        #             'type': 'getSenderCandidate',
-        #             'candidate': message['candidate'],
-        #         }
-        #     )
-        # ----------------------------
-    #
-    # # Receive message from room group
-    # async def peer_joined(self, event):
-    #     peer_id = event['peer_id']
-    #     # Send peer ID to all other peers
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'peer_joined',
-    #         'peer_id': peer_id
-    #     }))
-    #
-    # async def offer(self, event):
-    #     sender = event['sender']
-    #     receiver = event['receiver']
-    #     offer = event['offer']
-    #     # Send offer to the specified receiver
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'offer',
-    #         'sender': sender,
-    #         'receiver': receiver,
-    #         'offer': offer
-    #     }))
-    #
-    # async def answer(self, event):
-    #     sender = event['sender']
-    #     receiver = event['receiver']
-    #     answer = event['answer']
-    #     # Send answer to the specified receiver
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'answer',
-    #         'sender': sender,
-    #         'receiver': receiver,
-    #         'answer': answer
-    #     }))
-    #
-    # async def candidate(self, event):
-    #     sender = event['sender']
-    #     receiver = event['receiver']
-    #     candidate = event['candidate']
-    #     # Send candidate to the specified receiver
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'candidate',
-    #         'sender': sender,
-    #         'receiver': receiver,
-    #         'candidate': candidate
-    #     }))
