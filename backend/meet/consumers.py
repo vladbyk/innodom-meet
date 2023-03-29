@@ -11,6 +11,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 from accounts.models import Conference
 from accounts.models import User
+from .models import Room
 
 
 class VideoConferenceConsumer(AsyncWebsocketConsumer):
@@ -40,8 +41,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 await channel_layer.send(
                     user.channel_name,
                     {
-                        'type': 'getjoinRoom',
-                        'user': message['user']
+                        'type': 'getJoinRoom',
+                        'user': [conf_user for conf_user in Conference.objects.all() if conf_user.user.group.name == user.group.name]
                     })
         elif message['type'] == 'senderOffer':
             for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
@@ -55,7 +56,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
-    async def getjoinRoom(self, event):
+    async def getJoinRoom(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'user': event['user']
