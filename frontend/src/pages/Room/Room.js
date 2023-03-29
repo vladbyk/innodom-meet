@@ -48,7 +48,7 @@ const Room = (data) => {
     console.log('on ice cang',e)
             callSocket.current.send(JSON.stringify({
               candidate: e.candidate,
-              chanel_name:socketID,
+              channel_name:socketID,
               type:'candidate'
             }))}
   }
@@ -131,8 +131,8 @@ const Room = (data) => {
           console.log('get join room',response);
           if(response.allUsers.length>0){
             response.allUsers.map(item=>{
-              createPeerConnection(item.chanel_name,localStream,item.email)
-              let pc=pcs[item.chanel_name]
+              createPeerConnection(item.channel_name,localStream,item.email)
+              let pc=pcs[item.channel_name]
               if(pc){
   pc.createOffer({
     offerToReceiveAudio: true,
@@ -145,7 +145,7 @@ const Room = (data) => {
     callSocket.current.send(JSON.stringify({
       type:'offer',
       sdp:sdp,
-      chanel_name:item.chanel_name
+      channel_name:item.channel_name
     }))
   })
   .catch(err=>console.log(err))
@@ -155,8 +155,8 @@ const Room = (data) => {
         }
         if (type == "getOffer") {
           console.log('get sender offer',response);
-          createPeerConnection(response.chanel_name,response.email,localStream)
-          let pc = pcs[response.chanel_name]
+          createPeerConnection(response.channel_name,response.email,localStream)
+          let pc = pcs[response.channel_name]
           if(pc){
             pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
             .then(()=>{
@@ -169,7 +169,7 @@ const Room = (data) => {
                 callSocket.current.send(JSON.stringify({
                   type:'answer',
                   sdp:sdp,
-                  chanel_name:response.chanel_name
+                  channel_name:response.channel_name
                 }))
               })
             })
@@ -177,14 +177,14 @@ const Room = (data) => {
         }
         if (type == "getAnswer") {
           console.log('get answeer',response);
-          let pc = pcs[response.chanel_name]
+          let pc = pcs[response.channel_name]
           if(pc){
             pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
           }
         }
         if (type == "getCandidate") {
           console.log('get candidate',response);
-          let pc = pcs[response.chanel_name]
+          let pc = pcs[response.channel_name]
           if(pc){
             pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{console.log('candidate yes')})
