@@ -79,9 +79,9 @@ const Room = (data) => {
             user:data.data.id,
           }))
   let pc=new RTCPeerConnection(pc_config)
-  if(localVideo){
+  if(localStream){
     console.log('lockal streem add',localVideo)
-    localVideo.current.getTracks().forEach(track => {
+    localStream.getTracks().forEach(track => {
       pc.addTrack(track,localVideo)
     });
   }
