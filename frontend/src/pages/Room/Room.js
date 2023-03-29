@@ -77,7 +77,7 @@ const Room = (data) => {
           })
           callSocket.current.send(JSON.stringify({
             type:'joinRoom',
-            user:data.data.id
+            user:data.data.id,
           }))
           // socket.send(JSON.stringify({type: "join_room", roomId}));
       };
@@ -86,10 +86,12 @@ const Room = (data) => {
         let response = JSON.parse(e.data);
         let type = response.type;
   
-        if (type == "sender") {
-          console.log(response);
+        if (type == "getJoinRoom") {
+          console.log('getjoinroom',response);
         }
       };
+
+
   
       // socket.onmessage = (event) => {
       //     const message = JSON.parse(event.data);
