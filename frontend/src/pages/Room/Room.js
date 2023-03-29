@@ -160,7 +160,7 @@ const Room = (data) => {
           if(pc){
             console.log(pc)
             console.log(pcs)
-            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
+            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
             .then(()=>{
               pc.createAnswer({
                 offerToReceiveAudio: true,
