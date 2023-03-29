@@ -28,20 +28,20 @@ const Room = (data) => {
      localStream = stream;
      console.log(stream)
      localVideo.current.srcObject = stream;
-     return createConnectionAndAddStream();
    }).catch( (err)=>{
      console.log(err);
    })
   };
-  const createConnectionAndAddStream = () => {
-  // createPeerConnection();
-  peerConnection.current.addStream(localStream);
-  return true;
-  };
+  // const createConnectionAndAddStream = () => {
+  // // createPeerConnection();
+  // peerConnection.current.addStream(localStream);
+  // return true;
+  // };
   const createPeerConnection = (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   pcs={...pcs,[socketID]:pc}
 
+  console.log(pc)
   pc.onicecandidate=(e)=>{
     if(e.candidate){
     console.log('on ice cang',e)
