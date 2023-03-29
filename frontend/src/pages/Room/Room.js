@@ -131,7 +131,7 @@ const Room = (data) => {
           console.log('get join room',response);
           if(response.allUsers.length>0){
             response.allUsers.map(item=>{
-              createPeerConnection(item.chanel_name,item.email,localStream)
+              createPeerConnection(item.chanel_name,localStream,item.email)
               let pc=pcs[item.chanel_name]
               if(pc){
   pc.createOffer({
