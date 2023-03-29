@@ -35,36 +35,50 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         message = json.loads(text_data)
         print(message, flush=True)
         channel_layer = get_channel_layer()
-        if message['type'] == 'senderOffer':
+        if message['type'] == 'offer':
             for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
                 await channel_layer.send(
                     user.channel_name,
                     {
-                        'type': 'getSenderOffer',
+                        'type': 'getOffer',
                         'sdp': message['sdp'],
                         'channel_name': user.channel_name
                     })
-        elif message['type'] == 'senderCandidate':
-            await channel_layer.send(
+        elif message['type'] == 'answer':
+            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
+                await channel_layer.send(
                     message['channel_name'],
                     {
-                        'type': 'getSenderCandidate',
-                        'candidate': message['candidate']
-                    }
+                        'type': 'geAnswer',
+                        'sdp': message['sdp']
+                    })
+        elif message['type'] == 'candidate':
+            for user in Conference.objects.exclude(user=User.objects.get(id=message['user'])):
+                await channel_layer.send(
+                        user.channel_name,
+                        {
+                            'type': 'getCandidate',
+                            'candidate': message['candidate']
+                        }
                 )
-        elif
 
-    async def getJoinRoom(self, event):
+    async def getOffer(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'sdp': event['sdp'],
-            'channel_name': event['channel_name']
+            'channel_name': event['channel_name'],
         }))
 
-    async def getSenderCandidate(self, event):
+    async def getAnswer(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'user': event['candidate']
+            'sdp': event['sdp']
+        }))
+
+    async def getCandidate(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'candidate': event['candidate']
         }))
 
         #
