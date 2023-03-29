@@ -75,7 +75,7 @@ const Room = (data) => {
           beReady().then((bool)=>{
               processCall()
           })
-          socket.send(JSON.stringify({
+          callSocket.current.send(JSON.stringify({
             type:'joinRoom',
             user:data.data.id
           }))
