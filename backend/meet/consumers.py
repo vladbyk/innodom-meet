@@ -32,7 +32,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         message = json.loads(text_data)
-        print(message)
+        print(message, flush=True)
         from channels.layers import get_channel_layer
 
         channel_layer = get_channel_layer()
