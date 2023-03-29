@@ -140,6 +140,7 @@ const Room = (data) => {
   })
   .then(sdp=>{
     console.log('create off ',sdp)
+    console.log(item)
     pc.setLocalDescription(new RTCSessionDescription(sdp))
     callSocket.current.send(JSON.stringify({
       type:'offer',
