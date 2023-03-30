@@ -112,7 +112,8 @@ const Room = (data) => {
     callSocket.current.send(JSON.stringify({
       type:'offer',
       sdp:sdp,
-      channel_name:item.channel_name
+      channel_name:item.channel_name,
+      user:item.id
     }))
   })
   .catch(err=>console.log(err))
@@ -138,7 +139,7 @@ const Room = (data) => {
                 callSocket.current.send(JSON.stringify({
                   type:'answer',
                   sdp:sdp,
-                  channel_name:response.channel_name
+                  channel_name:response.channel_name_sender,
                 }))
               })
             })
