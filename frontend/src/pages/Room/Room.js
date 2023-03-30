@@ -45,7 +45,7 @@ const Room = (data) => {
               candidate: e.candidate,
               channel_name:socketID,
               type:'candidate',
-              channel_name_sender:data.data.id
+              user:data.data.id
             }))}
   }
 
