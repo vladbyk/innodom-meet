@@ -68,7 +68,7 @@ const Room = (data) => {
   }else{console.log('no local stream')}
 
   return pc;
-  }
+  };
   //   const handleRemoteStreamAdded = (event) => {
   //     console.log("Remote stream added.");
   //     console.log(event.stream)
@@ -77,7 +77,7 @@ const Room = (data) => {
   //     remoteVideo.current.srcObject = remoteStream;
   //   };
   
-  const processCall = useCallback( (username) => {
+  const processCall = (username) => {
     callSocket.current.send(JSON.stringify({
             type:'joinRoom',
             group:data.data.group,
@@ -115,8 +115,8 @@ const Room = (data) => {
   //     console.log(err);
   //   }
   // );
-  },[])
-  const connectRoom = useCallback( () => {
+  }
+  const connectRoom = () => {
       console.log('sok',data.data)
       callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
       callSocket.current.onopen = () => {
@@ -236,11 +236,11 @@ const Room = (data) => {
       // return () => {
       //     socket.close();
       // };
-  },[]);
+  };
   
   useEffect(()=>{
       connectRoom()
-  },[createPeerConnection,beReady])
+  },[])
   return (
      <div>
          <h1>room {data.data.group}</h1>
