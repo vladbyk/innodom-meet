@@ -48,10 +48,14 @@ const Room = (data) => {
             }))}
   }
 
+  pc.onconnectionstatechange=(e)=>{
+    console.log('onconnectionstatechange',e)
+  }
 
   pc.ontrack=(e)=>{
-    console.log(socketID)
-    console.log(users)
+    console.log('otrack',socketID)
+    console.log('otrack',users)
+    console.log('otrack',e)
     // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
