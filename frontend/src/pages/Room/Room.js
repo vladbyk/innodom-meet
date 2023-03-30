@@ -144,6 +144,7 @@ const Room = (data) => {
                 callSocket.current.send(JSON.stringify({
                   type:'answer',
                   sdp:sdp,
+                  user:data.data.id,
                   channel_name:response.channel_name_sender,
                 }))
               })
@@ -153,6 +154,8 @@ const Room = (data) => {
         if (type == "getAnswer") {
           console.log('get answeer',response);
           let pc = pcs[response.channel_name]
+          console.log(pc)
+          console.log(pcs)
           if(pc){
             pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
           }
