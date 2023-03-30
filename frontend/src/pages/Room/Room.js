@@ -38,7 +38,7 @@ const Room = (data) => {
   // peerConnection.current.addStream(localStream);
   // return true;
   // };
-  const createPeerConnection = useCallback( (socketID,localStream,email) => {
+  const createPeerConnection = (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   pcs={...pcs,[socketID]:pc}
 
@@ -68,7 +68,7 @@ const Room = (data) => {
   }else{console.log('no local stream')}
 
   return pc;
-  },[]);
+  }
   //   const handleRemoteStreamAdded = (event) => {
   //     console.log("Remote stream added.");
   //     console.log(event.stream)
