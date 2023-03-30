@@ -144,6 +144,7 @@ const Room = (data) => {
                 callSocket.current.send(JSON.stringify({
                   type:'answer',
                   sdp:sdp,
+                  user:data.data.id,
                   channel_name:response.channel_name_sender,
                 }))
               })
