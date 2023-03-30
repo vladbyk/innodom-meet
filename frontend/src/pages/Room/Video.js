@@ -19,6 +19,7 @@ const Video = ({
        <div>
         <div>{user.id}</div>
         <video ref={ref} autoPlay muted />
+        <video ref={email} autoPlay muted />
        </div>
    );
 }
