@@ -154,10 +154,11 @@ const Room = (data) => {
         if (type == "getAnswer") {
           console.log('get answeer',response);
           let pc = pcs[response.channel_name]
+          //возможно ченел нейм сендер
           console.log(pc)
           console.log(pcs)
           if(pc){
-            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
+            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
           }
         }
         if (type == "getCandidate") {
