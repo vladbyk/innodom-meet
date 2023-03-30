@@ -113,7 +113,7 @@ const Room = (data) => {
       type:'offer',
       sdp:sdp,
       channel_name:item.channel_name,
-      user:item.id
+      user:data.data.id
     }))
   })
   .catch(err=>console.log(err))
