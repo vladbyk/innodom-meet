@@ -38,7 +38,7 @@ const Room = (data) => {
   // peerConnection.current.addStream(localStream);
   // return true;
   // };
-  const createPeerConnection = (socketID,localStream,email) => {
+  const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   pcs={...pcs,[socketID]:pc}
 
@@ -53,10 +53,12 @@ const Room = (data) => {
             }))}
   }
 
+
   pc.ontrack=(e)=>{
+    console.log(socketID)
+    console.log(users)
     setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers((oldUsers)=>[{...oldUsers,email:email,id:socketID,stream:e.streams[0]}])
-    console.log(users)
   }
 
   if(localStream){
@@ -66,7 +68,7 @@ const Room = (data) => {
   }else{console.log('no local stream')}
 
   return pc;
-  };
+  },[]);
   //   const handleRemoteStreamAdded = (event) => {
   //     console.log("Remote stream added.");
   //     console.log(event.stream)
@@ -75,7 +77,7 @@ const Room = (data) => {
   //     remoteVideo.current.srcObject = remoteStream;
   //   };
   
-  const processCall = (username) => {
+  const processCall = useCallback( (username) => {
     callSocket.current.send(JSON.stringify({
             type:'joinRoom',
             group:data.data.group,
@@ -113,8 +115,8 @@ const Room = (data) => {
   //     console.log(err);
   //   }
   // );
-  }
-  const connectRoom = () => {
+  },[])
+  const connectRoom = useCallback( () => {
       console.log('sok',data.data)
       callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
       callSocket.current.onopen = () => {
@@ -234,11 +236,11 @@ const Room = (data) => {
       // return () => {
       //     socket.close();
       // };
-  };
+  },[]);
   
   useEffect(()=>{
       connectRoom()
-  },[])
+  },[createPeerConnection,beReady])
   return (
      <div>
          <h1>room {data.data.group}</h1>
