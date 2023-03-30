@@ -44,7 +44,8 @@ const Room = (data) => {
             callSocket.current.send(JSON.stringify({
               candidate: e.candidate,
               channel_name:socketID,
-              type:'candidate'
+              type:'candidate',
+              channel_name_sender:data.data.id
             }))}
   }
 
@@ -161,6 +162,7 @@ const Room = (data) => {
           let pc = pcs[response.channel_name]
           console.log('get candidate',pc)
           console.log('get candidate',pcs)
+          console.log('get candidate',pcs[response.channel_name])
           if(pc){
             pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{console.log('candidate yes')})
