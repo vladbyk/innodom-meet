@@ -244,7 +244,7 @@ const Room = (data) => {
          <h1>room {data.data.group}</h1>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
-          <Video key={index} email={user.email} stream={user.stream}/>
+          <Video key={index} email={user.email} stream={user.stream} user={user}/>
          ))}
      </div>
   );

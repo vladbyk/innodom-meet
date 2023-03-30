@@ -2,7 +2,8 @@ import React, {useState, useEffect, useRef, useCallback} from "react";
 
 const Video = ({
     email,
-    stream
+    stream,
+    user
 }) => {
     // const
     const ref = useRef();
@@ -12,6 +13,7 @@ const Video = ({
         if (ref.current) ref.current.srcObject = stream;
         console.log(email)
         console.log(ref)
+        console.log(user)
     });
     return (
        <div>
