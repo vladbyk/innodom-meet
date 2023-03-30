@@ -153,6 +153,8 @@ const Room = (data) => {
         if (type == "getAnswer") {
           console.log('get answeer',response);
           let pc = pcs[response.channel_name]
+          console.log(pc)
+          console.log(pcs)
           if(pc){
             pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
           }
