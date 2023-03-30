@@ -48,10 +48,14 @@ const Room = (data) => {
             }))}
   }
 
+  pc.onconnectionstatechange=(e)=>{
+    console.log('onconnectionstatechange',e)
+  }
 
   pc.ontrack=(e)=>{
-    console.log(socketID)
-    console.log(users)
+    console.log('otrack',socketID)
+    console.log('otrack',users)
+    console.log('otrack',e)
     // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
@@ -113,7 +117,7 @@ const Room = (data) => {
       type:'offer',
       sdp:sdp,
       channel_name:item.channel_name,
-      user:item.id
+      user:data.data.id
     }))
   })
   .catch(err=>console.log(err))
@@ -155,6 +159,8 @@ const Room = (data) => {
         if (type == "getCandidate") {
           console.log('get candidate',response);
           let pc = pcs[response.channel_name]
+          console.log('get candidate',pc)
+          console.log('get candidate',pcs)
           if(pc){
             pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{console.log('candidate yes')})
