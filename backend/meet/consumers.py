@@ -76,7 +76,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 message['channel_name'],
                 {
                     'type': 'getCandidate',
-                    'candidate': message['candidate']
+                    'candidate': message['candidate'],
+                    'channel_name': message['channel_name']
                 }
             )
 
@@ -97,7 +98,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getCandidate(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'candidate': event['candidate']
+            'candidate': event['candidate'],
+            'channel_name': event['channel_name']
         }))
 
     async def getJoinRoom(self, event):
