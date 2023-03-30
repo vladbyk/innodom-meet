@@ -69,7 +69,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 message['channel_name'],
                 {
                     'type': 'getAnswer',
-                    'sdp': message['sdp']
+                    'sdp': message['sdp'],
+                    'channel_name': message['channel_name'],
                 })
         elif message['type'] == 'candidate':
             user = Conference.objects.get(user__id=message['user'])
@@ -94,7 +95,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getAnswer(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'sdp': event['sdp']
+            'sdp': event['sdp'],
+            'channel_name': event['channel_name']
         }))
 
     async def getCandidate(self, event):
