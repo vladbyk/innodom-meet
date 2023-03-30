@@ -78,7 +78,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     'type': 'getCandidate',
                     'candidate': message['candidate'],
                     'channel_name': message['channel_name'],
-                    'channel_name_sender': message['channel_name_Sender']
+                    'channel_name_sender': message['channel_name_sender']
                 }
             )
 
