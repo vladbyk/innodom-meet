@@ -36,13 +36,13 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         print(message, flush=True)
         channel_layer = get_channel_layer()
         if message['type'] == 'joinRoom':
-            user = Conference.objects.get(user=User.objects.get(id=message['user']))
+            user = Conference.objects.get(user__id=message['user'])
             print([{'channel_name': conf_user.channel_name, 'id': conf_user.user.id,
-                                  'email': conf_user.user.email, 'name': conf_user.user.name,
-                                  'surname': conf_user.user.surname}
-                                 for
-                                 conf_user in Conference.objects.filter(user__group__group=message['group']).exclude(
-                            user=User.objects.get(id=message['user']))],flush=True)
+                    'email': conf_user.user.email, 'name': conf_user.user.name,
+                    'surname': conf_user.user.surname}
+                   for
+                   conf_user in Conference.objects.filter(user__group__group=message['group']).exclude(
+                    user=User.objects.get(id=message['user']))], flush=True)
             await channel_layer.send(
                 user.channel_name,
                 {
@@ -55,7 +55,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                             user=User.objects.get(id=message['user']))]
                 })
         elif message['type'] == 'offer':
-            user = Conference.objects.get(user=User.objects.get(id=message['user']))
+            user = Conference.objects.get(user__id=message['user'])
             await channel_layer.send(
                 message['channel_name'],
                 {
@@ -85,6 +85,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'sdp': event['sdp'],
             'channel_name': event['channel_name'],
+            'channel_name_sender': event['channel_name_sender']
         }))
 
     async def getAnswer(self, event):
