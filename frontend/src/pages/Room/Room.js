@@ -52,9 +52,8 @@ const Room = (data) => {
   pc.ontrack=(e)=>{
     console.log(socketID)
     console.log(users)
-    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
-    // setUsers((oldUsers)=>oldUsers.map(item=>))
-    setUsers((oldUsers)=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
+    // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
   }
 
@@ -166,6 +165,8 @@ const Room = (data) => {
   useEffect(()=>{
       connectRoom()
   },[createPeerConnection,processCall])
+  useEffect(()=>{
+},[users])
   return (
      <div>
          <h1>room {data.data.group}</h1>
