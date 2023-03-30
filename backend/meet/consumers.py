@@ -72,13 +72,14 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     'sdp': message['sdp']
                 })
         elif message['type'] == 'candidate':
+            user = Conference.objects.get(user__id=message['user'])
             await channel_layer.send(
                 message['channel_name'],
                 {
                     'type': 'getCandidate',
                     'candidate': message['candidate'],
                     'channel_name': message['channel_name'],
-                    'channel_name_sender': message['channel_name_Sender']
+                    'channel_name_sender': user.channel_name
                 }
             )
 
@@ -101,7 +102,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'candidate': event['candidate'],
             'channel_name': event['channel_name'],
-            'channel_name_sender': event['channel_name_Sender']
+            'channel_name_sender': event['channel_name_sender']
         }))
 
     async def getJoinRoom(self, event):
