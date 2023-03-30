@@ -101,7 +101,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'candidate': event['candidate'],
             'channel_name': event['channel_name'],
-            'channel_name_sender': event['channel_name_Sender']
+            'channel_name_sender': event['channel_name_sender']
         }))
 
     async def getJoinRoom(self, event):
