@@ -159,6 +159,8 @@ const Room = (data) => {
         if (type == "getCandidate") {
           console.log('get candidate',response);
           let pc = pcs[response.channel_name]
+          console.log('get candidate',pc)
+          console.log('get candidate',pcs)
           if(pc){
             pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{console.log('candidate yes')})
