@@ -127,8 +127,8 @@ const Room = (data) => {
         }
         if (type == "getOffer") {
           console.log('get sender offer',response);
-          createPeerConnection(response.channel_name,response.email,localStream)
-          let pc = pcs[response.channel_name]
+          createPeerConnection(response.channel_name_sender,response.email,localStream)
+          let pc = pcs[response.channel_name_sender]
           if(pc){
             console.log(pc)
             console.log(pcs)
@@ -180,7 +180,7 @@ const Room = (data) => {
          <button onClick={()=>{console.log(users)}}>user dla vlada</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
-          <Video key={index} email={user.email} stream={user.stream} user={user}/>
+          <Video key={index} stream={user.stream} user={user}/>
          ))}
      </div>
   );
