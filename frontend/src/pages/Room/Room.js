@@ -45,7 +45,7 @@ const Room = (data) => {
               candidate: e.candidate,
               channel_name:socketID,
               type:'candidate',
-              channel_name_sender:data.data.id
+              user:data.data.id
             }))}
   }
 
@@ -178,7 +178,10 @@ const Room = (data) => {
   return (
      <div>
          <h1>room {data.data.group}</h1>
-         <button onClick={()=>{console.log(users)}}>user dla vlada</button>
+         <button onClick={()=>{
+          console.log(localVideo)
+          console.log(users)
+          }}>user dla vlada</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
