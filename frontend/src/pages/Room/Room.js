@@ -33,12 +33,7 @@ const Room = (data) => {
      console.log(err);
    })
   };
-  // const createConnectionAndAddStream = () => {
-  // // createPeerConnection();
-  // peerConnection.current.addStream(localStream);
-  // return true;
-  // };
-  const createPeerConnection = (socketID,localStream,email) => {
+  const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   pcs={...pcs,[socketID]:pc}
 
@@ -57,8 +52,9 @@ const Room = (data) => {
   pc.ontrack=(e)=>{
     console.log(socketID)
     console.log(users)
-    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
-    setUsers((oldUsers)=>[{...oldUsers,email:email,id:socketID,stream:e.streams[0]}])
+    // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
+    console.log(users)
   }
 
   if(localStream){
@@ -68,16 +64,9 @@ const Room = (data) => {
   }else{console.log('no local stream')}
 
   return pc;
-  };
-  //   const handleRemoteStreamAdded = (event) => {
-  //     console.log("Remote stream added.");
-  //     console.log(event.stream)
-  //     console.log(localStream)
-  //     remoteStream = event.stream;
-  //     remoteVideo.current.srcObject = remoteStream;
-  //   };
+  },[]);
   
-  const processCall = (username) => {
+  const processCall = useCallback((username) => {
     callSocket.current.send(JSON.stringify({
             type:'joinRoom',
             group:data.data.group,
@@ -91,31 +80,7 @@ const Room = (data) => {
     });
   }
 
-  // pc.createOffer({
-  //   offerToReceiveAudio: true,
-  //   offerToReceiveVideo: true,
-  // })
-  // .then(sdp=>{
-  //   console.log('create off ',sdp)
-
-  // })
-
-  // peerConnection.current.createOffer(
-  //   (session) => {
-  //     peerConnection.current.setLocalDescription(session);
-  //     console.log(session)
-  //     console.log(peerConnection)
-  //     callSocket.current.send(JSON.stringify({
-  //       type:'senderOffer',
-  //       user:data.data.id,
-  //       sdp:session.sdp,
-  //     }))
-  //   },
-  //   (err) => {
-  //     console.log(err);
-  //   }
-  // );
-  }
+  },[])
   const connectRoom = () => {
       console.log('sok',data.data)
       callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
@@ -124,7 +89,6 @@ const Room = (data) => {
           beReady().then((bool)=>{
               processCall()
           })
-          // socket.send(JSON.stringify({type: "join_room", roomId}));
       };
 
       callSocket.current.onmessage = (e) => {
@@ -195,55 +159,18 @@ const Room = (data) => {
             .then(()=>{console.log('candidate yes')})
           }
         }
-        // if (type == "getSenderOffer") {
-        //   console.log('get sender offer',response);
-        //   let pc=new RTCPeerConnection(pc_config)
-        //   pc.onicecandidate=(e)=>{
-        //     console.log('on ice cang',e)
-        //     callSocket.current.send(JSON.stringify({
-        //       candidate: e.candidate,
-        //       chanel_name:data.data.chanel_name,
-        //       type:'senderCandidate'
-        //     }))
-        //   }
-
-        //   pc.ontrack=(e)=>{
-        //     console.log('ontrac',e)
-        //     e.streams[0]
-        //   }
-        // }
-
-        // if (type == "getSenderCandidate") {
-        //   console.log('get sender candidate',response);
-        //     try {
-        //       if (!(response.candidate && callSocket.current)) return;
-        //       console.log("get sender candidate");
-        //       callSocket.current.addIceCandidate(
-        //         new RTCIceCandidate(response.candidate)
-        //       );
-        //       console.log("candidate add success");
-        //     } catch (error) {
-        //       console.log(error);
-        //     }
-        // }
       };
-
-
-  
-      // socket.onmessage = (event) => {
-      //     const message = JSON.parse(event.data);
-      // };
-      // return () => {
-      //     socket.close();
-      // };
   };
   
   useEffect(()=>{
       connectRoom()
-  },[])
+  },[createPeerConnection,processCall])
+  useEffect(()=>{
+},[users])
   return (
      <div>
          <h1>room {data.data.group}</h1>
+         <button onClick={()=>{console.log(users)}}>user dla vlada</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} email={user.email} stream={user.stream} user={user}/>
