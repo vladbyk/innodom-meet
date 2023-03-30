@@ -53,7 +53,8 @@ const Room = (data) => {
     console.log(socketID)
     console.log(users)
     setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
-    setUsers((oldUsers)=>[{...oldUsers,email:email,id:socketID,stream:e.streams[0]}])
+    // setUsers((oldUsers)=>oldUsers.map(item=>))
+    // setUsers((oldUsers)=>{...oldUsers,email:email,id:socketID,stream:e.streams[0]})
     console.log(users)
   }
 

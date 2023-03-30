@@ -6,6 +6,17 @@ const Lobby = ({
     handleUserEmailChange,
     ConnectionRoom
 }) => {
+    const [us,setus]=useState([{name:'fff',f:'vvv'}])
+    useEffect(()=>{
+        setus(oldUsers => [
+            ...oldUsers,
+            {
+                name: 'ddd',
+                f:'gg',
+            },
+        ])
+        console.log(us)
+    },[])
     return (
        <div>
         <label htmlFor="email">Почта:</label>
