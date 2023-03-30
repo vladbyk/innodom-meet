@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
+import Video from "./Video";
 const pc_config = {
         iceServers: [
           {
@@ -28,33 +29,36 @@ const Room = (data) => {
      localStream = stream;
      console.log(stream)
      localVideo.current.srcObject = stream;
-     return createConnectionAndAddStream();
    }).catch( (err)=>{
      console.log(err);
    })
   };
-  const createConnectionAndAddStream = () => {
-  // createPeerConnection();
-  peerConnection.current.addStream(localStream);
-  return true;
-  };
+  // const createConnectionAndAddStream = () => {
+  // // createPeerConnection();
+  // peerConnection.current.addStream(localStream);
+  // return true;
+  // };
   const createPeerConnection = (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   pcs={...pcs,[socketID]:pc}
 
+  console.log(pc)
   pc.onicecandidate=(e)=>{
     if(e.candidate){
     console.log('on ice cang',e)
             callSocket.current.send(JSON.stringify({
               candidate: e.candidate,
-              chanel_name:socketID,
+              channel_name:socketID,
               type:'candidate'
             }))}
   }
 
+
   pc.ontrack=(e)=>{
-    setUsers((oldUsers)=>[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}])
+    console.log(socketID)
     console.log(users)
+    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    setUsers((oldUsers)=>[{...oldUsers,email:email,id:socketID,stream:e.streams[0]}])
   }
 
   if(localStream){
@@ -76,13 +80,14 @@ const Room = (data) => {
   const processCall = (username) => {
     callSocket.current.send(JSON.stringify({
             type:'joinRoom',
+            group:data.data.group,
             user:data.data.id,
           }))
   let pc=new RTCPeerConnection(pc_config)
   if(localStream){
     console.log('lockal streem add',localVideo)
     localStream.getTracks().forEach(track => {
-      pc.addTrack(track,localVideo)
+      pc.addTrack(track,localStream)
     });
   }
 
@@ -127,10 +132,10 @@ const Room = (data) => {
         let type = response.type;
         if (type == "getJoinRoom") {
           console.log('get join room',response);
-          if(response.length>0){
-            response.map(item=>{
-              createPeerConnection(item.chanel_name,item.email,localStream)
-              let pc=pcs[item.chanel_name]
+          if(response.allUsers.length>0){
+            response.allUsers.map(item=>{
+              createPeerConnection(item.channel_name,localStream,item.email)
+              let pc=pcs[item.channel_name]
               if(pc){
   pc.createOffer({
     offerToReceiveAudio: true,
@@ -138,11 +143,12 @@ const Room = (data) => {
   })
   .then(sdp=>{
     console.log('create off ',sdp)
+    console.log(item)
     pc.setLocalDescription(new RTCSessionDescription(sdp))
     callSocket.current.send(JSON.stringify({
       type:'offer',
       sdp:sdp,
-      chanel_name:item.chanel_name
+      channel_name:item.channel_name
     }))
   })
   .catch(err=>console.log(err))
@@ -152,10 +158,12 @@ const Room = (data) => {
         }
         if (type == "getOffer") {
           console.log('get sender offer',response);
-          createPeerConnection(response.chanel_name,response.email,localStream)
-          let pc = pcs[response.chanel_name]
+          createPeerConnection(response.channel_name,response.email,localStream)
+          let pc = pcs[response.channel_name]
           if(pc){
-            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
+            console.log(pc)
+            console.log(pcs)
+            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
             .then(()=>{
               pc.createAnswer({
                 offerToReceiveAudio: true,
@@ -166,7 +174,7 @@ const Room = (data) => {
                 callSocket.current.send(JSON.stringify({
                   type:'answer',
                   sdp:sdp,
-                  chanel_name:response.chanel_name
+                  channel_name:response.channel_name
                 }))
               })
             })
@@ -174,20 +182,19 @@ const Room = (data) => {
         }
         if (type == "getAnswer") {
           console.log('get answeer',response);
-          let pc = pcs[response.chanel_name]
+          let pc = pcs[response.channel_name]
           if(pc){
             pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
           }
         }
         if (type == "getCandidate") {
           console.log('get candidate',response);
-          let pc = pcs[response.chanel_name]
+          let pc = pcs[response.channel_name]
           if(pc){
             pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{console.log('candidate yes')})
           }
         }
-        console.log(users)
         // if (type == "getSenderOffer") {
         //   console.log('get sender offer',response);
         //   let pc=new RTCPeerConnection(pc_config)
@@ -238,6 +245,9 @@ const Room = (data) => {
      <div>
          <h1>room {data.data.group}</h1>
          <video muted autoPlay ref={localVideo}></video>
+         {users.length>0&&users.map((user,index)=>(
+          <Video key={index} email={user.email} stream={user.stream} user={user}/>
+         ))}
      </div>
   );
 }
