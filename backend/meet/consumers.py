@@ -38,15 +38,15 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         if message['type'] == 'joinRoom':
             user = Conference.objects.get(user=User.objects.get(id=message['user']))
             await channel_layer.send(
-                    user.channel_name,
-                    {
-                        'type': 'getJoinRoom',
-                        'allUsers': [{'channel_name': conf_user.channel_name, 'id': conf_user.user.id,
-                                      'email': conf_user.user.email, 'name': conf_user.user.name,
-                                      'surname': conf_user.user.surname}
-                                     for
-                                     conf_user in Conference.objects.filter(user__group__group=message['group'])]
-                    })
+                user.channel_name,
+                {
+                    'type': 'getJoinRoom',
+                    'allUsers': [{'channel_name': conf_user.channel_name, 'id': conf_user.user.id,
+                                  'email': conf_user.user.email, 'name': conf_user.user.name,
+                                  'surname': conf_user.user.surname}
+                                 for
+                                 conf_user in Conference.objects.filter(user__group__group=message['group'])]
+                })
         elif message['type'] == 'offer':
             await channel_layer.send(
                 message['channel_name'],
