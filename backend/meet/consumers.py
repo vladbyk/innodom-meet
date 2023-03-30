@@ -45,7 +45,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                                   'email': conf_user.user.email, 'name': conf_user.user.name,
                                   'surname': conf_user.user.surname}
                                  for
-                                 conf_user in Conference.objects.filter(user__group__group=message['group'])]
+                                 conf_user in Conference.objects.filter(user__group__group=message['group']).exclude(
+                            user=User.objects.get(id=message['user']))]
                 })
         elif message['type'] == 'offer':
             await channel_layer.send(
