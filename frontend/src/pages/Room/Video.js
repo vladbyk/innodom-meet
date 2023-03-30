@@ -17,6 +17,7 @@ const Video = ({
     });
     return (
        <div>
+        <div>{user.id}</div>
         <video ref={ref} autoPlay muted />
        </div>
    );
