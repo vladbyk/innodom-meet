@@ -170,6 +170,7 @@ const Room = (data) => {
   return (
      <div>
          <h1>room {data.data.group}</h1>
+         <button onClick={()=>{console.log(users)}}>user dla vlada</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} email={user.email} stream={user.stream} user={user}/>
