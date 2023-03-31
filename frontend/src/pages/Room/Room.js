@@ -20,6 +20,7 @@ const Room = (data) => {
   let callSocket=useRef()
   let pcs;
   const [users,setUsers]=useState([])
+  const [isCandidate,setCandidate]=useState([])
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -155,6 +156,7 @@ const Room = (data) => {
         if (type == "getAnswer") {
           console.log('get answeer',response);
           let pc = pcs[response.channel_name]
+          setCandidate(false)
           //возможно ченел нейм сендер
           console.log(pc)
           console.log(pcs)
@@ -169,7 +171,9 @@ const Room = (data) => {
           console.log('get candidate',pcs)
           if(pc){
             await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
-            .then(()=>{console.log('candidate yes')})
+            .then(()=>{
+              setCandidate(true)
+              console.log('candidate yes')})
           }
         }
       };
@@ -184,6 +188,7 @@ const Room = (data) => {
   return (
      <div>
          <h1>room {data.data.group}</h1>
+         {isCandidate&&<div>hi</div>}
          <button onClick={()=>{
           console.log(localVideo)
           console.log(users)
