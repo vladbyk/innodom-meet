@@ -52,6 +52,7 @@ const Room = (data) => {
 
   pc.onconnectionstatechange=(e)=>{
     console.log('onconnectionstatechange',e)
+    setCandidate(true)
   }
 
   pc.ontrack=(e)=>{
@@ -172,7 +173,6 @@ const Room = (data) => {
           if(pc){
             await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{
-              setCandidate(true)
               console.log('candidate yes')})
           }
         }
