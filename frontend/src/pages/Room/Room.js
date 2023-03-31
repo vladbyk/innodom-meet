@@ -73,29 +73,34 @@ const Room = (data) => {
   return pc;
   },[]);
   
-  const processCall = useCallback(async(username) => {
-    try{callSocket.current.send(JSON.stringify({
-            type:'joinRoom',
-            group:data.data.group,
-            user:data.data.id,
-          }))
-  let pc=new RTCPeerConnection(pc_config)
-  if(localStream){
-    console.log('lockal streem add',localVideo)
-    localStream.getTracks().forEach(track => {
-      pc.addTrack(track,localStream)
-    });
-  }}catch{
-    console.log('err')
-  }
-  },[])
+  // const processCall = useCallback(async(username) => {
+  //   try{callSocket.current.send(JSON.stringify({
+  //           type:'joinRoom',
+  //           group:data.data.group,
+  //           user:data.data.id,
+  //         }))
+  // let pc=new RTCPeerConnection(pc_config)
+  // if(localStream){
+  //   console.log('lockal streem add',localVideo)
+  //   localStream.getTracks().forEach(track => {
+  //     pc.addTrack(track,localStream)
+  //   });
+  // }}catch{
+  //   console.log('err')
+  // }
+  // },[])
   const connectRoom = () => {
       console.log('sok',data.data)
       callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
       callSocket.current.onopen = () => {
           console.log("WebSocket connection established");
           beReady().then((bool)=>{
-              processCall()
+            callSocket.current.send(JSON.stringify({
+              type:'joinRoom',
+              group:data.data.group,
+              user:data.data.id,
+            }))
+              // processCall()
           })
       };
 
