@@ -30,19 +30,12 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         Conference.objects.filter(channel_name=self.channel_name).delete()
 
-    # Receive message from WebSocket
     async def receive(self, text_data):
         message = json.loads(text_data)
         print(message, flush=True)
         channel_layer = get_channel_layer()
         if message['type'] == 'joinRoom':
             user = Conference.objects.get(user__id=message['user'])
-            print([{'channel_name': conf_user.channel_name, 'id': conf_user.user.id,
-                    'email': conf_user.user.email, 'name': conf_user.user.name,
-                    'surname': conf_user.user.surname}
-                   for
-                   conf_user in Conference.objects.filter(user__group__group=message['group']).exclude(
-                    user=User.objects.get(id=message['user']))], flush=True)
             await channel_layer.send(
                 user.channel_name,
                 {
@@ -71,7 +64,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'getAnswer',
                     'sdp': message['sdp'],
-                    'channel_name': user.channel_name, # это должно быть channel_name_sender
+                    'channel_name': user.channel_name,  # это должно быть channel_name_sender
                 })
         elif message['type'] == 'candidate':
             user = Conference.objects.get(user__id=message['user'])
