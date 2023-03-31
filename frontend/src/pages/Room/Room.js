@@ -20,7 +20,7 @@ const Room = (data) => {
   let callSocket=useRef()
   let pcs;
   const [users,setUsers]=useState([])
-  const [isCandidate,setCandidate]=useState([])
+  const [isCandidate,setCandidate]=useState(false)
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
