@@ -180,7 +180,7 @@ const Room = (data) => {
   },[createPeerConnection,processCall])
   useEffect(()=>{
     console.log('rerender')
-},[users])
+},[pcs,user])
   return (
      <div>
          <h1>room {data.data.group}</h1>
