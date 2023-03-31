@@ -21,7 +21,6 @@ const Room = (data) => {
   let pcs;
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
-  let pch=new RTCPeerConnection(pc_config)
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -66,6 +65,7 @@ const Room = (data) => {
   }
 
   if(localStream){
+    console.log(localStream)
     localStream.getTracks().forEach(track=>{
       pc.addTrack(track,localStream)
     })
@@ -179,14 +179,6 @@ const Room = (data) => {
           if(pc){
             await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{
-              pch.ontrack=(e)=>{
-                console.log('otrack',socketID)
-                console.log('otrack',users)
-                console.log('otrack',e)
-                setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
-                setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
-                console.log(users)
-              }
               console.log('candidate yes')})
           }
         }
