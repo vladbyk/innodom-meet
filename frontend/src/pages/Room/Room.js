@@ -54,7 +54,12 @@ const Room = (data) => {
     console.log('onconnectionstatechange',e)
     setCandidate(true)
   }
-
+  if(localStream){
+    console.log(localStream)
+    localStream.getTracks().forEach(track=>{
+      pc.addTrack(track,localStream)
+    })
+  }else{console.log('no local stream')}
   pc.ontrack=(e)=>{
     console.log('otrack',socketID)
     console.log('otrack',users)
@@ -63,13 +68,6 @@ const Room = (data) => {
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
   }
-
-  if(localStream){
-    console.log(localStream)
-    localStream.getTracks().forEach(track=>{
-      pc.addTrack(track,localStream)
-    })
-  }else{console.log('no local stream')}
 
   return pc;
   },[]);
