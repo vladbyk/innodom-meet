@@ -57,7 +57,7 @@ const Room = (data) => {
     console.log('otrack',socketID)
     console.log('otrack',users)
     console.log('otrack',e)
-    // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
   }
@@ -71,8 +71,8 @@ const Room = (data) => {
   return pc;
   },[]);
   
-  const processCall = useCallback((username) => {
-    callSocket.current.send(JSON.stringify({
+  const processCall = useCallback(async(username) => {
+    try{callSocket.current.send(JSON.stringify({
             type:'joinRoom',
             group:data.data.group,
             user:data.data.id,
@@ -83,8 +83,9 @@ const Room = (data) => {
     localStream.getTracks().forEach(track => {
       pc.addTrack(track,localStream)
     });
+  }}catch{
+    console.log('err')
   }
-
   },[])
   const connectRoom = () => {
       console.log('sok',data.data)
@@ -96,7 +97,7 @@ const Room = (data) => {
           })
       };
 
-      callSocket.current.onmessage = (e) => {
+      callSocket.current.onmessage = async(e) => {
         let response = JSON.parse(e.data);
         let type = response.type;
         if (type == "getJoinRoom") {
@@ -110,10 +111,10 @@ const Room = (data) => {
     offerToReceiveAudio: true,
     offerToReceiveVideo: true,
   })
-  .then(sdp=>{
+  .then(async sdp=>{
     console.log('create off ',sdp)
     console.log(item)
-    pc.setLocalDescription(new RTCSessionDescription(sdp))
+    await pc.setLocalDescription(new RTCSessionDescription(sdp))
     callSocket.current.send(JSON.stringify({
       type:'offer',
       sdp:sdp,
@@ -133,7 +134,7 @@ const Room = (data) => {
           if(pc){
             console.log(pc)
             console.log(pcs)
-            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
+            await pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
             .then(()=>{
               pc.createAnswer({
                 offerToReceiveAudio: true,
@@ -167,7 +168,7 @@ const Room = (data) => {
           console.log('get candidate',pc)
           console.log('get candidate',pcs)
           if(pc){
-            pc.addIceCandidate(new RTCIceCandidate(response.candidate))
+            await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
             .then(()=>{console.log('candidate yes')})
           }
         }
