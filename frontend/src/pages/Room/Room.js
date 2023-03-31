@@ -167,7 +167,10 @@ const Room = (data) => {
           console.log(pc)
           console.log(pcs)
           if(pc){
-            pc.setRemoteDescription(response.sdp)
+            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
+            .then(()=>{
+              console.log('hihihi')
+            })
           }
         }
         if (type == "getCandidate") {
