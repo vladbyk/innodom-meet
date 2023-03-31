@@ -168,12 +168,6 @@ const Room = (data) => {
           console.log(pcs)
           if(pc){
             pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
-            .then(()=>{
-              pc.createAnswer({
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
-              })
-            })
           }
         }
         if (type == "getCandidate") {
