@@ -16,7 +16,7 @@ const Video = ({
     return (
        <div>
         <div>{user.id}</div>
-        <video ref={ref} autoPlay />
+        <video ref={ref} autoPlay muted={false}/>
         {/* <video ref={stream} autoPlay muted /> */}
        </div>
    );
