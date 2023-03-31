@@ -22,11 +22,6 @@ const Room = (data) => {
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
 
-
-  const handleUserAdded = useCallback((email, id, stream) => {
-    setUsers(oldUsers => [...oldUsers, { email, id, stream }]);
-  }, []);
-
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
        audio: true,
@@ -61,7 +56,6 @@ const Room = (data) => {
   }
 
   pc.ontrack=(e)=>{
-    handleUserAdded(email, socketID, e.streams[0]);
     console.log('otrack',socketID)
     console.log('otrack',users)
     console.log('otrack',e)
