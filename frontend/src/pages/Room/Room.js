@@ -54,12 +54,7 @@ const Room = (data) => {
     console.log('onconnectionstatechange',e)
     setCandidate(true)
   }
-  if(localStream){
-    console.log(localStream)
-    localStream.getTracks().forEach(track=>{
-      pc.addTrack(track,localStream)
-    })
-  }else{console.log('no local stream')}
+
   pc.ontrack=(e)=>{
     console.log('otrack',socketID)
     console.log('otrack',users)
@@ -69,6 +64,12 @@ const Room = (data) => {
     console.log(users)
   }
 
+  if(localStream){
+    console.log(localStream)
+    localStream.getTracks().forEach(track=>{
+      pc.addTrack(track,localStream)
+    })
+  }else{console.log('no local stream')}
   return pc;
   },[]);
   
@@ -166,7 +167,7 @@ const Room = (data) => {
           console.log(pc)
           console.log(pcs)
           if(pc){
-            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
+            pc.setRemoteDescription(response.sdp)
           }
         }
         if (type == "getCandidate") {
