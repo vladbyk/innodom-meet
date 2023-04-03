@@ -188,29 +188,14 @@ callSocket.current.close()
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
          {isVideo ? <button onClick={()=>{
-          navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: false,
-          }).then((stream)=>{
-            console.log(stream)
-            stream.getVideoTracks()[0].enabled=false
-            localStream = stream;
-            console.log(stream)
-     localVideo.current.srcObject = stream;
-            setVideo(false)
+          const stream = navigator.mediaDevices.getUserMedia({
+            video: true,
           })
+          const videoTracks=stream.getVideoTracks()
+          videoTracks.forEach((track)=>{track.stop()})
           }}>выкл video</button>
          :<button onClick={()=>{
-          navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: true,
-          }).then((stream)=>{
-            stream.getVideoTracks()[0].enabled=true
-            localStream = stream;
-     console.log(stream)
-     localVideo.current.srcObject = stream;
-            setVideo(true)
-          })
+          console.log('vkl')
          }}>вкл video</button>}
          <button onClick={()=>{setAudio(!isAudio)}}>audio</button>
          <video muted autoPlay ref={localVideo}></video>
