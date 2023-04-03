@@ -26,8 +26,8 @@ const Room = (data) => {
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
-       audio: isAudio,
-       video: isVideo,
+       audio: true,
+       video: true,
      }).then((stream)=>{
      localStream = stream;
      console.log(stream)
@@ -187,8 +187,22 @@ callSocket.current.close()
          <h1>room {data.data.group}</h1>
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
-         {isVideo ? <button onClick={()=>{setVideo(false)}}>выкл video</button>
-         :<button onClick={()=>{setVideo(true)}}>вкл video</button>}
+         {isVideo ? <button onClick={()=>{
+          navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false,
+          }).then(()=>{
+            setVideo(false)
+          })
+          }}>выкл video</button>
+         :<button onClick={()=>{
+          navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true,
+          }).then(()=>{
+            setVideo(true)
+          })
+         }}>вкл video</button>}
          <button onClick={()=>{setAudio(!isAudio)}}>audio</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
