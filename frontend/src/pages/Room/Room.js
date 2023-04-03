@@ -173,9 +173,8 @@ const Room = (data) => {
         if (type == "getDisconnect") {
           console.log('get disconnect',response);
           delete pcs[response.channel_name]
-          setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name)).then(()=>{
-            pcs[response.channel_name].close()
-          })
+          setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
+          pcs[response.channel_name].close()
         }
       };
   };
