@@ -192,7 +192,11 @@ callSocket.current.close()
             video: true,
           })
           const videoTracks=stream.getVideoTracks()
-          videoTracks.forEach((track)=>{track.stop()})
+          const videoTrack=videoTracks[0]
+          const newVideotrack= videoTrack.clone()
+          newVideotrack.enabled=false
+          videoTrack.stop()
+          peerConnection.addTrack(newVideotrack,stream)
           }}>выкл video</button>
          :<button onClick={()=>{
           console.log('vkl')
