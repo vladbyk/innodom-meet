@@ -116,3 +116,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'allUsers': event['allUsers']
         }))
+
+    async def getDisconnect(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'channel_name': event['channel_name'],
+        }))
