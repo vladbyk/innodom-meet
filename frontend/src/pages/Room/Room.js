@@ -6,9 +6,9 @@ const pc_config = {
             urls: "stun:stun.rims.by:3478",
           },
           {
-            "url": "turn:turn.rims.by:3478",
-            "username": "guest",
-            "credential": "somepassword"
+            urls: "turn:turn.rims.by:3478",
+            username: "guest",
+            credential: "somepassword"
           }
         ],
       };
