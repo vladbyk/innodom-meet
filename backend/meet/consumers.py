@@ -29,6 +29,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         Conference.objects.filter(channel_name=self.channel_name).delete()
+        await self.close()
 
     async def receive(self, text_data):
         message = json.loads(text_data)
