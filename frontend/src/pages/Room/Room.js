@@ -72,22 +72,6 @@ const Room = (data) => {
   return pc;
   },[]);
   
-  // const processCall = useCallback(async(username) => {
-  //   try{callSocket.current.send(JSON.stringify({
-  //           type:'joinRoom',
-  //           group:data.data.group,
-  //           user:data.data.id,
-  //         }))
-  // let pc=new RTCPeerConnection(pc_config)
-  // if(localStream){
-  //   console.log('lockal streem add',localVideo)
-  //   localStream.getTracks().forEach(track => {
-  //     pc.addTrack(track,localStream)
-  //   });
-  // }}catch{
-  //   console.log('err')
-  // }
-  // },[])
   const connectRoom = () => {
       console.log('sok',data.data)
       callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
@@ -182,6 +166,10 @@ const Room = (data) => {
         }
       };
   };
+
+  const exitRoom = () =>{
+    callSocket.current.close()
+  }
   
   useEffect(()=>{
       connectRoom()
@@ -193,10 +181,7 @@ const Room = (data) => {
      <div>
          <h1>room {data.data.group}</h1>
          {isCandidate&&<div>hi</div>}
-         <button onClick={()=>{
-          console.log(localVideo)
-          console.log(users)
-          }}>user dla vlada</button>
+         <button onClick={exitRoom}>exit</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
