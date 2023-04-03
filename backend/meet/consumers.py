@@ -79,12 +79,12 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 }
             )
         elif message['type'] == 'disconnect':
-            user = Conference.objects.get(user__id=message['user'])
-            for user_conf in Conference.objects.filter(user__group__group=message['group']).exclude(user=user):
+            user = Conference.objects.get(user__id=message['user']).channel.name
+            for user_conf in Conference.objects.filter(user__group__group=message['group']).exclude(user__id=message['user']):
                 await channel_layer.send(
                     user_conf.channel_name, {
                         'type': 'getDisconnect',
-                        'channel_name': user.channel_name,
+                        'channel_name': user,
                     }
                 )
 
