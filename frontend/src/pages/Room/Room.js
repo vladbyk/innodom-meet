@@ -191,7 +191,7 @@ callSocket.current.close()
           navigator.mediaDevices.getUserMedia({
             audio: true,
             video: false,
-          }).then(()=>{
+          }).then((stream)=>{
             localStream = stream;
      console.log(stream)
      localVideo.current.srcObject = stream;
@@ -202,7 +202,7 @@ callSocket.current.close()
           navigator.mediaDevices.getUserMedia({
             audio: true,
             video: true,
-          }).then(()=>{
+          }).then((stream)=>{
             localStream = stream;
      console.log(stream)
      localVideo.current.srcObject = stream;
