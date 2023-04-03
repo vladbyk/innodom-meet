@@ -173,9 +173,8 @@ const Room = (data) => {
       };
   };
   const exitRoom = ()=>{
-callSocket.current.close()
-callSocket.close()
-  }
+callSocket.current.close() 
+}
   
   useEffect(()=>{
       connectRoom()
@@ -188,7 +187,8 @@ callSocket.close()
          <h1>room {data.data.group}</h1>
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
-         <button onClick={()=>{setVideo(!isVideo)}}>video</button>
+         {isVideo ? <button onClick={()=>{setVideo(false)}}>выкл video</button>
+         :<button onClick={()=>{setVideo(true)}}>вкл video</button>}
          <button onClick={()=>{setAudio(!isAudio)}}>audio</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
