@@ -78,6 +78,15 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     'channel_name_sender': user.channel_name
                 }
             )
+        elif message['type'] == 'disconnect':
+            user = Conference.objects.get(user__id=message['user'])
+            for user_conf in Conference.objects.filter(group=message['group']).exclude(user=user):
+                await channel_layer.send(
+                    user_conf.channel_name, {
+                        'type': 'getDisconnect',
+                        'channel_name': user.channel_name,
+                    }
+                )
 
     async def getOffer(self, event):
         await self.send(text_data=json.dumps({
