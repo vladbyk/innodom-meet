@@ -192,6 +192,9 @@ callSocket.current.close()
             audio: true,
             video: false,
           }).then(()=>{
+            localStream = stream;
+     console.log(stream)
+     localVideo.current.srcObject = stream;
             setVideo(false)
           })
           }}>выкл video</button>
@@ -200,6 +203,9 @@ callSocket.current.close()
             audio: true,
             video: true,
           }).then(()=>{
+            localStream = stream;
+     console.log(stream)
+     localVideo.current.srcObject = stream;
             setVideo(true)
           })
          }}>вкл video</button>}
