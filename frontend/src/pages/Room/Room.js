@@ -3,7 +3,7 @@ import Video from "./Video";
 const pc_config = {
         iceServers: [
           {
-            url: "stun:stun.rims.by:3478",
+            urls: "stun:stun.rims.by:3478",
           },
           {
             "url": "turn:turn.rims.by:3478",
