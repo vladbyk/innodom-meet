@@ -191,7 +191,7 @@ callSocket.current.close()
           // const stream = navigator.mediaDevices.getUserMedia({
           //   video: true,
           // })
-          const videoTracks=localStream.current.getVideoTracks()
+          const videoTracks=localVideo.current.getVideoTracks()
           videoTracks.forEach((track)=>{
             track.stop()
           })
