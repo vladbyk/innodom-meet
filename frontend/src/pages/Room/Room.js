@@ -7,8 +7,8 @@ const pc_config = {
           },
           {
             urls: "turn:turn.rims.by:3478",
-            username: "guest",
-            credential: "somepassword"
+            username: "innodom",
+            credential: "innodom15988951"
           }
         ],
       };
@@ -21,11 +21,13 @@ const Room = (data) => {
   let pcs;
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
+  const [isAudio,setAudio]=useState(true)
+  const [isVideo,setVideo]=useState(true)
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
-       audio: true,
-       video: true,
+       audio: isAudio,
+       video: isVideo,
      }).then((stream)=>{
      localStream = stream;
      console.log(stream)
@@ -86,6 +88,10 @@ const Room = (data) => {
               // processCall()
           })
       };
+
+      callSocket.current.onclose=()=>{
+        console.log('close socket')
+      }
 
       callSocket.current.onmessage = async(e) => {
         let response = JSON.parse(e.data);
@@ -166,10 +172,9 @@ const Room = (data) => {
         }
       };
   };
-
-  const exitRoom = () =>{
-    callSocket.current.close()
-  }
+  const exitRoom = ()=>{
+callSocket.current.close() 
+}
   
   useEffect(()=>{
       connectRoom()
@@ -182,6 +187,9 @@ const Room = (data) => {
          <h1>room {data.data.group}</h1>
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
+         {isVideo ? <button onClick={()=>{setVideo(false)}}>выкл video</button>
+         :<button onClick={()=>{setVideo(true)}}>вкл video</button>}
+         <button onClick={()=>{setAudio(!isAudio)}}>audio</button>
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>

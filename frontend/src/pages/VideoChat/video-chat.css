@@ -1,0 +1,12 @@
+.innomeet{
+    background-color: rgb(4, 15, 50);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+h1{
+    margin:0px
+}

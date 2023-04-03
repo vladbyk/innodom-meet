@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Lobby from "../Lobby/Lobby";
 import Room from "../Room/Room";
+import './video-chat.css'
 
 const VideoChat = () => {
   const [email, setEmail] = useState("");
@@ -29,8 +30,8 @@ const VideoChat = () => {
     }
   };
   return (
-    <div>
-      <h1>InnoDOM Video Conference</h1>
+    <div className="innomeet">
+      <h1>InnoMeet</h1>
       <p>{ErrMessage}</p>
       {UserInfo ? (
         <Room data={UserInfo.data}/>
