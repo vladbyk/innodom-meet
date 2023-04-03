@@ -172,7 +172,7 @@ const Room = (data) => {
         }
         if (type == "getDisconnect") {
           console.log('get disconnect',response);
-          pcs[response.channel_name].close()
+          // pcs[response.channel_name].close()
           delete pcs[response.channel_name]
           setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
         }
@@ -183,8 +183,9 @@ const Room = (data) => {
   type:'disconnect',
   user:data.data.id,
   group:data.data.group
-}))
-// callSocket.current.close() 
+})).then(()=>{
+callSocket.current.close() 
+})
 }
   
   useEffect(()=>{
@@ -204,8 +205,9 @@ const Room = (data) => {
           // })
           const videoTracks=localVideo.current.srcObject.getVideoTracks()
           videoTracks.forEach((track)=>{
-            track.stop()
+            track.enabled=false
           })
+          setVideo(false)
           // const videoTrack=videoTracks[0]
           // const newVideotrack= videoTrack.clone()
           // newVideotrack.enabled=false
@@ -213,7 +215,11 @@ const Room = (data) => {
           // peerConnection.addTrack(newVideotrack,stream)
           }}>выкл video</button>
          :<button onClick={()=>{
-          console.log('vkl')
+          const videoTracks=localVideo.current.srcObject.getVideoTracks()
+          videoTracks.forEach((track)=>{
+            track.enabled=true
+          })
+          setVideo(true)
          }}>вкл video</button>}
          <button onClick={()=>{setAudio(!isAudio)}}>audio</button>
          <video muted autoPlay ref={localVideo}></video>
