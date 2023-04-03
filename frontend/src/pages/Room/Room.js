@@ -188,15 +188,18 @@ callSocket.current.close()
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
          {isVideo ? <button onClick={()=>{
-          const stream = navigator.mediaDevices.getUserMedia({
-            video: true,
+          // const stream = navigator.mediaDevices.getUserMedia({
+          //   video: true,
+          // })
+          const videoTracks=localStream.getVideoTracks()
+          videoTracks.forEach((track)=>{
+            track.stop()
           })
-          const videoTracks=stream.getVideoTracks()
-          const videoTrack=videoTracks[0]
-          const newVideotrack= videoTrack.clone()
-          newVideotrack.enabled=false
-          videoTrack.stop()
-          peerConnection.addTrack(newVideotrack,stream)
+          // const videoTrack=videoTracks[0]
+          // const newVideotrack= videoTrack.clone()
+          // newVideotrack.enabled=false
+          // videoTrack.stop()
+          // peerConnection.addTrack(newVideotrack,stream)
           }}>выкл video</button>
          :<button onClick={()=>{
           console.log('vkl')
