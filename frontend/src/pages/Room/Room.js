@@ -136,7 +136,7 @@ const Room = (data) => {
         }
         if (type == "getOffer") {
           console.log('get sender offer',response);
-          createPeerConnection(response.channel_name_sender,response.email,localStream)
+          createPeerConnection(response.channel_name_sender,localStream,response.email)
           let pc = pcs[response.channel_name_sender]
           if(pc){
             console.log(pc)
