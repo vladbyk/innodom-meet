@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, {useState, useEffect, useRef, useCallback} from "react";
+import './lobby.css'
 
 const Lobby = ({
     email,
@@ -7,8 +8,8 @@ const Lobby = ({
     ConnectionRoom
 }) => {
     return (
-       <div>
-        <label htmlFor="email">Почта:</label>
+       <div className="lobby">
+        <label htmlFor="email">Enter email:</label>
            <input
           type="email"
           id="email"
@@ -16,7 +17,7 @@ const Lobby = ({
           onChange={handleUserEmailChange}
           required
         />
-        <button onClick={ConnectionRoom}>Connect</button>
+        <button className="connect-btn" onClick={ConnectionRoom}>Connect</button>
        </div>
    );
 }
