@@ -192,6 +192,7 @@ callSocket.current.close()
             audio: true,
             video: false,
           }).then((stream)=>{
+            console.log(stream)
             stream.getVideoTracks()[0].enabled=false
             localStream = stream;
             console.log(stream)
