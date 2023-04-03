@@ -170,10 +170,21 @@ const Room = (data) => {
               console.log('candidate yes')})
           }
         }
+        if (type == "getDisconnect") {
+          console.log('get disconnect',response);
+          pcs[response.channel_name].close()
+          delete pcs[response.channel_name]
+          setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
+        }
       };
   };
   const exitRoom = ()=>{
-callSocket.current.close() 
+  callSocket.current.send(JSON.stringify({
+  type:'disconnect',
+  user:data.data.id,
+  group:data.data.group
+}))
+// callSocket.current.close() 
 }
   
   useEffect(()=>{
@@ -191,7 +202,7 @@ callSocket.current.close()
           // const stream = navigator.mediaDevices.getUserMedia({
           //   video: true,
           // })
-          const videoTracks=localVideo.current.getVideoTracks()
+          const videoTracks=localVideo.current.srcObject.getVideoTracks()
           videoTracks.forEach((track)=>{
             track.stop()
           })
