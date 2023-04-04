@@ -186,11 +186,58 @@ const Room = (data) => {
         if (type == "getSharing") {
           console.log('get sharing',response);
           console.log(pcs)
+          pcs[response.channel_name].onnegotiationneeded=(e)=>{
+            pcs[response.channel_name].createOffer()
+            .then(offer=>{
+              pcs[response.channel_name].setLocalDescription(offer)
+              callSocket.current.send(JSON.stringify({
+                  type:'sharingOffer',
+                  user:data.data.id,
+                  group:data.data.group,
+                  sdp:offer
+                })
+              )
+            })
+          }
           // pcs[response.channel_name].ontrack=(e)=>{
           //   console.log('ontrack in sharing',e)
           //   setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
           // }
         }
+        if (type == "getSharingOffer") {
+          console.log('get sharing offer',response);
+          console.log('pcs',pcs);
+          let pc = pcs[response.channel_name]
+          if(pc){
+            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
+            .then(()=>{
+              pc.createAnswer({
+                offerToReceiveAudio:false,
+                offerToReceiveVideo:true
+              }).then(sdp=>{
+                pc.setLocalDescription(new RTCSessionDescription(sdp))
+                callSocket.current.send(JSON.stringify({
+                  type:'sharingAnswer',
+                  user:data.data.id,
+                  sdp:sdp
+                })
+              )
+              })
+              
+            })
+          }}
+          if (type == "getSharingAnswer") {
+            console.log('get sharing answer',response);
+            console.log('pcs',pcs);
+          let pc = pcs[response.channel_name]
+            if(pc){
+              pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
+            }
+            }
+          pcs[response.channel_name].close()
+          delete pcs[response.channel_name]
+          setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
+        
       };
   };
   const exitRoom = ()=>{
@@ -202,7 +249,7 @@ const Room = (data) => {
 callSocket.current.close() 
 }
 const screenSharing = ()=>{
-  navigator.mediaDevices.getDisplayMedia({video:true})
+  navigator.mediaDevices.getDisplayMedia({cursor:true})
   .then((stream)=>{
     console.log(pcs)
     console.log(pcsShearing)
@@ -216,7 +263,7 @@ const screenSharing = ()=>{
     localDisplayVideo.current.srcObject=stream
     Object.values(pcsShearing).map(pc=>{
       // pc.addTrack(firstTrack,stream)
-      pc.addTransceiver(firstTrack)
+      pc.addTransceiver(firstTrack,{derection:"sendonly"})
     })
 
     callSocket.current.send(JSON.stringify({
