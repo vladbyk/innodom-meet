@@ -42,9 +42,9 @@ const Room = (data) => {
   const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   // pcs={...pcs,[socketID]:pc}
-  setPcs({...pcs,socketID:pc})
+  setPcs({...pcs,[socketID]:pc})
   console.log(pcs)
-  
+
   pc.onicecandidate=(e)=>{
     if(e.candidate){
     console.log('on ice cang',e)
