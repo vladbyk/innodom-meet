@@ -16,7 +16,6 @@ const pc_config = {
 const Room = (data) => {
   let localVideo = useRef()
   let localStream;
-  let localDispStream;
   let peerConnection=useRef()
   let callSocket=useRef()
   let localDisplayVideo=useRef()
@@ -26,6 +25,7 @@ const Room = (data) => {
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
   const [isDispVideo,setDispVideo]=useState(false)
+  const [test,setTest]=useState()
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -44,6 +44,7 @@ const Room = (data) => {
   pcs={...pcs,[socketID]:pc}
   // setPcs({...pcs,socketID:pc})
   console.log(pcs)
+  setTest(pcs)
 
   pc.onicecandidate=(e)=>{
     if(e.candidate){
@@ -199,6 +200,7 @@ const screenSharing = ()=>{
   navigator.mediaDevices.getDisplayMedia({video:true})
   .then((stream)=>{
     console.log(pcs)
+    console.log(test)
     pcs.map(pc=>{
       stream.forEach(track=>{
       pc.addTrack(track,stream)
@@ -216,7 +218,6 @@ const screenSharing = ()=>{
   
   useEffect(()=>{
       connectRoom()
-      console.log(pcs)
   },[createPeerConnection,pcs])
   useEffect(()=>{
     console.log('rerender')
