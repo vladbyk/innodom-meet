@@ -184,7 +184,7 @@ const Room = (data) => {
         }
         if (type == "getSharing") {
           console.log('get sharing',response);
-          console.log(pcs[response.channel_name].getTracks())
+          console.log(pcs)
         }
       };
   };
