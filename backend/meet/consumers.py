@@ -107,6 +107,15 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'sdp': message['sdp']
                     }
                 )
+        elif message['type'] == 'sharingAnswer':
+            user = Conference.objects.get(user__id=message['user']).channel_name
+            await channel_layer.send(
+                user.channel_name, {
+                    'type': 'getSharingAnswer',
+                    'channel_name': user,
+                    'sdp': message['sdp']
+                }
+            )
 
     async def getOffer(self, event):
         await self.send(text_data=json.dumps({
@@ -150,6 +159,13 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         }))
 
     async def getSharingOffer(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'channel_name': event['channel_name'],
+            'sdp': event['sdp']
+        }))
+
+    async def getSharingAnswer(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'channel_name': event['channel_name'],
