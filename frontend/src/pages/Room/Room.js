@@ -201,9 +201,9 @@ const screenSharing = ()=>{
   .then((stream)=>{
     console.log(pcs)
     console.log(pcsShearing)
-    Object.values(pcsShearing).map(pc=>{
-      stream.forEach(track=>{
-      pc.addTrack(track,stream)
+    stream.forEach(track=>{
+      Object.values(pcsShearing).map(pc=>{
+        pc.addTrack(track,stream)
       })
     })
     callSocket.current.send(JSON.stringify({
