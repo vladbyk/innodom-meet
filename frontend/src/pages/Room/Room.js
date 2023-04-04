@@ -16,16 +16,16 @@ const pc_config = {
 const Room = (data) => {
   let localVideo = useRef()
   let localStream;
-  let localDispStream;
   let peerConnection=useRef()
   let callSocket=useRef()
   let localDisplayVideo=useRef()
-  let pcs=useRef()
+  let pcs;
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
   const [isDispVideo,setDispVideo]=useState(false)
+  const [pcsShearing,setPcsShearing]=useState()
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -42,8 +42,10 @@ const Room = (data) => {
   const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   pcs={...pcs,[socketID]:pc}
+  // setPcs({...pcs,socketID:pc})
+  console.log(pcs)
+  setPcsShearing(pcs)
 
-  console.log(pc)
   pc.onicecandidate=(e)=>{
     if(e.candidate){
     console.log('on ice cang',e)
@@ -182,7 +184,8 @@ const Room = (data) => {
         }
         if (type == "getSharing") {
           console.log('get sharing',response);
-          console.log(pcs[response.channel_name].getTracks())
+          console.log(pcs)
+          
         }
       };
   };
@@ -198,12 +201,16 @@ const screenSharing = ()=>{
   navigator.mediaDevices.getDisplayMedia({video:true})
   .then((stream)=>{
     console.log(pcs)
-    pcs.map(pc=>{
-      stream.forEach(track=>{
-      pc.addTrack(track,stream)
-      })
+    console.log(pcsShearing)
+    console.log(stream)
+    // Object.values(pcsShearing).map(pc=>{
+    // stream.getTracks().forEach(track=>{
+    //     pc.addTrack(track,stream)
+    //   })
+    // })
+    Object.values(pcsShearing).map(pc=>{
+      pc.addTrack(stream.getTracks()[0],stream)
     })
-    localDispStream=stream
     callSocket.current.send(JSON.stringify({
     type:'sharing',
     user:data.data.id,
