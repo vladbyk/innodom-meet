@@ -24,7 +24,7 @@ const Room = (data) => {
   const [isCandidate,setCandidate]=useState(false)
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
-  const [isDispVideo,setDispVideo]=useState(true)
+  const [isDispVideo,setDispVideo]=useState(false)
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
