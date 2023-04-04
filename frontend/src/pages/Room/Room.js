@@ -183,6 +183,8 @@ const Room = (data) => {
           navigator.mediaDevices.getDisplayMedia({video:true})
           .then((stream)=>{
           localDisplayVideo.current.srcObject=stream
+          console.log(localDisplayVideo)
+          console.log(localDisplayVideo.current)
           const pc = pcs[response.channel_name]
           stream.getTracks().forEach(track=>{
             pc.addTrack(track,stream)
