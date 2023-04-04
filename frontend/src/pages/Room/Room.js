@@ -42,8 +42,8 @@ const Room = (data) => {
   const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   // pcs={...pcs,[socketID]:pc}
-  setPcs(oldPsc=>{return{...oldPsc,socketID:pc}})
-  console.log(pcs)
+  setPcs({...pcs,socketID:pc})
+
 
   console.log(pc)
   pc.onicecandidate=(e)=>{
