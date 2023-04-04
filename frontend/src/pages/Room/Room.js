@@ -184,9 +184,9 @@ const Room = (data) => {
   user:data.data.id,
   group:data.data.group
 }))
-// .then(()=>{
-// callSocket.current.close() 
-// })
+.then(()=>{
+callSocket.current.close() 
+})
 }
   
   useEffect(()=>{
