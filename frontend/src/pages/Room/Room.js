@@ -25,9 +25,13 @@ const Room = (data) => {
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
   const [isDispVideo,setDispVideo]=useState(false)
+  const myNavigator = navigator.mediaDevices.getUserMedia || 
+        navigator.mediaDevices.webkitGetUserMedia || 
+        navigator.mediaDevices.mozGetUserMedia || 
+        navigator.mediaDevices.msGetUserMedia;
 
   const beReady = () => {
-      return navigator.mediaDevices.getUserMedia({
+      return myNavigator({
        audio: true,
        video: true,
      }).then((stream)=>{
@@ -182,10 +186,11 @@ const Room = (data) => {
         if (type == "getSharing") {
           navigator.mediaDevices.getDisplayMedia({video:true})
           .then((stream)=>{
+          console.log('get sharing',response);
           localDisplayVideo.current.srcObject=stream
           console.log(localDisplayVideo)
           console.log(pcs)
-          const pc = pcs[response.channel_name]
+          const pc = pcs[response.channel_name_sender]
           console.log(pc)
           stream.getTracks().forEach(track=>{
             pc.addTrack(track,stream)
@@ -206,6 +211,7 @@ const screenSharing = ()=>{
   callSocket.current.send(JSON.stringify({
     type:'sharing',
     user:data.data.id,
+    group:data.data.group
   }))
   setDispVideo(!isDispVideo)
 }
