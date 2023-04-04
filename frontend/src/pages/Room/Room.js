@@ -206,7 +206,6 @@ const screenSharing = ()=>{
       pc.addTrack(track,stream)
       })
     })
-    localDispStream=stream
     callSocket.current.send(JSON.stringify({
     type:'sharing',
     user:data.data.id,
