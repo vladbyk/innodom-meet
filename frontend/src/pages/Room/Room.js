@@ -202,7 +202,7 @@ const screenSharing = ()=>{
     console.log(pcs)
     console.log(pcsShearing)
     console.log(stream)
-    stream.map(track=>{
+    stream.getTracks.forEach(track=>{
       Object.values(pcsShearing).map(pc=>{
         pc.addTrack(track,stream)
       })
