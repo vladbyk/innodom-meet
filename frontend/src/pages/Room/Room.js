@@ -187,7 +187,8 @@ const Room = (data) => {
           console.log('get sharing',response);
           console.log(pcs)
           pcs[response.channel_name].ontrack=(e)=>{
-    setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
+            console.log('ontrack in sharing',e)
+            setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
           }
         }
       };
