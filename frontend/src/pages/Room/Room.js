@@ -186,10 +186,10 @@ const Room = (data) => {
         if (type == "getSharing") {
           console.log('get sharing',response);
           console.log(pcs)
-          pcs[response.channel_name].ontrack=(e)=>{
-            console.log('ontrack in sharing',e)
-            setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
-          }
+          // pcs[response.channel_name].ontrack=(e)=>{
+          //   console.log('ontrack in sharing',e)
+          //   setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
+          // }
         }
       };
   };
@@ -215,23 +215,14 @@ const screenSharing = ()=>{
     // })
     localDisplayVideo.current.srcObject=stream
     Object.values(pcsShearing).map(pc=>{
-      pc.addTrack(firstTrack,stream)
+      // pc.addTrack(firstTrack,stream)
+      pc.addTransceiver(firstTrack)
     })
-    let trackDetails={
-      kind: firstTrack.kind,
-      id: firstTrack.id,
-      label: firstTrack.label,
-      enabled: firstTrack.enabled,
-      muted: firstTrack.muted,
-      readyState: firstTrack.readyState,
-      remote: false,
-      extraData: 'new screen sharing track'}
 
     callSocket.current.send(JSON.stringify({
     type:'sharing',
     user:data.data.id,
     group:data.data.group,
-    details:trackDetails
   }))
   })
   setDispVideo(!isDispVideo)
