@@ -25,7 +25,7 @@ const Room = (data) => {
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
   const [isDispVideo,setDispVideo]=useState(false)
-  const [test,setTest]=useState()
+  const [pcsShearing,setPcsShearing]=useState()
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -44,7 +44,7 @@ const Room = (data) => {
   pcs={...pcs,[socketID]:pc}
   // setPcs({...pcs,socketID:pc})
   console.log(pcs)
-  setTest(pcs)
+  setPcsShearing(pcs)
 
   pc.onicecandidate=(e)=>{
     if(e.candidate){
@@ -200,8 +200,8 @@ const screenSharing = ()=>{
   navigator.mediaDevices.getDisplayMedia({video:true})
   .then((stream)=>{
     console.log(pcs)
-    console.log(test)
-    pcs.map(pc=>{
+    console.log(pcsShearing)
+    pcsShearing.map(pc=>{
       stream.forEach(track=>{
       pc.addTrack(track,stream)
       })
