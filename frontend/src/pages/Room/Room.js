@@ -25,13 +25,9 @@ const Room = (data) => {
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
   const [isDispVideo,setDispVideo]=useState(false)
-  const myNavigator = navigator.mediaDevices.getUserMedia || 
-        navigator.mediaDevices.webkitGetUserMedia || 
-        navigator.mediaDevices.mozGetUserMedia || 
-        navigator.mediaDevices.msGetUserMedia;
 
   const beReady = () => {
-      return myNavigator({
+      return navigator.mediaDevices.getUserMedia({
        audio: true,
        video: true,
      }).then((stream)=>{
