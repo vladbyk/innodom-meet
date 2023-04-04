@@ -184,7 +184,8 @@ const Room = (data) => {
         }
         if (type == "getSharing") {
           console.log('get sharing',response);
-          console.log(pcsShearing)
+          console.log(pcs)
+          
         }
       };
   };
@@ -202,10 +203,13 @@ const screenSharing = ()=>{
     console.log(pcs)
     console.log(pcsShearing)
     console.log(stream)
-    Object.values(pcsShearing).map(pc=>{
-    stream.getTracks().forEach(track=>{
-        pc.addTrack(track,stream)
-      })
+    // Object.values(pcsShearing).map(pc=>{
+    // stream.getTracks().forEach(track=>{
+    //     pc.addTrack(track,stream)
+    //   })
+    // })
+    pcsShearing.map(pc=>{
+      pc.addTrack(screen.getTracks()[0],stream)
     })
     callSocket.current.send(JSON.stringify({
     type:'sharing',
