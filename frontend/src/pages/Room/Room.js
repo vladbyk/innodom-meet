@@ -131,6 +131,7 @@ const Room = (data) => {
         if (type == "getOffer") {
           console.log('get sender offer',response);
           createPeerConnection(response.channel_name_sender,localStream,response.email)
+          // let myPcs = createPeerConnection(response.channel_name_sender,localStream,response.email)
           let pc = pcs[response.channel_name_sender]
           if(pc){
             console.log(pc)
@@ -185,7 +186,9 @@ const Room = (data) => {
         if (type == "getSharing") {
           console.log('get sharing',response);
           console.log(pcs)
-          
+          pcs[response.channel_name].ontrack=(e)=>{
+    setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
+          }
         }
       };
   };
@@ -203,18 +206,31 @@ const screenSharing = ()=>{
     console.log(pcs)
     console.log(pcsShearing)
     console.log(stream)
+    let firstTrack=stream.getTracks()[0]
     // Object.values(pcsShearing).map(pc=>{
     // stream.getTracks().forEach(track=>{
     //     pc.addTrack(track,stream)
     //   })
     // })
+    localDisplayVideo.current.srcObject=stream
     Object.values(pcsShearing).map(pc=>{
-      pc.addTrack(stream.getTracks()[0],stream)
+      pc.addTrack(firstTrack,stream)
     })
+    let trackDetails={
+      kind: firstTrack.kind,
+      id: firstTrack.id,
+      label: firstTrack.label,
+      enabled: firstTrack.enabled,
+      muted: firstTrack.muted,
+      readyState: firstTrack.readyState,
+      remote: false,
+      extraData: 'new screen sharing track'}
+
     callSocket.current.send(JSON.stringify({
     type:'sharing',
     user:data.data.id,
-    group:data.data.group
+    group:data.data.group,
+    details:trackDetails
   }))
   })
   setDispVideo(!isDispVideo)
@@ -266,7 +282,7 @@ const screenSharing = ()=>{
          <video muted autoPlay ref={localVideo}></video>
          {isDispVideo&&
          <video muted width='300px' autoPlay ref={localDisplayVideo}></video>
-         }
+        }
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
          ))}
