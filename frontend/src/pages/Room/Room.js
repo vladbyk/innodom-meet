@@ -182,10 +182,11 @@ const Room = (data) => {
         if (type == "getSharing") {
           navigator.mediaDevices.getDisplayMedia({video:true})
           .then((stream)=>{
+          console.log('get sharing',response);
           localDisplayVideo.current.srcObject=stream
           console.log(localDisplayVideo)
           console.log(pcs)
-          const pc = pcs[response.channel_name]
+          const pc = pcs[response.channel_name_sender]
           console.log(pc)
           stream.getTracks().forEach(track=>{
             pc.addTrack(track,stream)
@@ -206,6 +207,7 @@ const screenSharing = ()=>{
   callSocket.current.send(JSON.stringify({
     type:'sharing',
     user:data.data.id,
+    group:data.data.group
   }))
   setDispVideo(!isDispVideo)
 }
