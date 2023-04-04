@@ -43,9 +43,8 @@ const Room = (data) => {
   let pc=new RTCPeerConnection(pc_config)
   // pcs={...pcs,[socketID]:pc}
   setPcs({...pcs,socketID:pc})
-
-
-  console.log(pc)
+  console.log(pcs)
+  
   pc.onicecandidate=(e)=>{
     if(e.candidate){
     console.log('on ice cang',e)
