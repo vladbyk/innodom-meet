@@ -184,8 +184,9 @@ const Room = (data) => {
           .then((stream)=>{
           localDisplayVideo.current.srcObject=stream
           console.log(localDisplayVideo)
-          console.log(localDisplayVideo.current)
+          console.log(pcs)
           const pc = pcs[response.channel_name]
+          console.log(pc)
           stream.getTracks().forEach(track=>{
             pc.addTrack(track,stream)
           })
@@ -254,7 +255,7 @@ const screenSharing = ()=>{
          }
          <video muted autoPlay ref={localVideo}></video>
          {isDispVideo&&
-         <video muted autoPlay ref={localDisplayVideo}></video>
+         <video muted width='300px' autoPlay ref={localDisplayVideo}></video>
          }
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
