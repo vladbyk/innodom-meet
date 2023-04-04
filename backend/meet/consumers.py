@@ -93,7 +93,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 await channel_layer.send(
                     user_conf.channel_name, {
                         'type': 'getSharing',
-                        'channel_name': user
+                        'channel_name': user,
                     }
                 )
 
@@ -135,5 +135,5 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getSharing(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'channel_name': event['channel_name'],
+            'channel_name': event['channel_name']
         }))
