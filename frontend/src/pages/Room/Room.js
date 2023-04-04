@@ -20,7 +20,7 @@ const Room = (data) => {
   let peerConnection=useRef()
   let callSocket=useRef()
   let localDisplayVideo=useRef()
-  let [pcs,setPcs]=useState();
+  let pcs=useRef()
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
   const [isAudio,setAudio]=useState(true)
@@ -41,8 +41,7 @@ const Room = (data) => {
   };
   const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
-  // pcs={...pcs,[socketID]:pc}
-  setPcs(oldPsc=>{return[...oldPsc,{socketID:pc}]})
+  pcs={...pcs,[socketID]:pc}
 
   console.log(pc)
   pc.onicecandidate=(e)=>{
