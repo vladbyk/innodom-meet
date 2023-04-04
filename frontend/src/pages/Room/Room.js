@@ -20,7 +20,7 @@ const Room = (data) => {
   let peerConnection=useRef()
   let callSocket=useRef()
   let localDisplayVideo=useRef()
-  let [pcs,setPcs]=useState();
+  let pcs;
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
   const [isAudio,setAudio]=useState(true)
@@ -41,8 +41,8 @@ const Room = (data) => {
   };
   const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
-  // pcs={...pcs,[socketID]:pc}
-  setPcs({...pcs,[socketID]:pc})
+  pcs={...pcs,[socketID]:pc}
+  // setPcs({...pcs,socketID:pc})
   console.log(pcs)
 
   pc.onicecandidate=(e)=>{
@@ -216,6 +216,7 @@ const screenSharing = ()=>{
   
   useEffect(()=>{
       connectRoom()
+      console.log(pcs)
   },[createPeerConnection,pcs])
   useEffect(()=>{
     console.log('rerender')
