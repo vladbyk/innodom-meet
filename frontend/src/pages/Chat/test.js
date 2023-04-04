@@ -3,12 +3,12 @@ import Video from "./Video";
 const pc_config = {
         iceServers: [
           {
-            urls: "stun:stun.rims.by:5349",
+            urls: "stun:stun.rims.by:3478",
           },
           {
-            "url": "turn:turn.rims.by:5349",
-            "username": "guest",
-            "credential": "somepassword"
+            urls: "turn:turn.rims.by:3478",
+            username: "innodom",
+            credential: "innodom15988951"
           }
         ],
       };
@@ -18,8 +18,14 @@ const Room = (data) => {
   let localStream;
   let peerConnection=useRef()
   let callSocket=useRef()
+  let localDisplayVideo=useRef()
   let pcs;
   const [users,setUsers]=useState([])
+  const [isCandidate,setCandidate]=useState(false)
+  const [isAudio,setAudio]=useState(true)
+  const [isVideo,setVideo]=useState(true)
+  const [isDispVideo,setDispVideo]=useState(false)
+  const [pcsShearing,setPcsShearing]=useState()
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -33,102 +39,66 @@ const Room = (data) => {
      console.log(err);
    })
   };
-  // const createConnectionAndAddStream = () => {
-  // // createPeerConnection();
-  // peerConnection.current.addStream(localStream);
-  // return true;
-  // };
-  const createPeerConnection = (socketID,localStream,email) => {
+  const createPeerConnection = useCallback( (socketID,localStream,email) => {
   let pc=new RTCPeerConnection(pc_config)
   pcs={...pcs,[socketID]:pc}
+  // setPcs({...pcs,socketID:pc})
+  console.log(pcs)
+  setPcsShearing(pcs)
 
-  console.log(pc)
   pc.onicecandidate=(e)=>{
     if(e.candidate){
     console.log('on ice cang',e)
             callSocket.current.send(JSON.stringify({
               candidate: e.candidate,
               channel_name:socketID,
-              type:'candidate'
+              type:'candidate',
+              user:data.data.id
             }))}
   }
 
-
-  pc.ontrack=(e)=>{
-    console.log(socketID)
-    console.log(users)
-    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
-    setUsers((oldUsers)=>[{...oldUsers,email:email,id:socketID,stream:e.streams[0]}])
-    console.log(users)
+  pc.onconnectionstatechange=(e)=>{
+    console.log('onconnectionstatechange',e)
+    setCandidate(true)
   }
-
   if(localStream){
+    console.log(localStream)
     localStream.getTracks().forEach(track=>{
       pc.addTrack(track,localStream)
     })
   }else{console.log('no local stream')}
+  pc.ontrack=(e)=>{
+    console.log('otrack',socketID)
+    console.log('otrack',users)
+    console.log('otrack',e)
+    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
+    console.log(users)
+  }
 
   return pc;
-  };
-  //   const handleRemoteStreamAdded = (event) => {
-  //     console.log("Remote stream added.");
-  //     console.log(event.stream)
-  //     console.log(localStream)
-  //     remoteStream = event.stream;
-  //     remoteVideo.current.srcObject = remoteStream;
-  //   };
+  },[]);
   
-  const processCall = (username) => {
-    callSocket.current.send(JSON.stringify({
-            type:'joinRoom',
-            group:data.data.group,
-            user:data.data.id,
-          }))
-  let pc=new RTCPeerConnection(pc_config)
-  if(localStream){
-    console.log('lockal streem add',localVideo)
-    localStream.getTracks().forEach(track => {
-      pc.addTrack(track,localStream)
-    });
-  }
-
-  // pc.createOffer({
-  //   offerToReceiveAudio: true,
-  //   offerToReceiveVideo: true,
-  // })
-  // .then(sdp=>{
-  //   console.log('create off ',sdp)
-
-  // })
-
-  // peerConnection.current.createOffer(
-  //   (session) => {
-  //     peerConnection.current.setLocalDescription(session);
-  //     console.log(session)
-  //     console.log(peerConnection)
-  //     callSocket.current.send(JSON.stringify({
-  //       type:'senderOffer',
-  //       user:data.data.id,
-  //       sdp:session.sdp,
-  //     }))
-  //   },
-  //   (err) => {
-  //     console.log(err);
-  //   }
-  // );
-  }
   const connectRoom = () => {
       console.log('sok',data.data)
       callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
       callSocket.current.onopen = () => {
           console.log("WebSocket connection established");
           beReady().then((bool)=>{
-              processCall()
+            callSocket.current.send(JSON.stringify({
+              type:'joinRoom',
+              group:data.data.group,
+              user:data.data.id,
+            }))
+              // processCall()
           })
-          // socket.send(JSON.stringify({type: "join_room", roomId}));
       };
 
-      callSocket.current.onmessage = (e) => {
+      callSocket.current.onclose=()=>{
+        console.log('close socket')
+      }
+
+    callSocket.current.onmessage = async(e) => {
         let response = JSON.parse(e.data);
         let type = response.type;
         if (type == "getJoinRoom") {
@@ -142,14 +112,15 @@ const Room = (data) => {
     offerToReceiveAudio: true,
     offerToReceiveVideo: true,
   })
-  .then(sdp=>{
+  .then(async sdp=>{
     console.log('create off ',sdp)
     console.log(item)
-    pc.setLocalDescription(new RTCSessionDescription(sdp))
+    await pc.setLocalDescription(new RTCSessionDescription(sdp))
     callSocket.current.send(JSON.stringify({
       type:'offer',
       sdp:sdp,
-      channel_name:item.channel_name
+      channel_name:item.channel_name,
+      user:data.data.id
     }))
   })
   .catch(err=>console.log(err))
@@ -159,12 +130,13 @@ const Room = (data) => {
         }
         if (type == "getOffer") {
           console.log('get sender offer',response);
-          createPeerConnection(response.channel_name,response.email,localStream)
-          let pc = pcs[response.channel_name]
+          createPeerConnection(response.channel_name_sender,localStream,response.email)
+          // let myPcs = createPeerConnection(response.channel_name_sender,localStream,response.email)
+          let pc = pcs[response.channel_name_sender]
           if(pc){
             console.log(pc)
             console.log(pcs)
-            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
+            await pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
             .then(()=>{
               pc.createAnswer({
                 offerToReceiveAudio: true,
@@ -175,7 +147,8 @@ const Room = (data) => {
                 callSocket.current.send(JSON.stringify({
                   type:'answer',
                   sdp:sdp,
-                  channel_name:response.channel_name
+                  user:data.data.id,
+                  channel_name:response.channel_name_sender,
                 }))
               })
             })
@@ -184,70 +157,125 @@ const Room = (data) => {
         if (type == "getAnswer") {
           console.log('get answeer',response);
           let pc = pcs[response.channel_name]
+          setCandidate(false)
+          //возможно ченел нейм сендер
+          console.log(pc)
+          console.log(pcs)
           if(pc){
-            pc.setRemoteDiscription(new RTCSessionDescription(response.sdp))
+            pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
           }
         }
         if (type == "getCandidate") {
           console.log('get candidate',response);
-          let pc = pcs[response.channel_name]
+          let pc = pcs[response.channel_name_sender]
+          console.log('get candidate',pc)
+          console.log('get candidate',pcs)
           if(pc){
-            pc.addIceCandidate(new RTCIceCandidate(response.candidate))
-            .then(()=>{console.log('candidate yes')})
+            await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
+            .then(()=>{
+              console.log('candidate yes')})
           }
         }
-        // if (type == "getSenderOffer") {
-        //   console.log('get sender offer',response);
-        //   let pc=new RTCPeerConnection(pc_config)
-        //   pc.onicecandidate=(e)=>{
-        //     console.log('on ice cang',e)
-        //     callSocket.current.send(JSON.stringify({
-        //       candidate: e.candidate,
-        //       chanel_name:data.data.chanel_name,
-        //       type:'senderCandidate'
-        //     }))
-        //   }
-
-        //   pc.ontrack=(e)=>{
-        //     console.log('ontrac',e)
-        //     e.streams[0]
-        //   }
-        // }
-
-        // if (type == "getSenderCandidate") {
-        //   console.log('get sender candidate',response);
-        //     try {
-        //       if (!(response.candidate && callSocket.current)) return;
-        //       console.log("get sender candidate");
-        //       callSocket.current.addIceCandidate(
-        //         new RTCIceCandidate(response.candidate)
-        //       );
-        //       console.log("candidate add success");
-        //     } catch (error) {
-        //       console.log(error);
-        //     }
-        // }
+        if (type == "getDisconnect") {
+          console.log('get disconnect',response);
+          console.log('pcs',pcs);
+          pcs[response.channel_name].close()
+          delete pcs[response.channel_name]
+          setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
+        }
+        if (type == "getSharing") {
+          console.log('get sharing',response);
+          console.log(pcs)
+          pcs[response.channel_name].ontrack=(e)=>{
+            console.log('ontrack in sharing',e)
+            setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
+          }
+        }
       };
-
-
-  
-      // socket.onmessage = (event) => {
-      //     const message = JSON.parse(event.data);
-      // };
-      // return () => {
-      //     socket.close();
-      // };
   };
+  const exitRoom = ()=>{
+  callSocket.current.send(JSON.stringify({
+  type:'disconnect',
+  user:data.data.id,
+  group:data.data.group
+}))
+callSocket.current.close() 
+}
+const screenSharing = ()=>{
+  navigator.mediaDevices.getDisplayMedia({video:true})
+  .then((stream)=>{
+    console.log(pcs)
+    console.log(pcsShearing)
+    console.log(stream)
+    let firstTrack=stream.getTracks()[0]
+    // Object.values(pcsShearing).map(pc=>{
+    // stream.getTracks().forEach(track=>{
+    //     pc.addTrack(track,stream)
+    //   })
+    // })
+    localDisplayVideo.current.srcObject=stream
+    Object.values(pcsShearing).map(pc=>{
+      pc.addTrack(firstTrack,stream)
+    })
+
+    callSocket.current.send(JSON.stringify({
+    type:'sharing',
+    user:data.data.id,
+    group:data.data.group,
+  }))
+  })
+  setDispVideo(!isDispVideo)
+}
   
   useEffect(()=>{
       connectRoom()
-  },[])
+  },[createPeerConnection,pcs])
+  useEffect(()=>{
+    console.log('rerender')
+},[users])
   return (
      <div>
          <h1>room {data.data.group}</h1>
+         {isCandidate&&<div>hi</div>}
+         <button onClick={exitRoom}>exit</button>
+         <button onClick={screenSharing}>screen sharing</button>
+         {isVideo ? <button onClick={()=>{
+          const videoTracks=localVideo.current.srcObject.getVideoTracks()
+          videoTracks.forEach((track)=>{
+            track.enabled=false
+          })
+          setVideo(false)
+          }}>выкл video</button>
+         :<button onClick={()=>{
+          const videoTracks=localVideo.current.srcObject.getVideoTracks()
+          videoTracks.forEach((track)=>{
+            track.enabled=true
+          })
+          setVideo(true)
+         }}>вкл video</button>}
+         {isAudio ?
+         <button onClick={()=>{
+          const audioTracks=localVideo.current.srcObject.getAudioTracks()
+          audioTracks.forEach((track)=>{
+            track.enabled=false
+          })
+          setAudio(false)
+        }}>audio выкл</button>
+         :
+         <button onClick={()=>{
+          const audioTracks=localVideo.current.srcObject.getAudioTracks()
+          audioTracks.forEach((track)=>{
+            track.enabled=true
+          })
+          setAudio(true)
+        }}>audio вкл</button>
+         }
          <video muted autoPlay ref={localVideo}></video>
+         {isDispVideo&&
+         <video muted width='300px' autoPlay ref={localDisplayVideo}></video>
+        }
          {users.length>0&&users.map((user,index)=>(
-          <Video key={index} email={user.email} stream={user.stream} user={user}/>
+          <Video key={index} stream={user.stream} user={user}/>
          ))}
      </div>
   );
