@@ -201,19 +201,11 @@ const Room = (data) => {
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
          {isVideo ? <button onClick={()=>{
-          // const stream = navigator.mediaDevices.getUserMedia({
-          //   video: true,
-          // })
           const videoTracks=localVideo.current.srcObject.getVideoTracks()
           videoTracks.forEach((track)=>{
             track.enabled=false
           })
           setVideo(false)
-          // const videoTrack=videoTracks[0]
-          // const newVideotrack= videoTrack.clone()
-          // newVideotrack.enabled=false
-          // videoTrack.stop()
-          // peerConnection.addTrack(newVideotrack,stream)
           }}>выкл video</button>
          :<button onClick={()=>{
           const videoTracks=localVideo.current.srcObject.getVideoTracks()
@@ -222,7 +214,23 @@ const Room = (data) => {
           })
           setVideo(true)
          }}>вкл video</button>}
-         <button onClick={()=>{setAudio(!isAudio)}}>audio</button>
+         {isAudio ?
+         <button onClick={()=>{
+          const audioTracks=localVideo.current.srcObject.getAudioTracks()
+          audioTracks.forEach((track)=>{
+            track.enabled=false
+          })
+          setAudio(false)
+        }}>audio выкл</button>
+         :
+         <button onClick={()=>{
+          const audioTracks=localVideo.current.srcObject.getAudioTracks()
+          audioTracks.forEach((track)=>{
+            track.enabled=true
+          })
+          setAudio(true)
+        }}>audio вкл</button>
+         }
          <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
