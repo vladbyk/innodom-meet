@@ -197,7 +197,8 @@ callSocket.current.close()
 const screenSharing = ()=>{
   navigator.mediaDevices.getDisplayMedia({video:true})
   .then((stream)=>{
-    pcs.forEach(pc=>{
+    console.log(pcs)
+    pcs.map(pc=>{
       stream.forEach(track=>{
       pc.addTrack(track,stream)
       })
