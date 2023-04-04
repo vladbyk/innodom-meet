@@ -172,6 +172,7 @@ const Room = (data) => {
         }
         if (type == "getDisconnect") {
           console.log('get disconnect',response);
+          console.log('pcs',pcs);
           pcs[response.channel_name].close()
           delete pcs[response.channel_name]
           setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
@@ -184,9 +185,7 @@ const Room = (data) => {
   user:data.data.id,
   group:data.data.group
 }))
-.then(()=>{
 callSocket.current.close() 
-})
 }
   
   useEffect(()=>{
