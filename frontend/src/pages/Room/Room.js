@@ -208,7 +208,7 @@ const screenSharing = ()=>{
     //     pc.addTrack(track,stream)
     //   })
     // })
-    pcsShearing.map(pc=>{
+    Object.values(pcsShearing).map(pc=>{
       pc.addTrack(screen.getTracks()[0],stream)
     })
     callSocket.current.send(JSON.stringify({
