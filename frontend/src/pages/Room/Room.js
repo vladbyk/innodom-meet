@@ -16,6 +16,7 @@ const pc_config = {
 const Room = (data) => {
   let localVideo = useRef()
   let localStream;
+  let localDispStream;
   let peerConnection=useRef()
   let callSocket=useRef()
   let localDisplayVideo=useRef()
@@ -180,18 +181,8 @@ const Room = (data) => {
           setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
         }
         if (type == "getSharing") {
-          navigator.mediaDevices.getDisplayMedia({video:true})
-          .then((stream)=>{
           console.log('get sharing',response);
-          localDisplayVideo.current.srcObject=stream
-          console.log(localDisplayVideo)
-          console.log(pcs)
-          const pc = pcs[response.channel_name_sender]
-          console.log(pc)
-          stream.getTracks().forEach(track=>{
-            pc.addTrack(track,stream)
-          })
-          })
+          console.log(pcs[response.channel_name].getTracks())
         }
       };
   };
@@ -204,11 +195,20 @@ const Room = (data) => {
 callSocket.current.close() 
 }
 const screenSharing = ()=>{
-  callSocket.current.send(JSON.stringify({
+  navigator.mediaDevices.getDisplayMedia({video:true})
+  .then((stream)=>{
+    pcs.forEach(pc=>{
+      stream.forEach(track=>{
+      pc.addTrack(track,stream)
+      })
+    })
+    localDispStream=stream
+    callSocket.current.send(JSON.stringify({
     type:'sharing',
     user:data.data.id,
     group:data.data.group
   }))
+  })
   setDispVideo(!isDispVideo)
 }
   
