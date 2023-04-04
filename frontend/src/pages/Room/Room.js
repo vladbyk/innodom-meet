@@ -18,11 +18,13 @@ const Room = (data) => {
   let localStream;
   let peerConnection=useRef()
   let callSocket=useRef()
+  let localDisplayVideo=useRef()
   let pcs;
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
+  const [isDispVideo,setDispVideo]=useState(true)
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -177,6 +179,16 @@ const Room = (data) => {
           delete pcs[response.channel_name]
           setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
         }
+        if (type == "getSharing") {
+          navigator.mediaDevices.getDisplayMedia({video:true})
+          .then((stream)=>{
+          localDisplayVideo.current.srcObject=stream
+          const pc = pcs[response.channel_name]
+          stream.getTracks().forEach(track=>{
+            pc.addTrack(track,stream)
+          })
+          })
+        }
       };
   };
   const exitRoom = ()=>{
@@ -186,6 +198,13 @@ const Room = (data) => {
   group:data.data.group
 }))
 callSocket.current.close() 
+}
+const screenSharing = ()=>{
+  callSocket.current.send(JSON.stringify({
+    type:'sharing',
+    user:data.data.id,
+  }))
+  setDispVideo(!isDispVideo)
 }
   
   useEffect(()=>{
@@ -199,6 +218,7 @@ callSocket.current.close()
          <h1>room {data.data.group}</h1>
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
+         <button onClick={screenSharing}>screen sharing</button>
          {isVideo ? <button onClick={()=>{
           const videoTracks=localVideo.current.srcObject.getVideoTracks()
           videoTracks.forEach((track)=>{
@@ -231,6 +251,9 @@ callSocket.current.close()
         }}>audio вкл</button>
          }
          <video muted autoPlay ref={localVideo}></video>
+         {isDispVideo&&
+         <video muted autoPlay ref={localDisplayVideo}></video>
+         }
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
          ))}
