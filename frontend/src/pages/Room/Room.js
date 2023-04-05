@@ -19,6 +19,7 @@ const Room = (data, exitUser) => {
   let peerConnection=useRef()
   let callSocket=useRef()
   let localDisplayVideo=useRef()
+  let myStreamSharing=useRef()
   let pcs;
   const [users,setUsers]=useState([])
   const [isCandidate,setCandidate]=useState(false)
@@ -125,7 +126,8 @@ const Room = (data, exitUser) => {
       type:'offer',
       sdp:sdp,
       channel_name:item.channel_name,
-      user:data.data.id
+      user:data.data.id,
+      group:data.data.group
     }))
   })
   .catch(err=>console.log(err))
@@ -158,6 +160,24 @@ const Room = (data, exitUser) => {
               })
             })
           }
+        }
+        if (type == "getCheckDeamon") {
+          console.log('getCheckDeamon')
+          let firstTrack=stream.getTracks()[0]
+          pcs[response.channel_name].addTrack(firstTrack,myStreamSharing)
+          pcs[response.channel_name].createOffer()
+            .then(offer=>{
+              console.log('getCheckDeamons  send soffer');
+              pcs[response.channel_name].setLocalDescription(offer)
+
+          callSocket.current.send(JSON.stringify({
+            type:'sharingOffer',
+            user:data.data.id,
+            group:data.data.group,
+            sdp:offer,
+            channel_name:response.channel_name
+          }))
+        })
         }
         if (type == "getAnswer") {
           console.log('get answeer',response);
@@ -258,6 +278,7 @@ const screenSharing = ()=>{
     console.log(pcs)
     console.log(pcsShearing)
     console.log(stream)
+    myStreamSharing=stream
     let firstTrack=stream.getTracks()[0]
     // Object.values(pcsShearing).map(pc=>{
     // stream.getTracks().forEach(track=>{
@@ -274,6 +295,7 @@ const screenSharing = ()=>{
             .then(offer=>{
               console.log('get sharing  send soffer');
               pc.setLocalDescription(offer)
+
               callSocket.current.send(JSON.stringify({
                   type:'sharingOffer',
                   user:data.data.id,
