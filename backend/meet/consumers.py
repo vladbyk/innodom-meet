@@ -50,14 +50,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 })
         elif message['type'] == 'offer':
             user = Conference.objects.get(user__id=message['user'])
-            for conf_user in Conference.objects.filter(user__group__group=message['group']):
-                if conf_user.deamon:
-                    await channel_layer.send(
-                        conf_user.channel_name,
-                        {
-                            'type': 'getCheckDeamon',
-                            'channel_name': user.channel_name
-                        })
             await channel_layer.send(
                 message['channel_name'],
                 {
@@ -68,6 +60,14 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 })
         elif message['type'] == 'answer':
             user = Conference.objects.get(user__id=message['user'])
+            for conf_user in Conference.objects.filter(user__group__group=message['group']):
+                if conf_user.deamon:
+                    await channel_layer.send(
+                        conf_user.channel_name,
+                        {
+                            'type': 'getCheckDeamon',
+                            'channel_name': user.channel_name
+                        })
             await channel_layer.send(
                 message['channel_name'],
                 {
