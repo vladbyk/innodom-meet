@@ -186,7 +186,8 @@ const Room = (data, exitUser) => {
         if (type == "getSharing") {
           console.log('get sharing',response);
           console.log(pcs)
-          pcs[response.channel_name].onnegotiationneeded=(e)=>{
+          // pcs[response.channel_name].onnegotiationneeded=(e)=>{
+            // console.log('onnegotiationneeded',e);
             pcs[response.channel_name].createOffer()
             .then(offer=>{
               console.log('get sharing  send soffer');
@@ -200,7 +201,7 @@ const Room = (data, exitUser) => {
               )
             })
             .catch(err=>console.log(err))
-          }
+          // }
         }
         if (type == "getSharingOffer") {
           console.log('get sharing offer',response);
