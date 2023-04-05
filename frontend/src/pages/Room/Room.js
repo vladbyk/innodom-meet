@@ -162,7 +162,8 @@ const Room = (data, exitUser) => {
           }
         }
         if (type == "getCheckDeamon") {
-          console.log('getCheckDeamon')
+          console.log('getCheckDeamon',response)
+          console.log(myStreamSharing)
           let firstTrack=myStreamSharing.current.getTracks()[0]
           pcs[response.channel_name].addTrack(firstTrack,myStreamSharing)
           pcs[response.channel_name].createOffer()
@@ -278,7 +279,7 @@ const screenSharing = ()=>{
     console.log(pcs)
     console.log(pcsShearing)
     console.log(stream)
-    myStreamSharing=stream
+    myStreamSharing.current=stream
     let firstTrack=stream.getTracks()[0]
     // Object.values(pcsShearing).map(pc=>{
     // stream.getTracks().forEach(track=>{
