@@ -79,6 +79,7 @@ const Room = (data, exitUser) => {
     let len= tracks.length
     console.log(tracks)
     console.log(e.streams)
+    console.log(e.streams[0].getVideoTracks()[0].getSettings())
     if(len===2)
     setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
