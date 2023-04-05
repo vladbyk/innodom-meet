@@ -50,6 +50,14 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 })
         elif message['type'] == 'offer':
             user = Conference.objects.get(user__id=message['user'])
+            for conf_user in Conference.objects.filter(user__group__group=message['group']):
+                if conf_user.deamon:
+                    await channel_layer.send(
+                        conf_user.channel_name,
+                        {
+                            'type': 'getCheckDeamon',
+                            'channel_name': user.channel_name
+                        })
             await channel_layer.send(
                 message['channel_name'],
                 {
@@ -88,11 +96,13 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     }
                 )
         elif message['type'] == 'sharingOffer':
-            user = Conference.objects.get(user__id=message['user']).channel_name
+            user = Conference.objects.get(user__id=message['user'])
+            user.deamon = True
+            user.save()
             await channel_layer.send(
                 message['channel_name'], {
                     'type': 'getSharingOffer',
-                    'channel_name': user,
+                    'channel_name': user.channel_name,
                     'sdp': message['sdp']
                 }
             )
@@ -159,4 +169,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'channel_name': event['channel_name'],
             'sdp': event['sdp']
+        }))
+
+    async def getCheckDeamon(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
         }))
