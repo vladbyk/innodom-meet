@@ -71,7 +71,7 @@ const Room = (data, exitUser) => {
     console.log('otrack',socketID)
     console.log('otrack',users)
     console.log('otrack',e)
-    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
   }
@@ -248,7 +248,7 @@ callSocket.current.close()
 exitUser()
 }
 const screenSharing = ()=>{
-  navigator.mediaDevices.getDisplayMedia({cursor:true})
+  navigator.mediaDevices.getDisplayMedia({video:true})
   .then((stream)=>{
     console.log(pcs)
     console.log(pcsShearing)
