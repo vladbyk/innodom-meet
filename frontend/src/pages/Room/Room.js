@@ -86,6 +86,7 @@ const Room = (data, exitUser) => {
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
   }else{
     localDisplayVideo.current.srcObject=e.streams[0]
+    setDispVideo(true)
   }
     console.log(users)
   }
