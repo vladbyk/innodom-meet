@@ -28,6 +28,7 @@ const Room = (data, exitUser) => {
   const [isAudio,setAudio]=useState(true)
   const [isVideo,setVideo]=useState(true)
   const [isDispVideo,setDispVideo]=useState(false)
+  const [isSharing,setSharing]=useState(false)
   const [pcsShearing,setPcsShearing]=useState()
 
   const beReady = () => {
@@ -80,9 +81,12 @@ const Room = (data, exitUser) => {
     console.log(tracks)
     console.log(e.streams)
     console.log(e.streams[0].getVideoTracks()[0].getSettings())
-    if(len===2)
+    if(len===2){
     setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
+  }else{
+    localDisplayVideo.current.srcObject=e.streams[0]
+  }
     console.log(users)
   }
 
@@ -290,24 +294,14 @@ const screenSharing = ()=>{
     console.log(pcsShearing)
     console.log(stream)
     myStreamSharing.current=stream
-    // stream.getVideoTracks()[0].contentHint='screen-stream'
     let firstTrack=stream.getTracks()[0]
-    // Object.values(pcsShearing).map(pc=>{
-    // stream.getTracks().forEach(track=>{
-    //     pc.addTrack(track,stream)
-    //   })
-    // })
     localDisplayVideo.current.srcObject=stream
-    // Object.values(pcsShearing).map(pc=>{
       Object.entries(pcsShearing).map(([key,pc])=>{
-      // for(pc in pcsShearing){
       pc.addTrack(firstTrack,stream)
-      // pc.addTransceiver(firstTrack,{direction:"sendonly"})
       pc.createOffer()
             .then(offer=>{
               console.log('get sharing  send soffer');
               pc.setLocalDescription(offer)
-
               callSocket.current.send(JSON.stringify({
                   type:'sharingOffer',
                   user:data.data.id,
@@ -320,15 +314,15 @@ const screenSharing = ()=>{
     .catch(err=>console.log(err))
     }
     )
-    
-
-  //   callSocket.current.send(JSON.stringify({
-  //   type:'sharing',
-  //   user:data.data.id,
-  //   group:data.data.group,
-  // }))
   })
   setDispVideo(!isDispVideo)
+}
+
+const screenSharingStop = ()=>{
+  const videoTracks=localDisplayVideo.current.srcObject.getVideoTracks()
+          videoTracks.forEach((track)=>{
+            track.stop()
+          })
 }
   
   useEffect(()=>{
@@ -342,7 +336,11 @@ const screenSharing = ()=>{
          <h1>room {data.data.group}</h1>
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
-         <button onClick={screenSharing}>screen sharing</button>
+         {isSharing ? 
+         <button onClick={screenSharingStop}>screen sharing выкл</button>
+         :
+         <button onClick={screenSharing}>screen sharing вкл</button>
+        }
          {isVideo ? <button onClick={()=>{
           const videoTracks=localVideo.current.srcObject.getVideoTracks()
           videoTracks.forEach((track)=>{
