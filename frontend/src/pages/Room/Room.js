@@ -165,12 +165,11 @@ const Room = (data, exitUser) => {
           console.log('getCheckDeamon',response)
           console.log(myStreamSharing)
           let firstTrack=myStreamSharing.current.getTracks()[0]
-          console.log(pcsShearing)
-          pcsShearing[response.channel_name].addTrack(firstTrack,myStreamSharing)
-          pcsShearing[response.channel_name].createOffer()
+          pcs[response.channel_name].addTrack(firstTrack,myStreamSharing)
+          pcs[response.channel_name].createOffer()
             .then(offer=>{
               console.log('getCheckDeamons  send soffer');
-              pcsShearing[response.channel_name].setLocalDescription(offer)
+              pcs[response.channel_name].setLocalDescription(offer)
 
           callSocket.current.send(JSON.stringify({
             type:'sharingOffer',
@@ -280,7 +279,7 @@ const screenSharing = ()=>{
     console.log(pcs)
     console.log(pcsShearing)
     console.log(stream)
-    myStreamSharing.current=stream
+    myStreamSharing=stream
     let firstTrack=stream.getTracks()[0]
     // Object.values(pcsShearing).map(pc=>{
     // stream.getTracks().forEach(track=>{
