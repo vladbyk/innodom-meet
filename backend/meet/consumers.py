@@ -66,7 +66,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         conf_user.channel_name,
                         {
                             'type': 'getCheckDeamon',
-                            'channel_name': user.channel_name
+                            'channel_name': message['channel_name']
                         })
             await channel_layer.send(
                 message['channel_name'],
