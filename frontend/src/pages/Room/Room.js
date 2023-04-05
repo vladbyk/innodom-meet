@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
 import Video from "./Video";
+import './room.css'
+
 const pc_config = {
         iceServers: [
           {
@@ -76,7 +78,7 @@ const Room = (data, exitUser) => {
     let tracks= stream.getTracks()
     let len= tracks.length
     console.log(tracks)
-    if(len===2)
+    console.log(e.streams)
     setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
@@ -167,6 +169,7 @@ const Room = (data, exitUser) => {
           console.log(pcs)
           console.log(myStreamSharing)
           let firstTrack=myStreamSharing.current.getTracks()[0]
+          try{
           pcs[response.channel_name].addTrack(firstTrack,myStreamSharing.current)
           pcs[response.channel_name].createOffer()
             .then(offer=>{
@@ -181,6 +184,9 @@ const Room = (data, exitUser) => {
             channel_name:response.channel_name
           }))
         })
+      }catch{
+        console.log('not a check demonstration')
+      }
         }
         if (type == "getAnswer") {
           console.log('get answeer',response);
@@ -276,7 +282,7 @@ callSocket.current.close()
 exitUser()
 }
 const screenSharing = ()=>{
-  navigator.mediaDevices.getDisplayMedia({video:true})
+  navigator.mediaDevices.getDisplayMedia({video:true,audio:false})
   .then((stream)=>{
     console.log(pcs)
     console.log(pcsShearing)
