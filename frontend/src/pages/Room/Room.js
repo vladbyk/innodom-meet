@@ -183,26 +183,26 @@ const Room = (data, exitUser) => {
           delete pcs[response.channel_name]
           setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
         }
-        if (type == "getSharing") {
-          console.log('get sharing',response);
-          console.log(pcs)
-          // pcs[response.channel_name].onnegotiationneeded=(e)=>{
-            // console.log('onnegotiationneeded',e);
-            pcs[response.channel_name].createOffer()
-            .then(offer=>{
-              console.log('get sharing  send soffer');
-              pcs[response.channel_name].setLocalDescription(offer)
-              callSocket.current.send(JSON.stringify({
-                  type:'sharingOffer',
-                  user:data.data.id,
-                  group:data.data.group,
-                  sdp:offer
-                })
-              )
-            })
-            .catch(err=>console.log(err))
-          // }
-        }
+        // if (type == "getSharing") {
+        //   console.log('get sharing',response);
+        //   console.log(pcs)
+        //   // pcs[response.channel_name].onnegotiationneeded=(e)=>{
+        //     // console.log('onnegotiationneeded',e);
+        //     pcs[response.channel_name].createOffer()
+        //     .then(offer=>{
+        //       console.log('get sharing  send soffer');
+        //       pcs[response.channel_name].setLocalDescription(offer)
+        //       callSocket.current.send(JSON.stringify({
+        //           type:'sharingOffer',
+        //           user:data.data.id,
+        //           group:data.data.group,
+        //           sdp:offer
+        //         })
+        //       )
+        //     })
+        //     .catch(err=>console.log(err))
+        //   // }
+        // }
         if (type == "getSharingOffer") {
           console.log('get sharing offer',response);
           console.log('pcs',pcs);
@@ -259,16 +259,33 @@ const screenSharing = ()=>{
     //   })
     // })
     localDisplayVideo.current.srcObject=stream
-    Object.values(pcsShearing).map(pc=>{
+    // Object.values(pcsShearing).map(pc=>{
+      for(pc in pcsShearing){
       // pc.addTrack(firstTrack,stream)
       pc.addTransceiver(firstTrack,{derection:"sendonly"})
-    })
+      pc.createOffer()
+            .then(offer=>{
+              console.log('get sharing  send soffer');
+              pc.setLocalDescription(offer)
+              callSocket.current.send(JSON.stringify({
+                  type:'sharingOffer',
+                  user:data.data.id,
+                  group:data.data.group,
+                  sdp:offer,
+                  channel_name:pcsShearing[pc]
+                })
+              )
+            })
+    .catch(err=>console.log(err))
+    }
+    // )
+    
 
-    callSocket.current.send(JSON.stringify({
-    type:'sharing',
-    user:data.data.id,
-    group:data.data.group,
-  }))
+  //   callSocket.current.send(JSON.stringify({
+  //   type:'sharing',
+  //   user:data.data.id,
+  //   group:data.data.group,
+  // }))
   })
   setDispVideo(!isDispVideo)
 }
