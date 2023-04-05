@@ -260,7 +260,8 @@ const screenSharing = ()=>{
     // })
     localDisplayVideo.current.srcObject=stream
     // Object.values(pcsShearing).map(pc=>{
-      for(pc in pcsShearing){
+      Object.entries(pcsShearing).map(([key,pc])=>{
+      // for(pc in pcsShearing){
       // pc.addTrack(firstTrack,stream)
       pc.addTransceiver(firstTrack,{derection:"sendonly"})
       pc.createOffer()
@@ -272,13 +273,13 @@ const screenSharing = ()=>{
                   user:data.data.id,
                   group:data.data.group,
                   sdp:offer,
-                  channel_name:pcsShearing[pc]
+                  channel_name:key
                 })
               )
             })
     .catch(err=>console.log(err))
     }
-    // )
+    )
     
 
   //   callSocket.current.send(JSON.stringify({
