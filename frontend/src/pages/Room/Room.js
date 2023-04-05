@@ -79,7 +79,7 @@ const Room = (data, exitUser) => {
     let len= tracks.length
     console.log(tracks)
     console.log(e.streams)
-    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
   }
@@ -288,6 +288,7 @@ const screenSharing = ()=>{
     console.log(pcsShearing)
     console.log(stream)
     myStreamSharing.current=stream
+    stream.getVideoTracks()[0].contentHint='screen-stream'
     let firstTrack=stream.getTracks()[0]
     // Object.values(pcsShearing).map(pc=>{
     // stream.getTracks().forEach(track=>{
