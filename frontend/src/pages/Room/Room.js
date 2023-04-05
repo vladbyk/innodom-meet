@@ -71,7 +71,12 @@ const Room = (data, exitUser) => {
     console.log('otrack',socketID)
     console.log('otrack',users)
     console.log('otrack',e)
-    // setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
+    let stream= e.streams[0]
+    let tracks= stream.getTracks()
+    let len= tracks.length
+    console.log(tracks)
+    if(len===2)
+    setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
     console.log(users)
   }
@@ -263,8 +268,8 @@ const screenSharing = ()=>{
     // Object.values(pcsShearing).map(pc=>{
       Object.entries(pcsShearing).map(([key,pc])=>{
       // for(pc in pcsShearing){
-      // pc.addTrack(firstTrack,stream)
-      pc.addTransceiver(firstTrack,{derection:"sendonly"})
+      pc.addTrack(firstTrack,stream)
+      // pc.addTransceiver(firstTrack,{direction:"sendonly"})
       pc.createOffer()
             .then(offer=>{
               console.log('get sharing  send soffer');
@@ -337,7 +342,7 @@ const screenSharing = ()=>{
          }
          <video muted autoPlay ref={localVideo}></video>
          {isDispVideo&&
-         <video muted width='300px' autoPlay ref={localDisplayVideo}></video>
+         <video muted width='400px' autoPlay ref={localDisplayVideo}></video>
         }
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
