@@ -155,6 +155,7 @@ const Room = (data, exitUser) => {
                   type:'answer',
                   sdp:sdp,
                   user:data.data.id,
+                  group:data.data.group,
                   channel_name:response.channel_name_sender,
                 }))
               })
