@@ -29,12 +29,15 @@ const VideoChat = () => {
         setErrMessage("Почта указана неверно");
     }
   };
+  const exitUser=()=>{
+    setUserInfo(false)
+  }
   return (
     <div className="innomeet">
       <h1>InnoMeet</h1>
       <p>{ErrMessage}</p>
       {UserInfo ? (
-        <Room data={UserInfo.data}/>
+        <Room data={UserInfo.data} exitUser={exitUser}/>
       ) : (
         <Lobby
           email={email}

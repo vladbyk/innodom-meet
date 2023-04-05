@@ -13,7 +13,7 @@ const pc_config = {
         ],
       };
 
-const Room = (data) => {
+const Room = (data, exitUser) => {
   let localVideo = useRef()
   let localStream;
   let peerConnection=useRef()
@@ -199,10 +199,6 @@ const Room = (data) => {
               )
             })
           }
-          // pcs[response.channel_name].ontrack=(e)=>{
-          //   console.log('ontrack in sharing',e)
-          //   setUsers(oldUsers=>{return[...oldUsers,{email:'email-sharing',id:"socketID-sharing",stream:e.streams[0]}]})
-          // }
         }
         if (type == "getSharingOffer") {
           console.log('get sharing offer',response);
@@ -234,10 +230,6 @@ const Room = (data) => {
               pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
             }
             }
-          pcs[response.channel_name].close()
-          delete pcs[response.channel_name]
-          setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==response.channel_name))
-        
       };
   };
   const exitRoom = ()=>{
@@ -247,6 +239,7 @@ const Room = (data) => {
   group:data.data.group
 }))
 callSocket.current.close() 
+exitUser()
 }
 const screenSharing = ()=>{
   navigator.mediaDevices.getDisplayMedia({cursor:true})
