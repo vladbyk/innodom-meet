@@ -87,15 +87,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'channel_name': user,
                     }
                 )
-        elif message['type'] == 'sharing':
-            user = Conference.objects.get(user__id=message['user']).channel_name
-            for user_conf in Conference.objects.filter(user__group__group=message['group']).exclude(user__id=message['user']):
-                await channel_layer.send(
-                    user_conf.channel_name, {
-                        'type': 'getSharing',
-                        'channel_name': user,
-                    }
-                )
         elif message['type'] == 'sharingOffer':
             user = Conference.objects.get(user__id=message['user']).channel_name
             for user_conf in Conference.objects.filter(user__group__group=message['group']).exclude(
@@ -110,7 +101,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         elif message['type'] == 'sharingAnswer':
             user = Conference.objects.get(user__id=message['user']).channel_name
             await channel_layer.send(
-                user.channel_name, {
+                user, {
                     'type': 'getSharingAnswer',
                     'channel_name': user,
                     'sdp': message['sdp']
