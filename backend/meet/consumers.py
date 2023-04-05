@@ -110,7 +110,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         elif message['type'] == 'sharingAnswer':
             user = Conference.objects.get(user__id=message['user']).channel_name
             await channel_layer.send(
-                user.channel_name, {
+                user, {
                     'type': 'getSharingAnswer',
                     'channel_name': user,
                     'sdp': message['sdp']
