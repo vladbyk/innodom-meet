@@ -163,7 +163,7 @@ const Room = (data, exitUser) => {
         }
         if (type == "getCheckDeamon") {
           console.log('getCheckDeamon')
-          let firstTrack=stream.getTracks()[0]
+          let firstTrack=myStreamSharing.getTracks()[0]
           pcs[response.channel_name].addTrack(firstTrack,myStreamSharing)
           pcs[response.channel_name].createOffer()
             .then(offer=>{
