@@ -219,7 +219,8 @@ const Room = (data, exitUser) => {
                 callSocket.current.send(JSON.stringify({
                   type:'sharingAnswer',
                   user:data.data.id,
-                  sdp:sdp
+                  sdp:sdp,
+                  channel_name:response.channel_name
                 })
               )
               })
