@@ -82,7 +82,8 @@ const Room = (data, exitUser) => {
             let len = tracks.length
             console.log(tracks)
             console.log(e.streams)
-            console.log(tracks[0].getCapabilities())
+            console.log(e.streams[0].getVideoTracks()[0].getCapabilities().displaySurface)
+            console.log(e.streams[0].getVideoTracks()[0].getCapabilities())
             if (len === 2)
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== socketID))
             setUsers(oldUsers => {
