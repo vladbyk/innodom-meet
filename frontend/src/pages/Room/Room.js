@@ -165,6 +165,8 @@ const Room = (data, exitUser) => {
           console.log('getCheckDeamon',response)
           console.log(myStreamSharing)
           let firstTrack=myStreamSharing.current.getTracks()[0]
+          console.log(pcs)
+
           pcs[response.channel_name].addTrack(firstTrack,myStreamSharing)
           pcs[response.channel_name].createOffer()
             .then(offer=>{
