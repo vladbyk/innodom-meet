@@ -284,7 +284,7 @@ callSocket.current.close()
 exitUser()
 }
 const screenSharing = ()=>{
-  navigator.mediaDevices.getDisplayMedia({video: {frameRate:60, deviceId:"screen"},audio:false})
+  navigator.mediaDevices.getDisplayMedia({video:{frameRate:60, deviceId:"screen"},audio:false})
   .then((stream)=>{
     console.log(pcs)
     console.log(pcsShearing)
