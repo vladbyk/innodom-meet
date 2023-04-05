@@ -36,6 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Conference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     channel_name = models.CharField(max_length=100, verbose_name='Название канала')
+    deamon = models.BooleanField(default=False, verbose_name='Демонстрирующий экран')
 
     def __str__(self):
         return f"{self.user}<->{self.channel_name}"
