@@ -189,6 +189,7 @@ const Room = (data, exitUser) => {
           pcs[response.channel_name].onnegotiationneeded=(e)=>{
             pcs[response.channel_name].createOffer()
             .then(offer=>{
+              console.log('get sharing  send soffer');
               pcs[response.channel_name].setLocalDescription(offer)
               callSocket.current.send(JSON.stringify({
                   type:'sharingOffer',
@@ -198,6 +199,7 @@ const Room = (data, exitUser) => {
                 })
               )
             })
+            .catch(err=>console.log(err))
           }
         }
         if (type == "getSharingOffer") {
@@ -207,6 +209,7 @@ const Room = (data, exitUser) => {
           if(pc){
             pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
             .then(()=>{
+              console.log('get sharing offer');
               pc.createAnswer({
                 offerToReceiveAudio:false,
                 offerToReceiveVideo:true
@@ -221,6 +224,7 @@ const Room = (data, exitUser) => {
               })
               
             })
+            .catch(err=>console.log(err))
           }}
           if (type == "getSharingAnswer") {
             console.log('get sharing answer',response);
