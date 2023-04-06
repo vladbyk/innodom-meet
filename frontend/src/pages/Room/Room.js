@@ -297,7 +297,7 @@ const screenSharing = ()=>{
     myStreamSharing.current=stream
     let firstTrack=stream.getTracks()[0]
     localDisplayVideo.current.srcObject=stream
-    if(pcsShearing!==undefined || pcsShearing.length>0){
+    if(pcsShearing){
       Object.entries(pcsShearing).map(([key,pc])=>{
       pc.addTrack(firstTrack,stream)
       pc.createOffer()
