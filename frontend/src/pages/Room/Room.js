@@ -386,7 +386,7 @@ useEffect(() => {
   };
 })
 }
-}, [stream, pcsShearing, recorder, recordedBlobs]);
+}, [pcsShearing, recorder, recordedBlobs]);
 
   return (
      <div>
