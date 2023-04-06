@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
 import Video from "./Video";
 import './room.css'
+import RecordRTC from "recordrtc";
 
 const pc_config = {
         iceServers: [
@@ -30,6 +31,10 @@ const Room = (data, exitUser) => {
   const [isDispVideo,setDispVideo]=useState(false)
   const [isSharing,setSharing]=useState(false)
   const [pcsShearing,setPcsShearing]=useState()
+
+  const [recorder, setRecorder] = useState(null);
+  const [recordedBlobs, setRecordedBlobs] = useState([]);
+  const videoRef = useRef(null);
 
   const beReady = () => {
       return navigator.mediaDevices.getUserMedia({
@@ -340,8 +345,52 @@ const screenSharingStop = ()=>{
   useEffect(()=>{
     console.log('rerender')
 },[users])
+
+useEffect(() => {
+  if(data.data.role='T'){
+  navigator.mediaDevices.getDisplayMedia({video:true,audio:true})
+  .then(stream=>{
+  if (stream && pcsShearing.length > 0) {
+    const recordRTC = RecordRTC([stream].concat(pcsShearing), {
+      type: 'video',
+      mimeType: 'video/webm',
+    });
+
+    recordRTC.startRecording();
+
+    setRecorder(recordRTC);
+
+    recordRTC.on('dataavailable', (blob) => {
+      setRecordedBlobs((prevBlobs) => prevBlobs.concat(blob));
+    });
+  }
+
+  return () => {
+    // останавливаем запись при размонтировании компонента
+    if (recorder) {
+      recorder.stopRecording(() => {
+        const blob = new Blob(recordedBlobs, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `${data.data.group}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      });
+    }
+  };
+})
+}
+}, [stream, pcsShearing, recorder, recordedBlobs]);
+
   return (
      <div>
+      <video ref={videoRef} autoPlay />
          <h1>room {data.data.group}</h1>
          {isCandidate&&<div>hi</div>}
          <button onClick={exitRoom}>exit</button>
