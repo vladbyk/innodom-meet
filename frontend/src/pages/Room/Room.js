@@ -268,7 +268,8 @@ const Room = (data, exitUser) => {
               
             })
             .catch(err=>console.log(err))
-          }}
+          }
+        }
           if (type == "getSharingAnswer") {
             console.log('get sharing answer',response);
             console.log('pcs',pcs);
@@ -315,7 +316,13 @@ const screenSharing = ()=>{
             })
     .catch(err=>console.log(err))
     }
-    )}
+    )}else{
+      callSocket.current.send(JSON.stringify({
+        type:'userScreen',
+        user:data.data.id,
+      })
+    )
+    }
   })
   setDispVideo(!isDispVideo)
 }
