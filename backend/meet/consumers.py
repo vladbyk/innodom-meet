@@ -115,6 +115,10 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     'sdp': message['sdp']
                 }
             )
+        elif message['type'] == 'userScreen':
+            user = Conference.objects.get(user__id=message['user'])
+            user.deamon = True
+            user.save()
 
     async def getOffer(self, event):
         await self.send(text_data=json.dumps({
