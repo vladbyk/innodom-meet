@@ -348,13 +348,24 @@ const screenSharingStop = ()=>{
 
 useEffect(() => {
   if(data.data.role='T'){
-  navigator.mediaDevices.getDisplayMedia({video:true,audio:true})
-  .then(stream=>{
-  if (stream && pcsShearing.length > 0) {
-    const recordRTC = RecordRTC([stream].concat(pcsShearing), {
+    let recordRTC;
+    if(localStream!==undefined && pcsShearing==undefined && localDisplayVideo==undefined){
+      recordRTC = RecordRTC([localStream], {
       type: 'video',
       mimeType: 'video/webm',
     });
+    }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo==undefined){
+      recordRTC = RecordRTC([localStream].concat(pcsShearing), {
+        type: 'video',
+        mimeType: 'video/webm',
+    });
+    }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo!==undefined){
+      recordRTC = RecordRTC([localStream].concat(pcsShearing).concat([localDisplayVideo]), {
+        type: 'video',
+        mimeType: 'video/webm',
+    });
+    }
+    
 
     recordRTC.startRecording();
 
@@ -363,10 +374,8 @@ useEffect(() => {
     recordRTC.on('dataavailable', (blob) => {
       setRecordedBlobs((prevBlobs) => prevBlobs.concat(blob));
     });
-  }
 
   return () => {
-    // останавливаем запись при размонтировании компонента
     if (recorder) {
       recorder.stopRecording(() => {
         const blob = new Blob(recordedBlobs, { type: 'video/webm' });
@@ -384,9 +393,8 @@ useEffect(() => {
       });
     }
   };
-})
 }
-}, [pcsShearing, recorder, recordedBlobs]);
+}, [pcsShearing, localStream, localDisplayVideo, recorder, recordedBlobs]);
 
   return (
      <div>
