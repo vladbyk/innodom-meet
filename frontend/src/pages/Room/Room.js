@@ -85,7 +85,7 @@ const Room = (data, exitUser) => {
     setUsers((oldUsers)=>oldUsers.filter(user=>user.id!==socketID))
     setUsers(oldUsers=>{return[...oldUsers,{email:email,id:socketID,stream:e.streams[0]}]})
   }else{
-    setDispVideo(true)
+    // setDispVideo(true)
     localDisplayVideo.current.srcObject=e.streams[0]
   }
     console.log(users)
@@ -374,9 +374,9 @@ const screenSharingStop = ()=>{
         }}>audio вкл</button>
          }
          <video muted autoPlay ref={localVideo}></video>
-         {isDispVideo&&
+         {/* {isDispVideo&& */}
          <video muted width='400px' autoPlay ref={localDisplayVideo}></video>
-        }
+        {/* } */}
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
          ))}
