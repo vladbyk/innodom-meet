@@ -297,6 +297,7 @@ const screenSharing = ()=>{
     myStreamSharing.current=stream
     let firstTrack=stream.getTracks()[0]
     localDisplayVideo.current.srcObject=stream
+    if(pcsShearing.length>0){
       Object.entries(pcsShearing).map(([key,pc])=>{
       pc.addTrack(firstTrack,stream)
       pc.createOffer()
@@ -314,7 +315,7 @@ const screenSharing = ()=>{
             })
     .catch(err=>console.log(err))
     }
-    )
+    )}
   })
   setDispVideo(!isDispVideo)
 }
