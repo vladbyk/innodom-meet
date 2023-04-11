@@ -411,7 +411,6 @@ const screenSharingStop = ()=>{
           <div className="video-panel-upper">
          <video muted autoPlay className="my-video" ref={localVideo}></video>
          <div className="users-video">
-         <video muted autoPlay ref={localVideo}></video>
          {users.length>0&&users.map((user,index)=>(
           <Video key={index} stream={user.stream} user={user}/>
          ))}
