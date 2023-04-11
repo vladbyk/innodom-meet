@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Lobby from "../Lobby/Lobby";
 import Room from "../Room/Room";
 import './video-chat.css'
+import logo from '../../assets/logo-light.svg'
+import heroImg from '../../assets/hero.svg'
 
 const VideoChat = () => {
   const [email, setEmail] = useState("");
@@ -10,6 +12,7 @@ const VideoChat = () => {
     setEmail(event.target.value);
   }, []);
   let [UserInfo, setUserInfo] = useState();
+  // {data:{id:1,group:2}}
   let [ErrMessage, setErrMessage] = useState("");
   const ConnectionRoom = () => {
     if (email.length > 3) {
@@ -33,17 +36,26 @@ const VideoChat = () => {
     setUserInfo(false)
   }
   return (
-    <div className="innomeet">
-      <h1>InnoMeet</h1>
-      <p>{ErrMessage}</p>
+    <div>
+      
       {UserInfo ? (
         <Room data={UserInfo.data} exitUser={exitUser}/>
       ) : (
+        <div className="innomeet">
+        <div className="lobby-header">
+          <img src={logo} alt="innomeet"/>
+        </div>
+        <div className="content-lobby">
+          <div className="disc-lobby">
+        <p className="err-mess">{ErrMessage}</p>
         <Lobby
           email={email}
           handleUserEmailChange={handleUserEmailChange}
           ConnectionRoom={ConnectionRoom}
-        />
+        /></div>
+        <img src={heroImg} alt="innomeet" />
+        </div>
+        </div>
       )}
     </div>
   );

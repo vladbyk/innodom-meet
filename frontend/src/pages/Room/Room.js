@@ -2,6 +2,12 @@ import React, {useState, useEffect, useRef, useCallback} from "react";
 import Video from "./Video";
 import './room.css'
 import RecordRTC from "recordrtc";
+import videoActive from '../../assets/icons/videoAction.svg'
+import videoMuted from '../../assets/icons/videoMuted.svg'
+import audioActive from '../../assets/icons/audioAction.svg'
+import audioMuted from '../../assets/icons/audioMuted.svg'
+import sharingActive from '../../assets/icons/sharingAction.svg'
+import sharingNone from '../../assets/icons/sharingNone.svg'
 
 const pc_config = {
         iceServers: [
@@ -346,105 +352,124 @@ const screenSharingStop = ()=>{
     console.log('rerender')
 },[users])
 
-useEffect(() => {
-  if(data.data.role='T'){
-    let recordRTC;
-    if(localStream!==undefined && pcsShearing==undefined && localDisplayVideo==undefined){
-      recordRTC = RecordRTC([localStream], {
-      type: 'video',
-      mimeType: 'video/webm',
-    });
-    }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo==undefined){
-      recordRTC = RecordRTC([localStream].concat(pcsShearing), {
-        type: 'video',
-        mimeType: 'video/webm',
-    });
-    }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo!==undefined){
-      recordRTC = RecordRTC([localStream].concat(pcsShearing).concat([localDisplayVideo]), {
-        type: 'video',
-        mimeType: 'video/webm',
-    });
-    }
+// useEffect(() => {
+//   if(data.data.role='T'){
+//     let recordRTC=useRef();
+//     if(localStream!==undefined && pcsShearing==undefined && localDisplayVideo==undefined){
+//       recordRTC = RecordRTC([localStream], {
+//       type: 'video',
+//       mimeType: 'video/webm',
+//     });
+//     }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo==undefined){
+//       recordRTC = RecordRTC([localStream].concat(pcsShearing), {
+//         type: 'video',
+//         mimeType: 'video/webm',
+//     });
+//     }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo!==undefined){
+//       recordRTC = RecordRTC([localStream].concat(pcsShearing).concat([localDisplayVideo]), {
+//         type: 'video',
+//         mimeType: 'video/webm',
+//     });
+//     }
     
 
-    recordRTC.startRecording();
+//     recordRTC.startRecording();
 
-    setRecorder(recordRTC);
+//     setRecorder(recordRTC);
 
-    recordRTC.on('dataavailable', (blob) => {
-      setRecordedBlobs((prevBlobs) => prevBlobs.concat(blob));
-    });
+//     recordRTC.on('dataavailable', (blob) => {
+//       setRecordedBlobs((prevBlobs) => prevBlobs.concat(blob));
+//     });
 
-  return () => {
-    if (recorder) {
-      recorder.stopRecording(() => {
-        const blob = new Blob(recordedBlobs, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `${data.data.group}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }, 100);
-      });
-    }
-  };
-}
-}, [pcsShearing, localStream, localDisplayVideo, recorder, recordedBlobs]);
+//   return () => {
+//     if (recorder) {
+//       recorder.stopRecording(() => {
+//         const blob = new Blob(recordedBlobs, { type: 'video/webm' });
+//         const url = URL.createObjectURL(blob);
+//         const a = document.createElement('a');
+//         a.style.display = 'none';
+//         a.href = url;
+//         a.download = `${data.data.group}.webm`;
+//         document.body.appendChild(a);
+//         a.click();
+//         setTimeout(() => {
+//           document.body.removeChild(a);
+//           URL.revokeObjectURL(url);
+//         }, 100);
+//       });
+//     }
+//   };
+// }
+// }, [pcsShearing, localStream, localDisplayVideo, recorder, recordedBlobs]);
 
   return (
-     <div>
-      <video ref={videoRef} autoPlay />
-         <h1>room {data.data.group}</h1>
-         {isCandidate&&<div>hi</div>}
-         <button onClick={exitRoom}>exit</button>
-         {isSharing ? 
-         <button onClick={screenSharingStop}>screen sharing выкл</button>
-         :
-         <button onClick={screenSharing}>screen sharing вкл</button>
-        }
-         {isVideo ? <button onClick={()=>{
+     <div className="room-all">
+      {/* <video ref={videoRef} autoPlay /> */}
+         {/* <h1>room {data.data.group}</h1> */}
+         {/* {isCandidate&&<div>hi</div>} */}
+         <div className="video-panel">
+          <div className="video-panel-upper">
+         <video muted autoPlay className="my-video" ref={localVideo}></video>
+         <div className="users-video">
+         <video muted autoPlay ref={localVideo}></video>
+         {users.length>0&&users.map((user,index)=>(
+          <Video key={index} stream={user.stream} user={user}/>
+         ))}
+         </div>
+         </div>
+         {/* {isDispVideo&& */}
+         <div className="display-video">
+         <video muted autoPlay ref={localDisplayVideo}></video>
+         </div>
+        {/* } */}
+         </div>
+         
+         <div className="panel-optional-all">
+         <div className="media-track-panel">
+         {isVideo ? <img src={videoActive} className="my-video-btn" alt="выкл видео" onClick={()=>{
           const videoTracks=localVideo.current.srcObject.getVideoTracks()
           videoTracks.forEach((track)=>{
             track.enabled=false
           })
           setVideo(false)
-          }}>выкл video</button>
-         :<button onClick={()=>{
+          }}/>
+         :<img src={videoMuted} alt="вкл видео" className="my-video-btn" onClick={()=>{
           const videoTracks=localVideo.current.srcObject.getVideoTracks()
           videoTracks.forEach((track)=>{
             track.enabled=true
           })
           setVideo(true)
-         }}>вкл video</button>}
+         }}/>}
+
          {isAudio ?
-         <button onClick={()=>{
+         <img src={audioActive} alt="audio выкл" onClick={()=>{
           const audioTracks=localVideo.current.srcObject.getAudioTracks()
           audioTracks.forEach((track)=>{
             track.enabled=false
           })
           setAudio(false)
-        }}>audio выкл</button>
+        }}/>
          :
-         <button onClick={()=>{
+         <img src={audioMuted} alt="audio вкл" onClick={()=>{
           const audioTracks=localVideo.current.srcObject.getAudioTracks()
           audioTracks.forEach((track)=>{
             track.enabled=true
           })
           setAudio(true)
-        }}>audio вкл</button>
+        }}/>
          }
-         <video muted autoPlay ref={localVideo}></video>
-         {/* {isDispVideo&& */}
-         <video muted width='400px' autoPlay ref={localDisplayVideo}></video>
-        {/* } */}
-         {users.length>0&&users.map((user,index)=>(
-          <Video key={index} stream={user.stream} user={user}/>
-         ))}
+         </div>
+
+        <div className="option-panel">
+        {isSharing ? 
+         <img src={sharingActive} alt="screen sharing выкл" onClick={screenSharingStop}/>
+         :
+         <img src={sharingNone} alt="screen sharing вкл" onClick={screenSharing}/>
+        }
+        </div>
+
+         <button className="btn-exit" onClick={exitRoom}>Завершить</button>
+         </div>
      </div>
   );
 }

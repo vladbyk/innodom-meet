@@ -9,15 +9,17 @@ const Lobby = ({
 }) => {
     return (
        <div className="lobby">
-        <label htmlFor="email">Enter email:</label>
+        {/* <label htmlFor="email">Enter email:</label> */}
            <input
           type="email"
           id="email"
+          className="inp-lobby"
+          placeholder="Электронная почта"
           value={email}
           onChange={handleUserEmailChange}
           required
         />
-        <button className="connect-btn" onClick={ConnectionRoom}>Connect</button>
+        <button className="connect-btn" onClick={ConnectionRoom}>Подключиться</button>
        </div>
    );
 }
