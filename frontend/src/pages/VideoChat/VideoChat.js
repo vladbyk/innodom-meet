@@ -12,7 +12,7 @@ const VideoChat = () => {
     setEmail(event.target.value);
   }, []);
   let [UserInfo, setUserInfo] = useState();
-  // {data:{id:1,group:2}}
+  // {data:{id:1,group:2,name:'katia'}}
   let [ErrMessage, setErrMessage] = useState("");
   const ConnectionRoom = () => {
     if (email.length > 3) {

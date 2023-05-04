@@ -16,13 +16,35 @@
     font-size: 16px;
     padding: 9px 3%;
 }
+.my-name-icon{
+    background-color: #afafafa6;
+    padding: 10px 27px;
+    font-size: 43px;
+    width: 21%;
+    position: relative;
+    bottom: 53px;
+    right: 42%;
+    border-radius: 50%;
+}
 .panel-optional-all{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+.panel-optional-all img,.btn-exit{
+    cursor: pointer;
+}
 .my-video-btn{
     margin-right: 10px;
+}
+.my-name{
+    position: relative;
+    right: 82%;
+    bottom: 15px;
+    color: white;
+}
+.icon-mic{
+    margin-right: 5px;
 }
 .video-panel-upper{
     display: flex;
@@ -34,11 +56,14 @@
     flex-direction: column;
     align-items: center;
     margin: 10px 0px;
-    background-color: #97979759;
+    /* background-color: #97979759; */
     border-radius: 18px;
 }
 .display-video video{
     height: 68vh;
-    /* width: 84%; */
+    width: 100%;
     background-color: rgba(180, 182, 183, 0.41);
+}
+.video-panel{
+    padding: 0px 13%;
 }

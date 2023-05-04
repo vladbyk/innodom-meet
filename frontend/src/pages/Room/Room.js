@@ -1,13 +1,14 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
 import Video from "./Video";
 import './room.css'
-import RecordRTC from "recordrtc";
+import RecordRTC, { MultiStreamRecorder, invokeSaveAsDialog } from "recordrtc";
 import videoActive from '../../assets/icons/videoAction.svg'
 import videoMuted from '../../assets/icons/videoMuted.svg'
 import audioActive from '../../assets/icons/audioAction.svg'
 import audioMuted from '../../assets/icons/audioMuted.svg'
 import sharingActive from '../../assets/icons/sharingAction.svg'
 import sharingNone from '../../assets/icons/sharingNone.svg'
+import microIcon from '../../assets/icons/mikroIcon.svg'
 
 const pc_config = {
         iceServers: [
@@ -21,7 +22,6 @@ const pc_config = {
           }
         ],
       };
-
 const Room = (data, exitUser) => {
   let localVideo = useRef()
   let localStream;
@@ -50,6 +50,16 @@ const Room = (data, exitUser) => {
      localStream = stream;
      console.log(stream)
      localVideo.current.srcObject = stream;
+     const videoTracks=localVideo.current.srcObject.getVideoTracks()
+     videoTracks.forEach((track)=>{
+       track.enabled=false
+     })
+     setVideo(false)
+     const audioTracks=localVideo.current.srcObject.getAudioTracks()
+     audioTracks.forEach((track)=>{
+       track.enabled=false
+     })
+     setAudio(false)
    }).catch( (err)=>{
      console.log(err);
    })
@@ -348,12 +358,57 @@ const screenSharingStop = ()=>{
   useEffect(()=>{
       connectRoom()
   },[createPeerConnection,pcs])
+
   useEffect(()=>{
     console.log('rerender')
 },[users])
 
+console.log('data role',data.data.role)
+
+const startRecording=()=>{
+  // if(data.data.role=='T'){}
+  navigator.mediaDevices.getDisplayMedia({
+    video:true,
+    audio:true
+  }).then(async function(stream) {
+    let recorder = RecordRTC(stream, {
+        type: 'video'
+    });
+    recorder.startRecording();
+
+    const sleep = m => new Promise(r => setTimeout(r, m));
+    await sleep(3000);
+
+  //   let options = {
+  //     mimeType: 'video/webm'
+  // }
+
+  //   let recorder= new MultiStreamRecorder([stream],options)
+  //   recorder.record()
+
+  let testArr=[]
+  users.map(i=>{testArr.push(i.stream)})
+
+setTimeout(()=>{
+//   recorder.stop(function(blob) {
+//     invokeSaveAsDialog(blob,'video.webm');
+// });
+    recorder.stopRecording(function() {
+        let blob = recorder.getBlob();
+        invokeSaveAsDialog(blob,'video.webm');
+    });
+},15000)
+   
+});
+
+}
+// useEffect(()=>{
+//   if(data.data.role=='S'){
+//     console.log('yes')
+// }
+// },[])
 // useEffect(() => {
-//   if(data.data.role='T'){
+//   if(data.data.role=='T'){
 //     let recordRTC=useRef();
 //     if(localStream!==undefined && pcsShearing==undefined && localDisplayVideo==undefined){
 //       recordRTC = RecordRTC([localStream], {
@@ -409,10 +464,20 @@ const screenSharingStop = ()=>{
          {/* {isCandidate&&<div>hi</div>} */}
          <div className="video-panel">
           <div className="video-panel-upper">
-         <video muted autoPlay className="my-video" ref={localVideo}></video>
+            <div className="my-video">
+         <video muted autoPlay ref={localVideo}></video>
+         {/* <span className="my-name-icon">{data.data.name[0].toUpperCase()}</span> */}
+         {/* <span className="my-name"><img className="icon-mic" src={microIcon} alt="micro"/>{data.data.name}</span> */}
+         </div>
          <div className="users-video">
          {users.length>0&&users.map((user,index)=>(
+          <>
           <Video key={index} stream={user.stream} user={user}/>
+          {/* <Video key={index} stream={user.stream} user={user}/>
+          <Video key={index} stream={user.stream} user={user}/>
+          <Video key={index} stream={user.stream} user={user}/>
+          <Video key={index} stream={user.stream} user={user}/> */}
+          </>
          ))}
          </div>
          </div>
@@ -465,6 +530,8 @@ const screenSharingStop = ()=>{
          :
          <img src={sharingNone} alt="screen sharing вкл" onClick={screenSharing}/>
         }
+        <span onClick={startRecording}>запись</span>
+        {/* <span onClick={stopRecording}>запись</span> */}
         </div>
 
          <button className="btn-exit" onClick={exitRoom}>Завершить</button>
