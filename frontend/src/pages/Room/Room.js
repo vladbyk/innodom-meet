@@ -358,142 +358,143 @@ const screenSharingStop = ()=>{
 console.log('data role',data.data.role)
 const [recorder, setRecorder] = useState(null);
 
-const startScreenRecording=()=>{
-  // if(data.data.role=='T'){}
-  navigator.mediaDevices.getDisplayMedia({
-    video:true,
-    audio:true
-  }).then(stream=>{
-    let streams=[]
-      console.log(users)
-      users.map(i=>{streams.push(i.stream)})
-      // streams.push(stream)
-      console.log(streams)
-      let RecordMediaStream= new MediaStream()
-      console.log(stream.getVideoTracks())
-      RecordMediaStream.addTrack(stream.getVideoTracks()[0])
-
-      navigator.mediaDevices.getUserMedia({video:false,audio:true})
-      .then(audio=>{
-        RecordMediaStream.addTrack(audio.getAudioTracks()[0])
-      })
-      streams.forEach(item=>{
-        console.log(item.getAudioTracks())
-        RecordMediaStream.addTrack(item.getAudioTracks()[0])
-      })
-      let screenRecorder =new RecordRTC(RecordMediaStream,{type:'video'})
-
-      screenRecorder.startRecording()
-      // const ConferenceRecorder = ({streams}) => {
-      
-          // Ищем MediaStream с экраном, чтобы записывать его
-          // const screenStream = stream
-          // s.find(streamMy => {
-          //   return streamMy.getVideoTracks().length && streamMy.getVideoTracks()[0].label === 'screen';
-          // });
-          // if (!screenStream) {
-          //   console.log('Не удалось найти MediaStream с экраном');
-          //   return;
-          // }
-      
-          // Создаем RecordRTC для записи экрана
-          // const screenRecorder = new RecordRTC(screenStream, { type: 'video' });
-      
-          // // Создаем AudioContext и объединяем звук всех MediaStream
-          // const audioContext = new AudioContext();
-          // const audioSources = [];
-          // const outputNode = audioContext.createMediaStreamDestination();
-          // streams.forEach(stream => {
-          //   stream.getAudioTracks().forEach(track => {
-          //     const audioStream = new MediaStream();
-          //     audioStream.addTrack(track);
-          //     const audioSource = audioContext.createMediaStreamSource(audioStream);
-          //     console.log(audioSource)
-          //     audioSource.connect(outputNode);
-          //     audioSources.push(audioSource);
-          //   });
-          // });
-
-      
-          // // Начинаем запись
-          // screenRecorder.startRecording();
-          // setRecorder(screenRecorder);
-      
-          // Отключаем звук через 10 секунд
-          // const timeout = 
-          setTimeout(() => {
-            screenRecorder.stopRecording(() => {
-              console.log('enddd')
-              const blob = screenRecorder.getBlob();
-              invokeSaveAsDialog(blob, 'conference.mp4');
-            });
-          }, 10000);
-      
-          // return () => {
-            // При размонтировании компонента останавливаем запись и очищаем timeout
-            // if (recorder) {
-            //   recorder.stopRecording();
-            //   setRecorder(null);
-            // }
-            // clearTimeout(timeout);
-          // };
-      
-        // return null;
-      // };
-      // ConferenceRecorder(streams)
-     
-  }).catch(err=>console.log(err))
-
-//   setTimeout(()=>{
-//     recorder.stopRecording(function() {
-//         let blob = recorder.getBlob();
-//         invokeSaveAsDialog(blob,'video.mp4');
-//     });
-// },10000)
-
+// const startScreenRecording=()=>{
+//   // if(data.data.role=='T'){}
 //   navigator.mediaDevices.getDisplayMedia({
 //     video:true,
 //     audio:true
-//   }).then(async function(stream) {
-//     let recorder = RecordRTC([stream], {
-//         type: 'video',
-//         recorderType: MultiStreamRecorder, 
-//         disableLogs: true, 
-//         numberOfAudioChannels: 1, 
-//         bufferSize: 0, 
-//         sampleRate: 0, 
-//         desiredSampRate: 16000, 
-//         video: HTMLVideoElement
-//     });
-//     recorder.startRecording();
+//   }).then(stream=>{
+//     let streams=[]
+//       console.log(users)
+//       users.map(i=>{streams.push(i.stream)})
+//       // streams.push(stream)
+//       console.log(streams)
+//       let RecordMediaStream= new MediaStream()
+//       console.log(stream.getVideoTracks())
+//       RecordMediaStream.addTrack(stream.getVideoTracks()[0])
 
-//     const sleep = m => new Promise(r => setTimeout(r, m));
-//     await sleep(3000);
+//       navigator.mediaDevices.getUserMedia({video:false,audio:true})
+//       .then(audio=>{
+//         RecordMediaStream.addTrack(audio.getAudioTracks()[0])
+//       })
+//       streams.forEach(item=>{
+//         console.log(item.getAudioTracks())
+//         RecordMediaStream.addTrack(item.getAudioTracks()[0])
+//       })
+//       console.log(RecordMediaStream)
+//       let screenRecorder = new RecordRTC(RecordMediaStream,{mimeType:'video/webm' })
 
-//   //   let options = {
-//   //     mimeType: 'video/webm'
-//   // }
+//       screenRecorder.startRecording()
+//       // const ConferenceRecorder = ({streams}) => {
+      
+//           // Ищем MediaStream с экраном, чтобы записывать его
+//           // const screenStream = stream
+//           // s.find(streamMy => {
+//           //   return streamMy.getVideoTracks().length && streamMy.getVideoTracks()[0].label === 'screen';
+//           // });
+//           // if (!screenStream) {
+//           //   console.log('Не удалось найти MediaStream с экраном');
+//           //   return;
+//           // }
+      
+//           // Создаем RecordRTC для записи экрана
+//           // const screenRecorder = new RecordRTC(screenStream, { type: 'video' });
+      
+//           // // Создаем AudioContext и объединяем звук всех MediaStream
+//           // const audioContext = new AudioContext();
+//           // const audioSources = [];
+//           // const outputNode = audioContext.createMediaStreamDestination();
+//           // streams.forEach(stream => {
+//           //   stream.getAudioTracks().forEach(track => {
+//           //     const audioStream = new MediaStream();
+//           //     audioStream.addTrack(track);
+//           //     const audioSource = audioContext.createMediaStreamSource(audioStream);
+//           //     console.log(audioSource)
+//           //     audioSource.connect(outputNode);
+//           //     audioSources.push(audioSource);
+//           //   });
+//           // });
 
-//   //   let recorder= new MultiStreamRecorder([stream],options)
-//   //   recorder.record()
+      
+//           // // Начинаем запись
+//           // screenRecorder.startRecording();
+//           // setRecorder(screenRecorder);
+      
+//           // Отключаем звук через 10 секунд
+//           // const timeout = 
+//           setTimeout(() => {
+//             screenRecorder.stopRecording(() => {
+//               const blob = screenRecorder.getBlob();
+//               invokeSaveAsDialog(blob, 'conference.webm');
+//             });
+//           }, 10000);
+      
+//           // return () => {
+//             // При размонтировании компонента останавливаем запись и очищаем timeout
+//             // if (recorder) {
+//             //   recorder.stopRecording();
+//             //   setRecorder(null);
+//             // }
+//             // clearTimeout(timeout);
+//           // };
+      
+//         // return null;
+//       // };
+//       // ConferenceRecorder(streams)
+     
+//   }).catch(err=>console.log(err))
 
-//   let testArr=[]
-//   console.log(users)
-//   users.map(i=>{testArr.push(i.stream)})
-//   console.log(testArr)
-// setTimeout(()=>{
-// //   recorder.stop(function(blob) {
-// //     invokeSaveAsDialog(blob,'video.webm');
-// // });
-//     recorder.stopRecording(function() {
-//         let blob = recorder.getBlob();
-//         invokeSaveAsDialog(blob,'video.mp4');
-//     });
-// },15000)
+// //   setTimeout(()=>{
+// //     recorder.stopRecording(function() {
+// //         let blob = recorder.getBlob();
+// //         invokeSaveAsDialog(blob,'video.mp4');
+// //     });
+// // },10000)
+
+// //   navigator.mediaDevices.getDisplayMedia({
+// //     video:true,
+// //     audio:true
+// //   }).then(async function(stream) {
+// //     let recorder = RecordRTC([stream], {
+// //         type: 'video',
+// //         recorderType: MultiStreamRecorder, 
+// //         disableLogs: true, 
+// //         numberOfAudioChannels: 1, 
+// //         bufferSize: 0, 
+// //         sampleRate: 0, 
+// //         desiredSampRate: 16000, 
+// //         video: HTMLVideoElement
+// //     });
+// //     recorder.startRecording();
+
+// //     const sleep = m => new Promise(r => setTimeout(r, m));
+// //     await sleep(3000);
+
+// //   //   let options = {
+// //   //     mimeType: 'video/webm'
+// //   // }
+
+// //   //   let recorder= new MultiStreamRecorder([stream],options)
+// //   //   recorder.record()
+
+// //   let testArr=[]
+// //   console.log(users)
+// //   users.map(i=>{testArr.push(i.stream)})
+// //   console.log(testArr)
+// // setTimeout(()=>{
+// // //   recorder.stop(function(blob) {
+// // //     invokeSaveAsDialog(blob,'video.webm');
+// // // });
+// //     recorder.stopRecording(function() {
+// //         let blob = recorder.getBlob();
+// //         invokeSaveAsDialog(blob,'video.mp4');
+// //     });
+// // },15000)
    
-// });
+// // });
 
-}
+// }
+
 // useEffect(()=>{
 //   if(data.data.role=='S'){
 //     console.log('yes')
@@ -548,6 +549,52 @@ const startScreenRecording=()=>{
 //   };
 // }
 // }, [pcsShearing, localStream, localDisplayVideo, recorder, recordedBlobs]);
+const startScreenRecording = () => {
+  navigator.mediaDevices.getDisplayMedia({
+      video: true, audio: false
+  }).then(stream => {
+      let streams = []
+      console.log(users)
+      streams.push(stream)
+      users.map(i => {
+        // let userStream=i.stream
+        // userStream.getVideoTracks().forEach(track=>track.stop())
+        let userStream = new MediaStream()
+        i.stream.getAudioTracks().forEach(track=>userStream.addTrack(track))
+        // userStream.addAu
+          streams.push(userStream)
+      })
+      console.log(streams)
+      let RecordMediaStream = new MediaStream()
+      console.log(stream.getVideoTracks())
+      RecordMediaStream.addTrack(stream.getVideoTracks()[0])
+
+      navigator.mediaDevices.getUserMedia({video: false, audio: true})
+          .then(audio => {
+            console.log(audio.getTracks())
+              streams.push(audio)
+              RecordMediaStream.addTrack(audio.getAudioTracks()[0])
+              
+              console.log(streams)
+      let screenRecorder = new RecordRTC(streams, {type: 'video', numberOfAudioChannels: 2})
+
+      screenRecorder.startRecording()
+      setTimeout(() => {
+          screenRecorder.stopRecording(() => {
+              console.log('enddd')
+              const blob = screenRecorder.getBlob();
+              invokeSaveAsDialog(blob, 'conference.mp4');
+          });
+      }, 10000);
+          })
+      // streams.forEach(item => {
+      //     console.log(item.getAudioTracks())
+      //     RecordMediaStream.addTrack(item.getAudioTracks()[0])
+      // })
+      
+
+  }).catch(err => console.log(err))
+}
 
   return (
      <div className="room-all">
@@ -633,3 +680,4 @@ const startScreenRecording=()=>{
 }
 
 export default Room;
+
