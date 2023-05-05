@@ -558,24 +558,16 @@ const startScreenRecording = () => {
       console.log(users)
       streams.push(stream)
       users.map(i => {
-        // let userStream=i.stream
-        // userStream.getVideoTracks().forEach(track=>track.stop())
         let userStream = new MediaStream()
         i.stream.getAudioTracks().forEach(track=>userStream.addTrack(track))
-        // userStream.addAu
-          streams.push(userStream)
+        streams.push(userStream)
       })
       console.log(streams)
-      let RecordMediaStream = new MediaStream()
-      console.log(stream.getVideoTracks())
-      RecordMediaStream.addTrack(stream.getVideoTracks()[0])
 
       navigator.mediaDevices.getUserMedia({video: false, audio: true})
           .then(audio => {
             console.log(audio.getTracks())
               streams.push(audio)
-              RecordMediaStream.addTrack(audio.getAudioTracks()[0])
-              
               console.log(streams)
       let screenRecorder = new RecordRTC(streams, {type: 'video', numberOfAudioChannels: 2})
 
