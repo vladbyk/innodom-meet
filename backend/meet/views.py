@@ -2,7 +2,7 @@ import base64
 
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from moviepy.editor import *
 from yadisk import yadisk
@@ -11,7 +11,7 @@ from .models import MoviesGenerate, Room
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def get_movie(request):
     movie = MoviesGenerate.objects.filter(group=request.data['group'])
     if movie is []:
