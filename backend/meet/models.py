@@ -13,7 +13,7 @@ class Room(models.Model):
 
 
 class MoviesGenerate(models.Model):
-    movies = models.TextField(verbose_name='Запись')
+    movies = models.BinaryField(verbose_name='Запись')
     group = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Группа')
     date = models.DateField(verbose_name='Дата создания', auto_now_add=True)
 
