@@ -14,7 +14,7 @@ from .models import MoviesGenerate, Room
 @permission_classes([AllowAny])
 def get_movie(request):
     movie = MoviesGenerate.objects.filter(group__group=request.data['group'])
-    if movie is []:
+    if not movie:
         MoviesGenerate(
             movies=request.data['blob'],
             group=Room.objects.get(group=request.data['group'])
