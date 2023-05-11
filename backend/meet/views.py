@@ -1,3 +1,4 @@
+import base64
 import os.path
 
 from rest_framework import status
@@ -22,9 +23,9 @@ def get_movie(request):
     else:
         path = os.path.dirname(__file__).replace('meet', 'videos')
         with open(f'{path}/file.webm', 'wb') as f_vid:
-            f_vid.write(movie[0].movies)
+            f_vid.write(base64.b64decode(movie[0].movies.split(';base64,')[-1]))
         with open(f'{path}/file1.webm', 'wb') as f_vid:
-            f_vid.write(request.data['blob'])
+            f_vid.write(base64.b64decode(request.data['blob'].split(';base64,')[-1]))
         clip = VideoFileClip(f"{path}/file.webm")
         clip1 = clip.subclip(0, 5)
         clipx = VideoFileClip(f"{path}/file1.webm")
