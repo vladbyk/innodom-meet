@@ -21,7 +21,7 @@ def get_movie(request):
             group=Room.objects.get(group=request.data['group'])
         ).save()
     else:
-        path = os.path.dirname(__file__).replace('meet', 'videos')
+        path = os.path.dirname(__file__).replace('meet', 'videos').replace('./', '')
         print(path)
         with open(f'{path}/file.webm', 'wb') as f_vid:
             f_vid.write(base64.b64decode(movie[0].movies.split(';base64,')[-1]))
