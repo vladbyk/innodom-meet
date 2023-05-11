@@ -5,3 +5,5 @@ djoser
 channels
 channels-redis
 django-rest-framework
+moviepy==1.0.3
+yadisk==1.3.3
