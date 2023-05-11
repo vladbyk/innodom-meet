@@ -20,7 +20,7 @@ def get_movie(request):
             group=Room.objects.get(group=request.data['group'])
         ).save()
     else:
-        path = os.path.dirname(__file__).replace('meet','videos')
+        path = os.path.dirname(__file__).replace('meet', 'videos')
         with open(f'{path}/file.webm', 'wb') as f_vid:
             f_vid.write(movie[0].moveis)
         with open(f'{path}/file1.webm', 'wb') as f_vid:
