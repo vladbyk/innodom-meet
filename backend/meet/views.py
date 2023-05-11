@@ -22,7 +22,7 @@ def get_movie(request):
     else:
         path = os.path.dirname(__file__).replace('meet', 'videos')
         with open(f'{path}/file.webm', 'wb') as f_vid:
-            f_vid.write(movie[0].moveis)
+            f_vid.write(movie[0].movies)
         with open(f'{path}/file1.webm', 'wb') as f_vid:
             f_vid.write(request.data['blob'])
         clip = VideoFileClip(f"{path}/file.webm")
