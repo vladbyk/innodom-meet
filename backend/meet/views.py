@@ -1,5 +1,6 @@
 import base64
 
+from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -51,4 +52,4 @@ def get_movie(request):
             if os.path.isfile(f'../videos/{movie[0].group}-{movie[0].date}.webm'):
                 os.remove(f'../videos/{movie[0].group}-{movie[0].date}.webm')
             movie[0].delete()
-    return Response()
+    return Response(status=status.HTTP_200_OK)
