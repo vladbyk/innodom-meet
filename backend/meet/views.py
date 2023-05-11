@@ -21,8 +21,7 @@ def get_movie(request):
             group=Room.objects.get(group=request.data['group'])
         ).save()
     else:
-        path = os.path.dirname(__file__).replace('meet', 'videos').replace('./', '')
-        print(path)
+        path = "app/backend/videos"
         with open(f'{path}/file.webm', 'wb') as f_vid:
             f_vid.write(base64.b64decode(movie[0].movies.split(';base64,')[-1]))
         with open(f'{path}/file1.webm', 'wb') as f_vid:
@@ -41,7 +40,7 @@ def get_movie(request):
             final.write_videofile(f"{path}/{movie[0].group}-{movie[0].date}.webm")
             y = yadisk.YaDisk(token="y0_AgAAAABVA64gAAnjtwAAAADi8QQ2wmDmWZ8PSC2W0S6RFne6SwNOxvA")
             y.mkdir("/videos")
-            y.upload(f"../videos/{movie[0].group}-{movie[0].date}.webm", f"/videos/{movie[0].group}-{movie[0].date}.webm")
+            y.upload(f"/videos/{movie[0].group}-{movie[0].date}.webm", f"/videos/{movie[0].group}-{movie[0].date}.webm")
             if os.path.isfile(f"{path}/{movie[0].group}-{movie[0].date}.webm"):
                 os.remove(f"{path}/{movie[0].group}-{movie[0].date}.webm")
             movie[0].delete()
