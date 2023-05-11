@@ -13,7 +13,7 @@ from .models import MoviesGenerate, Room
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def get_movie(request):
-    movie = MoviesGenerate.objects.filter(group=request.data['group'])
+    movie = MoviesGenerate.objects.filter(group__group=request.data['group'])
     if movie is []:
         MoviesGenerate(
             movies=request.data['blob'],
