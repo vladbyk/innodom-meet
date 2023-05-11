@@ -9,6 +9,7 @@ import audioMuted from '../../assets/icons/audioMuted.svg'
 import sharingActive from '../../assets/icons/sharingAction.svg'
 import sharingNone from '../../assets/icons/sharingNone.svg'
 import microIcon from '../../assets/icons/mikroIcon.svg'
+import Carousel from "nuka-carousel"
 
 const pc_config = {
         iceServers: [
@@ -351,212 +352,20 @@ const screenSharingStop = ()=>{
       connectRoom()
   },[createPeerConnection,pcs])
 
-  useEffect(()=>{
-    console.log('rerender')
-},[users])
-
 console.log('data role',data.data.role)
-const [recorder, setRecorder] = useState(null);
+let screenRecorder=useRef()
+let emptyStream=useRef()
 
-// const startScreenRecording=()=>{
-//   // if(data.data.role=='T'){}
-//   navigator.mediaDevices.getDisplayMedia({
-//     video:true,
-//     audio:true
-//   }).then(stream=>{
-//     let streams=[]
-//       console.log(users)
-//       users.map(i=>{streams.push(i.stream)})
-//       // streams.push(stream)
-//       console.log(streams)
-//       let RecordMediaStream= new MediaStream()
-//       console.log(stream.getVideoTracks())
-//       RecordMediaStream.addTrack(stream.getVideoTracks()[0])
-
-//       navigator.mediaDevices.getUserMedia({video:false,audio:true})
-//       .then(audio=>{
-//         RecordMediaStream.addTrack(audio.getAudioTracks()[0])
-//       })
-//       streams.forEach(item=>{
-//         console.log(item.getAudioTracks())
-//         RecordMediaStream.addTrack(item.getAudioTracks()[0])
-//       })
-//       console.log(RecordMediaStream)
-//       let screenRecorder = new RecordRTC(RecordMediaStream,{mimeType:'video/webm' })
-
-//       screenRecorder.startRecording()
-//       // const ConferenceRecorder = ({streams}) => {
-      
-//           // Ищем MediaStream с экраном, чтобы записывать его
-//           // const screenStream = stream
-//           // s.find(streamMy => {
-//           //   return streamMy.getVideoTracks().length && streamMy.getVideoTracks()[0].label === 'screen';
-//           // });
-//           // if (!screenStream) {
-//           //   console.log('Не удалось найти MediaStream с экраном');
-//           //   return;
-//           // }
-      
-//           // Создаем RecordRTC для записи экрана
-//           // const screenRecorder = new RecordRTC(screenStream, { type: 'video' });
-      
-//           // // Создаем AudioContext и объединяем звук всех MediaStream
-//           // const audioContext = new AudioContext();
-//           // const audioSources = [];
-//           // const outputNode = audioContext.createMediaStreamDestination();
-//           // streams.forEach(stream => {
-//           //   stream.getAudioTracks().forEach(track => {
-//           //     const audioStream = new MediaStream();
-//           //     audioStream.addTrack(track);
-//           //     const audioSource = audioContext.createMediaStreamSource(audioStream);
-//           //     console.log(audioSource)
-//           //     audioSource.connect(outputNode);
-//           //     audioSources.push(audioSource);
-//           //   });
-//           // });
-
-      
-//           // // Начинаем запись
-//           // screenRecorder.startRecording();
-//           // setRecorder(screenRecorder);
-      
-//           // Отключаем звук через 10 секунд
-//           // const timeout = 
-//           setTimeout(() => {
-//             screenRecorder.stopRecording(() => {
-//               const blob = screenRecorder.getBlob();
-//               invokeSaveAsDialog(blob, 'conference.webm');
-//             });
-//           }, 10000);
-      
-//           // return () => {
-//             // При размонтировании компонента останавливаем запись и очищаем timeout
-//             // if (recorder) {
-//             //   recorder.stopRecording();
-//             //   setRecorder(null);
-//             // }
-//             // clearTimeout(timeout);
-//           // };
-      
-//         // return null;
-//       // };
-//       // ConferenceRecorder(streams)
-     
-//   }).catch(err=>console.log(err))
-
-// //   setTimeout(()=>{
-// //     recorder.stopRecording(function() {
-// //         let blob = recorder.getBlob();
-// //         invokeSaveAsDialog(blob,'video.mp4');
-// //     });
-// // },10000)
-
-// //   navigator.mediaDevices.getDisplayMedia({
-// //     video:true,
-// //     audio:true
-// //   }).then(async function(stream) {
-// //     let recorder = RecordRTC([stream], {
-// //         type: 'video',
-// //         recorderType: MultiStreamRecorder, 
-// //         disableLogs: true, 
-// //         numberOfAudioChannels: 1, 
-// //         bufferSize: 0, 
-// //         sampleRate: 0, 
-// //         desiredSampRate: 16000, 
-// //         video: HTMLVideoElement
-// //     });
-// //     recorder.startRecording();
-
-// //     const sleep = m => new Promise(r => setTimeout(r, m));
-// //     await sleep(3000);
-
-// //   //   let options = {
-// //   //     mimeType: 'video/webm'
-// //   // }
-
-// //   //   let recorder= new MultiStreamRecorder([stream],options)
-// //   //   recorder.record()
-
-// //   let testArr=[]
-// //   console.log(users)
-// //   users.map(i=>{testArr.push(i.stream)})
-// //   console.log(testArr)
-// // setTimeout(()=>{
-// // //   recorder.stop(function(blob) {
-// // //     invokeSaveAsDialog(blob,'video.webm');
-// // // });
-// //     recorder.stopRecording(function() {
-// //         let blob = recorder.getBlob();
-// //         invokeSaveAsDialog(blob,'video.mp4');
-// //     });
-// // },15000)
-   
-// // });
-
-// }
-
-
-// useEffect(()=>{
-//   if(data.data.role=='S'){
-//     console.log('yes')
-// }
-// },[])
-// useEffect(() => {
-//   if(data.data.role=='T'){
-//     let recordRTC=useRef();
-//     if(localStream!==undefined && pcsShearing==undefined && localDisplayVideo==undefined){
-//       recordRTC = RecordRTC([localStream], {
-//       type: 'video',
-//       mimeType: 'video/webm',
-//     });
-//     }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo==undefined){
-//       recordRTC = RecordRTC([localStream].concat(pcsShearing), {
-//         type: 'video',
-//         mimeType: 'video/webm',
-//     });
-//     }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo!==undefined){
-//       recordRTC = RecordRTC([localStream].concat(pcsShearing).concat([localDisplayVideo]), {
-//         type: 'video',
-//         mimeType: 'video/webm',
-//     });
-//     }
-    
-
-//     recordRTC.startRecording();
-
-//     setRecorder(recordRTC);
-
-//     recordRTC.on('dataavailable', (blob) => {
-//       setRecordedBlobs((prevBlobs) => prevBlobs.concat(blob));
-//     });
-
-//   return () => {
-//     if (recorder) {
-//       recorder.stopRecording(() => {
-//         const blob = new Blob(recordedBlobs, { type: 'video/webm' });
-//         const url = URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.style.display = 'none';
-//         a.href = url;
-//         a.download = `${data.data.group}.webm`;
-//         document.body.appendChild(a);
-//         a.click();
-//         setTimeout(() => {
-//           document.body.removeChild(a);
-//           URL.revokeObjectURL(url);
-//         }, 100);
-//       });
-//     }
-//   };
-// }
-// }, [pcsShearing, localStream, localDisplayVideo, recorder, recordedBlobs]);
-const startScreenRecording = () => {
+useEffect(()=>{
+  if(data.data.role=='T'){
   navigator.mediaDevices.getDisplayMedia({
       video: true, audio: false
   }).then(stream => {
       let streams = []
       console.log(users)
       streams.push(stream)
+      emptyStream.current=new MediaStream()
+      streams.push(emptyStream.current)
       users.map(i => {
         let userStream = new MediaStream()
         i.stream.getAudioTracks().forEach(track=>userStream.addTrack(track))
@@ -569,31 +378,60 @@ const startScreenRecording = () => {
             console.log(audio.getTracks())
               streams.push(audio)
               console.log(streams)
-      let screenRecorder = new RecordRTC(streams, {type: 'video', numberOfAudioChannels: 2})
+      screenRecorder.current = new RecordRTC(streams, {
+        type: 'video',
+        mimeType:'video/mp4',
+        disableLogs:true,
+        timeSlice:1000,
+        checkForInactiveTracks:false,
+        bitsPerSecond:128000,
+        audioBitsPerSecond:128000,
+        videoBitsPerSecond:128000,
+        sampleRate:96000,
+        desiredSampRate:16000,
+        bufferSize:16384,
+        numberOfAudioChannels:2,
+        video:{width:window.screen.width,height:window.screen.height},
+        frameRate:90,
+        bitrate:128000
+      })
 
-      screenRecorder.startRecording()
-      setTimeout(() => {
-          screenRecorder.stopRecording(() => {
-              console.log('enddd')
-              const blob = screenRecorder.getBlob();
-              invokeSaveAsDialog(blob, 'conference.mp4');
-          });
-      }, 10000);
-          })
-      // streams.forEach(item => {
-      //     console.log(item.getAudioTracks())
-      //     RecordMediaStream.addTrack(item.getAudioTracks()[0])
-      // })
+      screenRecorder.current.startRecording()
+
+      setTimeout(()=>{
+        screenRecorder.current.stopRecording(() => {
+        console.log('enddd')
+        const blob = screenRecorder.current.getBlob();
+        invokeSaveAsDialog(blob, 'conference.mp4');
+    });
+      },10000)
       
-
+      
+          })      
   }).catch(err => console.log(err))
 }
+},[])
+// const stopRecording=()=>{
+//           screenRecorder.stopRecording(() => {
+//               console.log('enddd')
+//               const blob = screenRecorder.getBlob();
+//               invokeSaveAsDialog(blob, 'conference.mp4');
+//           });
+//       }
+useEffect(()=>{
+  if(data.data.role=='T'&&users.length>0){
+  console.log('new user to record')
+  console.log(users[users.length-1].stream)
+    // let userStream = new MediaStream()
+    users[users.length-1].stream.getAudioTracks().forEach(track=>emptyStream.current.addTrack(track))
+    
+    // emptyStream.current.addTrack()
+    // screenRecorder.current.addStreams([userStream])
+  }
+},[users])
 
   return (
      <div className="room-all">
-      {/* <video ref={videoRef} autoPlay /> */}
-         {/* <h1>room {data.data.group}</h1> */}
-         {/* {isCandidate&&<div>hi</div>} */}
          <div className="video-panel">
           <div className="video-panel-upper">
             <div className="my-video">
@@ -601,16 +439,12 @@ const startScreenRecording = () => {
          {/* <span className="my-name-icon">{data.data.name[0].toUpperCase()}</span> */}
          {/* <span className="my-name"><img className="icon-mic" src={microIcon} alt="micro"/>{data.data.name}</span> */}
          </div>
-         <div className="users-video">
+         <div>
+          <Carousel className="users-video" slidesToShow={4}>
          {users.length>0&&users.map((user,index)=>(
-          <>
           <Video key={index} stream={user.stream} user={user}/>
-          {/* <Video key={index} stream={user.stream} user={user}/>
-          <Video key={index} stream={user.stream} user={user}/>
-          <Video key={index} stream={user.stream} user={user}/>
-          <Video key={index} stream={user.stream} user={user}/> */}
-          </>
          ))}
+         </Carousel>
          </div>
          </div>
          {/* {isDispVideo&& */}
@@ -662,8 +496,7 @@ const startScreenRecording = () => {
          :
          <img src={sharingNone} alt="screen sharing вкл" onClick={screenSharing}/>
         }
-        <span onClick={startScreenRecording}>запись</span>
-        {/* <span onClick={stopRecording}>запись</span> */}
+        {/* <span onClick={stopRecording}>остановить запись</span> */}
         </div>
 
          <button className="btn-exit" onClick={exitRoom}>Завершить</button>
