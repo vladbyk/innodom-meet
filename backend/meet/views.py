@@ -59,14 +59,14 @@ def get_movie(request):
     else:
         if request.data['is_last']:
             y = yadisk.YaDisk(token="y0_AgAAAABVA64gAAnjtwAAAADi8QQ2wmDmWZ8PSC2W0S6RFne6SwNOxvA")
-            movie[-1].delete()
+            movie[0].delete()
             video1_path = 'video1.mp4'
             with open(video1_path, 'wb') as video1_file:
                 video1_file.write(base64.b64decode(combine_videos(movie[-1].movies, request.data['blob'])))
                 y.mkdir("/videos")
                 y.upload(video1_file, f"/videos/{movie[0].group}-{movie[0].date}.webm")
         else:
-            movie[-1].movies = combine_videos(movie[-1].movies, request.data['blob'])
-            movie[-1].save()
+            movie[0].movies = combine_videos(movie[-1].movies, request.data['blob'])
+            movie[0].save()
 
     return Response(status=status.HTTP_200_OK)
