@@ -9,6 +9,9 @@ import audioMuted from '../../assets/icons/audioMuted.svg'
 import sharingActive from '../../assets/icons/sharingAction.svg'
 import sharingNone from '../../assets/icons/sharingNone.svg'
 import microIcon from '../../assets/icons/mikroIcon.svg'
+import Carousel from "nuka-carousel"
+import axios from "axios";
+import { BASE_URL } from "../../auth";
 
 const pc_config = {
     iceServers: [{
@@ -33,8 +36,6 @@ const Room = (data, exitUser) => {
     const [isSharing, setSharing] = useState(false)
     const [pcsShearing, setPcsShearing] = useState()
 
-    // const [recordedBlobs, setRecordedBlobs] = useState([]);
-    // const videoRef = useRef(null);
 
     const beReady = () => {
         return navigator.mediaDevices.getUserMedia({
@@ -237,26 +238,6 @@ const Room = (data, exitUser) => {
                 delete pcs[response.channel_name]
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== response.channel_name))
             }
-            // if (type == "getSharing") {
-            //   console.log('get sharing',response);
-            //   console.log(pcs)
-            //   // pcs[response.channel_name].onnegotiationneeded=(e)=>{
-            //     // console.log('onnegotiationneeded',e);
-            //     pcs[response.channel_name].createOffer()
-            //     .then(offer=>{
-            //       console.log('get sharing  send soffer');
-            //       pcs[response.channel_name].setLocalDescription(offer)
-            //       callSocket.current.send(JSON.stringify({
-            //           type:'sharingOffer',
-            //           user:data.data.id,
-            //           group:data.data.group,
-            //           sdp:offer
-            //         })
-            //       )
-            //     })
-            //     .catch(err=>console.log(err))
-            //   // }
-            // }
             if (type == "getSharingOffer") {
                 console.log('get sharing offer', response);
                 console.log('pcs', pcs);
@@ -344,201 +325,6 @@ const Room = (data, exitUser) => {
         console.log('rerender')
     }, [users])
 
-    console.log('data role', data.data.role)
-
-// const startScreenRecording=()=>{
-//   // if(data.data.role=='T'){}
-//   navigator.mediaDevices.getDisplayMedia({
-//     video:true,
-//     audio:true
-//   }).then(stream=>{
-//     let streams=[]
-//       console.log(users)
-//       users.map(i=>{streams.push(i.stream)})
-//       // streams.push(stream)
-//       console.log(streams)
-//       let RecordMediaStream= new MediaStream()
-//       console.log(stream.getVideoTracks())
-//       RecordMediaStream.addTrack(stream.getVideoTracks()[0])
-
-//       navigator.mediaDevices.getUserMedia({video:false,audio:true})
-//       .then(audio=>{
-//         RecordMediaStream.addTrack(audio.getAudioTracks()[0])
-//       })
-//       streams.forEach(item=>{
-//         console.log(item.getAudioTracks())
-//         RecordMediaStream.addTrack(item.getAudioTracks()[0])
-//       })
-//       console.log(RecordMediaStream)
-//       let screenRecorder = new RecordRTC(RecordMediaStream,{mimeType:'video/webm' })
-
-//       screenRecorder.startRecording()
-//       // const ConferenceRecorder = ({streams}) => {
-
-//           // Ищем MediaStream с экраном, чтобы записывать его
-//           // const screenStream = stream
-//           // s.find(streamMy => {
-//           //   return streamMy.getVideoTracks().length && streamMy.getVideoTracks()[0].label === 'screen';
-//           // });
-//           // if (!screenStream) {
-//           //   console.log('Не удалось найти MediaStream с экраном');
-//           //   return;
-//           // }
-
-//           // Создаем RecordRTC для записи экрана
-//           // const screenRecorder = new RecordRTC(screenStream, { type: 'video' });
-
-//           // // Создаем AudioContext и объединяем звук всех MediaStream
-//           // const audioContext = new AudioContext();
-//           // const audioSources = [];
-//           // const outputNode = audioContext.createMediaStreamDestination();
-//           // streams.forEach(stream => {
-//           //   stream.getAudioTracks().forEach(track => {
-//           //     const audioStream = new MediaStream();
-//           //     audioStream.addTrack(track);
-//           //     const audioSource = audioContext.createMediaStreamSource(audioStream);
-//           //     console.log(audioSource)
-//           //     audioSource.connect(outputNode);
-//           //     audioSources.push(audioSource);
-//           //   });
-//           // });
-
-
-//           // // Начинаем запись
-//           // screenRecorder.startRecording();
-//           // setRecorder(screenRecorder);
-
-//           // Отключаем звук через 10 секунд
-//           // const timeout = 
-//           setTimeout(() => {
-//             screenRecorder.stopRecording(() => {
-//               const blob = screenRecorder.getBlob();
-//               invokeSaveAsDialog(blob, 'conference.webm');
-//             });
-//           }, 10000);
-
-//           // return () => {
-//             // При размонтировании компонента останавливаем запись и очищаем timeout
-//             // if (recorder) {
-//             //   recorder.stopRecording();
-//             //   setRecorder(null);
-//             // }
-//             // clearTimeout(timeout);
-//           // };
-
-//         // return null;
-//       // };
-//       // ConferenceRecorder(streams)
-
-//   }).catch(err=>console.log(err))
-
-// //   setTimeout(()=>{
-// //     recorder.stopRecording(function() {
-// //         let blob = recorder.getBlob();
-// //         invokeSaveAsDialog(blob,'video.mp4');
-// //     });
-// // },10000)
-
-// //   navigator.mediaDevices.getDisplayMedia({
-// //     video:true,
-// //     audio:true
-// //   }).then(async function(stream) {
-// //     let recorder = RecordRTC([stream], {
-// //         type: 'video',
-// //         recorderType: MultiStreamRecorder, 
-// //         disableLogs: true, 
-// //         numberOfAudioChannels: 1, 
-// //         bufferSize: 0, 
-// //         sampleRate: 0, 
-// //         desiredSampRate: 16000, 
-// //         video: HTMLVideoElement
-// //     });
-// //     recorder.startRecording();
-
-// //     const sleep = m => new Promise(r => setTimeout(r, m));
-// //     await sleep(3000);
-
-// //   //   let options = {
-// //   //     mimeType: 'video/webm'
-// //   // }
-
-// //   //   let recorder= new MultiStreamRecorder([stream],options)
-// //   //   recorder.record()
-
-// //   let testArr=[]
-// //   console.log(users)
-// //   users.map(i=>{testArr.push(i.stream)})
-// //   console.log(testArr)
-// // setTimeout(()=>{
-// // //   recorder.stop(function(blob) {
-// // //     invokeSaveAsDialog(blob,'video.webm');
-// // // });
-// //     recorder.stopRecording(function() {
-// //         let blob = recorder.getBlob();
-// //         invokeSaveAsDialog(blob,'video.mp4');
-// //     });
-// // },15000)
-
-// // });
-
-// }
-
-
-// useEffect(()=>{
-//   if(data.data.role=='S'){
-//     console.log('yes')
-// }
-// },[])
-// useEffect(() => {
-//   if(data.data.role=='T'){
-//     let recordRTC=useRef();
-//     if(localStream!==undefined && pcsShearing==undefined && localDisplayVideo==undefined){
-//       recordRTC = RecordRTC([localStream], {
-//       type: 'video',
-//       mimeType: 'video/webm',
-//     });
-//     }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo==undefined){
-//       recordRTC = RecordRTC([localStream].concat(pcsShearing), {
-//         type: 'video',
-//         mimeType: 'video/webm',
-//     });
-//     }else if(localStream!==undefined && pcsShearing!==undefined && localDisplayVideo!==undefined){
-//       recordRTC = RecordRTC([localStream].concat(pcsShearing).concat([localDisplayVideo]), {
-//         type: 'video',
-//         mimeType: 'video/webm',
-//     });
-//     }
-
-
-//     recordRTC.startRecording();
-
-//     setRecorder(recordRTC);
-
-//     recordRTC.on('dataavailable', (blob) => {
-//       setRecordedBlobs((prevBlobs) => prevBlobs.concat(blob));
-//     });
-
-//   return () => {
-//     if (recorder) {
-//       recorder.stopRecording(() => {
-//         const blob = new Blob(recordedBlobs, { type: 'video/webm' });
-//         const url = URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.style.display = 'none';
-//         a.href = url;
-//         a.download = `${data.data.group}.webm`;
-//         document.body.appendChild(a);
-//         a.click();
-//         setTimeout(() => {
-//           document.body.removeChild(a);
-//           URL.revokeObjectURL(url);
-//         }, 100);
-//       });
-//     }
-//   };
-// }
-// }, [pcsShearing, localStream, localDisplayVideo, recorder, recordedBlobs]);
-
     const mixStreams = (audioStreams) => {
         const audioContext = new AudioContext()
         const mediaStreamAudioDestinationNode = new MediaStreamAudioDestinationNode(
@@ -555,9 +341,19 @@ const Room = (data, exitUser) => {
 
 
     useEffect(() => {
+      if(data.data.role=='T'){
         if (users.length > 0) {
             recorder.current.stopRecording(function () {
-                invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
+                // invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
+                axios.post(BASE_URL+'movie/create',{
+                  blob:recorder.current.getBlob(),
+                  group:data.data.group,
+                  is_last:false
+                })
+                .then(res=>{
+                  console.log(res)
+                })
+                .catch(err=>console.log(err))
 
                 recorder.current.destroy()
                 let streams = []
@@ -587,7 +383,7 @@ const Room = (data, exitUser) => {
                 })
                 recorder.current.startRecording()
             });
-        }
+        }}
     }, [users])
 
     let adminStream = useRef()
@@ -595,6 +391,7 @@ const Room = (data, exitUser) => {
     let recorder = useRef()
 
     useEffect(() => {
+      if(data.data.role=='T'){
             navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
                 .then(stream => {
                     let streams = []
@@ -628,27 +425,36 @@ const Room = (data, exitUser) => {
                         recorder.current.startRecording()
                     })
                 })
-        }, []
-    )
+              }
+        }, [])
 
     useEffect(() => {
+      if(data.data.role=='T'){
         const handleBeforeUnload = event => {
             event.preventDefault();
             event.returnValue = '';
             recorder.current.stopRecording(function () {
-                invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
+                // invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
+                axios.post(BASE_URL+'movie/create',{
+                  blob:recorder.current.getBlob(),
+                  group:data.data.group,
+                  is_last:true
+                })
+                .then(res=>{
+                  console.log(res)
+                })
+                .catch(err=>console.log(err))
             });
         };
         window.addEventListener('beforeunload', handleBeforeUnload);
+        // window.onbeforeunload(handleBeforeUnload)
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
+      }
     }, []);
 
     return (<div className="room-all">
-        {/* <video ref={videoRef} autoPlay /> */}
-        {/* <h1>room {data.data.group}</h1> */}
-        {/* {isCandidate&&<div>hi</div>} */}
         <div className="video-panel">
             <div className="video-panel-upper">
                 <div className="my-video">
@@ -659,10 +465,6 @@ const Room = (data, exitUser) => {
                 <div className="users-video">
                     {users.length > 0 && users.map((user, index) => (<>
                         <Video key={index} stream={user.stream} user={user}/>
-                        {/* <Video key={index} stream={user.stream} user={user}/>
-          <Video key={index} stream={user.stream} user={user}/>
-          <Video key={index} stream={user.stream} user={user}/>
-          <Video key={index} stream={user.stream} user={user}/> */}
                     </>))}
                 </div>
             </div>

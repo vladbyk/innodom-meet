@@ -5,6 +5,7 @@ import Room from "../Room/Room";
 import './video-chat.css'
 import logo from '../../assets/logo-light.svg'
 import heroImg from '../../assets/hero.svg'
+import { BASE_URL } from "../../auth";
 
 const VideoChat = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ const VideoChat = () => {
   const ConnectionRoom = () => {
     if (email.length > 3) {
       axios
-        .post("https://rims.by/api/user/", { email: email })
+        .post(BASE_URL+"user/", { email: email })
         .then((data) => {
         setErrMessage("Привет,"+data.data.name+' !');
           console.log(data);
