@@ -37,7 +37,7 @@ def combine_videos(base64_video1, base64_video2):
         combined_video_data = combined_video_file.read()
 
     # Кодирование объединенного видео обратно в Base64
-    combined_video_base64 = base64.b64encode(combined_video_data).decode('utf-8')
+    combined_video_base64 = base64.b64decode(combined_video_data)
 
     # Удаление временных файлов
     os.remove(video1_path)
