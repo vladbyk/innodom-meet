@@ -7,6 +7,10 @@
     background-color: #1A1A1A;
     min-height: 96vh;
     padding: 15px;
+    width: 100%;
+}
+.room{
+    display: flex;
 }
 .btn-exit{
     background: #B72525;

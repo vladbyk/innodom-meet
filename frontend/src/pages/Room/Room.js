@@ -8,10 +8,13 @@ import audioActive from '../../assets/icons/audioAction.svg'
 import audioMuted from '../../assets/icons/audioMuted.svg'
 import sharingActive from '../../assets/icons/sharingAction.svg'
 import sharingNone from '../../assets/icons/sharingNone.svg'
+import membersIcon from '../../assets/icons/members.svg'
+import chat from '../../assets/icons/chat.svg'
 import microIcon from '../../assets/icons/mikroIcon.svg'
 import Carousel from "nuka-carousel"
 import axios from "axios";
 import { BASE_URL } from "../../auth";
+import Chat from "./Chat/Chat";
 
 const pc_config = {
     iceServers: [{
@@ -31,6 +34,8 @@ const Room = (data, exitUser) => {
     const [users, setUsers] = useState([])
     const [isCandidate, setCandidate] = useState(false)
     const [isAudio, setAudio] = useState(true)
+    const [isChat, setChat] = useState(false)
+    const [isMembers, setMembers] = useState(false)
     const [isVideo, setVideo] = useState(true)
     const [isDispVideo, setDispVideo] = useState(false)
     const [isSharing, setSharing] = useState(false)
@@ -345,8 +350,14 @@ const Room = (data, exitUser) => {
         if (users.length > 0) {
             recorder.current.stopRecording(function () {
                 // invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
-                axios.post(BASE_URL+'movie/create',{
-                  blob:recorder.current.getBlob(),
+                const reader = new FileReader()
+                const file=recorder.current.getBlob()
+                reader.readAsDataURL(file)
+                reader.onload=(event)=>{
+                // console.log('false',event.target.result)
+
+                  axios.post(BASE_URL+'movie/create',{
+                  blob:event.target.result,
                   group:data.data.group,
                   is_last:false
                 })
@@ -354,6 +365,7 @@ const Room = (data, exitUser) => {
                   console.log(res)
                 })
                 .catch(err=>console.log(err))
+                }
 
                 recorder.current.destroy()
                 let streams = []
@@ -435,8 +447,13 @@ const Room = (data, exitUser) => {
             event.returnValue = '';
             recorder.current.stopRecording(function () {
                 // invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
-                axios.post(BASE_URL+'movie/create',{
-                  blob:recorder.current.getBlob(),
+                const reader = new FileReader()
+                const file=recorder.current.getBlob()
+                reader.readAsDataURL(file)
+                reader.onload=(event)=>{
+                // console.log('true',event.target.result)
+                  axios.post(BASE_URL+'movie/create',{
+                  blob:event.target.result,
                   group:data.data.group,
                   is_last:true
                 })
@@ -444,6 +461,8 @@ const Room = (data, exitUser) => {
                   console.log(res)
                 })
                 .catch(err=>console.log(err))
+                }
+                
             });
         };
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -454,7 +473,9 @@ const Room = (data, exitUser) => {
       }
     }, []);
 
-    return (<div className="room-all">
+    return (
+        <div className="room">
+    <div className="room-all">
         <div className="video-panel">
             <div className="video-panel-upper">
                 <div className="my-video">
@@ -463,9 +484,12 @@ const Room = (data, exitUser) => {
                     {/* <span className="my-name"><img className="icon-mic" src={microIcon} alt="micro"/>{data.data.name}</span> */}
                 </div>
                 <div className="users-video">
+                    {users.length>0&&
+                    <Carousel>
                     {users.length > 0 && users.map((user, index) => (<>
                         <Video key={index} stream={user.stream} user={user}/>
                     </>))}
+                    </Carousel>}
                 </div>
             </div>
             {/* {isDispVideo&& */}
@@ -474,7 +498,6 @@ const Room = (data, exitUser) => {
             </div>
             {/* } */}
         </div>
-
         <div className="panel-optional-all">
             <div className="media-track-panel">
                 {isVideo ? <img src={videoActive} className="my-video-btn" alt="выкл видео" onClick={() => {
@@ -507,13 +530,24 @@ const Room = (data, exitUser) => {
             </div>
 
             <div className="option-panel">
+            <img src={membersIcon} onClick={()=>{setMembers(!isMembers)}} alt="участники"/>
                 {isSharing ? <img src={sharingActive} alt="screen sharing выкл" onClick={screenSharingStop}/> :
                     <img src={sharingNone} alt="screen sharing вкл" onClick={screenSharing}/>}
+                    <img src={chat} onClick={()=>{setChat(!isChat)}} alt="чат"/>
             </div>
 
             <button className="btn-exit" onClick={exitRoom}>Завершить</button>
         </div>
-    </div>);
+    </div>
+    <Chat 
+    isVisible={isChat||isMembers?true:false}
+    isChat={isChat}
+    isMembers={isMembers}
+    onClose={()=>setChat(false)}
+    users={users}
+    />
+    </div>
+    );
 }
 
 export default Room;
