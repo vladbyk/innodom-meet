@@ -15,8 +15,8 @@ import subprocess
 
 def combine_videos(base64_video1, base64_video2):
     # Раскодирование строк Base64 в бинарные данные
-    video1_data = base64.b64decode(base64_video1)
-    video2_data = base64.b64decode(base64_video2)
+    video1_data = base64.b64decode(base64_video1.split(';base64,')[-1])
+    video2_data = base64.b64decode(base64_video2.split(';base64,')[-1])
 
     # Запись двух видеозаписей во временные файлы
     video1_path = 'video1.mp4'
@@ -67,7 +67,7 @@ def get_movie(request):
                 y.upload(video1_file, f"/videos/{movie[0].group}-{movie[0].date}.webm")
             movie[0].delete()
         else:
-            movie[0].movies = combine_videos(movie[-1].movies, request.data['blob'])
+            movie[0].movies = combine_videos(movie[0].movies, request.data['blob'])
             movie[0].save()
 
     return Response(status=status.HTTP_200_OK)
