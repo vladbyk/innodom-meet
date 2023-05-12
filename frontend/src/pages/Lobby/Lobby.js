@@ -9,7 +9,6 @@ const Lobby = ({
 }) => {
     return (
        <div className="lobby">
-        {/* <label htmlFor="email">Enter email:</label> */}
            <input
           type="email"
           id="email"
