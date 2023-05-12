@@ -1,24 +1,19 @@
-import os.path
-
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from moviepy.editor import *
-from yadisk import yadisk
 
 from .models import MoviesGenerate, Room
 
+from yadisk import yadisk
 import base64
 import subprocess
 
 
 def combine_videos(base64_video1, base64_video2):
-    # Раскодирование строк Base64 в бинарные данные
     video1_data = base64.b64decode(base64_video1.split(';base64,')[-1])
     video2_data = base64.b64decode(base64_video2.split(';base64,')[-1])
 
-    # Запись двух видеозаписей во временные файлы
     video1_path = 'video1.mp4'
     video2_path = 'video2.mp4'
     with open(video1_path, 'wb') as video1_file:
@@ -26,20 +21,16 @@ def combine_videos(base64_video1, base64_video2):
     with open(video2_path, 'wb') as video2_file:
         video2_file.write(video2_data)
 
-    # Объединение видеозаписей с помощью ffmpeg
     combined_video_path = 'combined_video.mp4'
     subprocess.run(
         ['ffmpeg', '-i', video1_path, '-i', video2_path, '-filter_complex', 'concat=n=2:v=1:a=0', '-c:v', 'copy',
          combined_video_path])
 
-    # Чтение объединенного видео из файла
     with open(combined_video_path, 'rb') as combined_video_file:
         combined_video_data = combined_video_file.read()
 
-    # Кодирование объединенного видео обратно в Base64
     combined_video_base64 = base64.b64encode(combined_video_data)
 
-    # Удаление временных файлов
     os.remove(video1_path)
     os.remove(video2_path)
     os.remove(combined_video_path)
