@@ -1,4 +1,4 @@
-import base64
+import os.path
 
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
@@ -9,47 +9,65 @@ from yadisk import yadisk
 
 from .models import MoviesGenerate, Room
 
+import base64
+import subprocess
+
+
+def combine_videos(base64_video1, base64_video2):
+    # Раскодирование строк Base64 в бинарные данные
+    video1_data = base64.b64decode(base64_video1)
+    video2_data = base64.b64decode(base64_video2)
+
+    # Запись двух видеозаписей во временные файлы
+    video1_path = 'video1.mp4'
+    video2_path = 'video2.mp4'
+    with open(video1_path, 'wb') as video1_file:
+        video1_file.write(video1_data)
+    with open(video2_path, 'wb') as video2_file:
+        video2_file.write(video2_data)
+
+    # Объединение видеозаписей с помощью ffmpeg
+    combined_video_path = 'combined_video.mp4'
+    subprocess.run(
+        ['ffmpeg', '-i', video1_path, '-i', video2_path, '-filter_complex', 'concat=n=2:v=1:a=0', '-c:v', 'copy',
+         combined_video_path])
+
+    # Чтение объединенного видео из файла
+    with open(combined_video_path, 'rb') as combined_video_file:
+        combined_video_data = combined_video_file.read()
+
+    # Кодирование объединенного видео обратно в Base64
+    combined_video_base64 = base64.b64encode(combined_video_data).decode('utf-8')
+
+    # Удаление временных файлов
+    os.remove(video1_path)
+    os.remove(video2_path)
+    os.remove(combined_video_path)
+
+    return combined_video_base64
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def get_movie(request):
     movie = MoviesGenerate.objects.filter(group__group=request.data['group'])
-    if movie is []:
+    if not movie:
         MoviesGenerate(
             movies=request.data['blob'],
             group=Room.objects.get(group=request.data['group'])
         ).save()
     else:
-        with open('../videos/file.webm', 'wb') as f_vid:
-            f_vid.write(base64.b64encode(movie[0].moveis))
-        with open('../videos/file1.webm', 'wb') as f_vid:
-            f_vid.write(base64.b64encode(request.data['blob']))
-        clip = VideoFileClip("../videos/file.webm")
-        clip1 = clip.subclip(0, 5)
-        clipx = VideoFileClip("../videos/file1.webm")
-        clip2 = clipx.subclip(0, 5)
-        clips = [clip1, clip2]
-        final = concatenate_videoclips(clips)
-        if os.path.isfile('../videos/file.webm'):
-            os.remove('../videos/file.webm')
-        if os.path.isfile('../videos/file1.webm'):
-            os.remove('../videos/file1.webm')
         if request.data['is_last']:
-            final.write_videofile(f'../videos/{movie[0].group}-{movie[0].date}.webm')
             y = yadisk.YaDisk(token="y0_AgAAAABVA64gAAnjtwAAAADi8QQ2wmDmWZ8PSC2W0S6RFne6SwNOxvA")
-            y.mkdir("/videos")
-            y.upload(f"../videos/{movie[0].group}-{movie[0].date}.webm", f"/videos/{movie[0].group}-{movie[0].date}.webm")
-            if os.path.isfile(f'../videos/{movie[0].group}-{movie[0].date}.webm'):
-                os.remove(f'../videos/{movie[0].group}-{movie[0].date}.webm')
+            video1_path = 'video1.mp4'
+            end_file = base64.b64decode(combine_videos(movie[0].movies, request.data['blob']))
+            with open(video1_path, 'wb') as video1_file:
+                video1_file.write(end_file)
+                y.mkdir("/videos")
+                y.upload(video1_file, f"/videos/{movie[0].group}-{movie[0].date}.webm")
             movie[0].delete()
         else:
-            final.write_videofile(f'../videos/{movie[0].group}-{movie[0].date}.webm')
-            with open(f'../videos/{movie[0].group}-{movie[0].date}.webm', 'rb') as f_vid:
-                MoviesGenerate(
-                    movies=base64.b64decode(f_vid.read()),
-                    group=Room.objects.get(group=request.data['group'])
-                ).save()
-            if os.path.isfile(f'../videos/{movie[0].group}-{movie[0].date}.webm'):
-                os.remove(f'../videos/{movie[0].group}-{movie[0].date}.webm')
-            movie[0].delete()
+            movie[0].movies = combine_videos(movie[-1].movies, request.data['blob'])
+            movie[0].save()
+
     return Response(status=status.HTTP_200_OK)
