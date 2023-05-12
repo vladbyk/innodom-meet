@@ -24,7 +24,7 @@ def combine_videos(base64_video1, base64_video2):
     combined_video_path = 'combined_video.mp4'
     subprocess.run(
         ['ffmpeg', '-i', video1_path, '-i', video2_path, '-filter_complex', 'concat=n=2:v=1:a=0', '-c:v', 'copy',
-         combined_video_path])
+         combined_video_path], shell=True)
 
     with open(combined_video_path, 'rb') as combined_video_file:
         combined_video_data = combined_video_file.read()
