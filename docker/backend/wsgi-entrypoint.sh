@@ -1,7 +1,5 @@
 #!/bin/sh
 
-apt install ffmpeg
-
 until cd /app/backend
 do
     echo "Waiting for server volume..."
