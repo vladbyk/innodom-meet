@@ -125,7 +125,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 await channel_layer.send(
                     user_conf.channel_name, {
                         'type': 'getHandUp',
-                        'user_name': user.user.name,
+                        'user_name': f"{user.user.name} {user.user.surname}",
                     }
                 )
 
