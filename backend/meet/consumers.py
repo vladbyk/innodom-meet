@@ -73,7 +73,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'getAnswer',
                     'sdp': message['sdp'],
-                    'channel_name': user.channel_name,  # это должно быть channel_name_sender
+                    'channel_name': user.channel_name,
                 })
         elif message['type'] == 'candidate':
             user = Conference.objects.get(user__id=message['user'])
@@ -119,6 +119,15 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             user = Conference.objects.get(user__id=message['user'])
             user.deamon = True
             user.save()
+        elif message['type'] == 'handUp':
+            user = Conference.objects.get(user__id=message['user'])
+            for user_conf in Conference.objects.filter(user__group__group=message['group']):
+                await channel_layer.send(
+                    user_conf.channel_name, {
+                        'type': 'getHandUp',
+                        'user_name': f"{user.user.name} {user.user.surname}",
+                    }
+                )
 
     async def getOffer(self, event):
         await self.send(text_data=json.dumps({
@@ -179,4 +188,10 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'channel_name': event['channel_name']
+        }))
+
+    async def getHandUp(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'user_name': event['user_name']
         }))
