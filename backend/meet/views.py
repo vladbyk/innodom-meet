@@ -61,8 +61,7 @@ def get_movie(request):
             video1_path = 'video1.mp4'
             end_file = base64.b64decode(combine_videos(movie[0].movies, request.data['blob']))
             with open(video1_path, 'wb') as video1_file:
-                video1_data = base64.b64decode(end_file.split(';base64,')[-1])
-                video1_file.write(video1_data)
+                video1_file.write(end_file)
             y.upload(video1_file, f"/videos/{movie[0].group}-{movie[0].date}.webm")
             os.remove(video1_path)
             movie[0].delete()
