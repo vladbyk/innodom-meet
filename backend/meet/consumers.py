@@ -193,5 +193,5 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getHandUp(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'channel_name': event['channel_name']
+            'user_name': event['user_name']
         }))
