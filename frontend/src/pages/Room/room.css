@@ -12,6 +12,9 @@
 .room{
     display: flex;
 }
+.sharing-img{
+    padding: 0px 10px;
+}
 .btn-exit{
     background: #B72525;
     border-radius: 92px;

@@ -20,6 +20,21 @@
     color: #1E1E1E;
     font-family: var(--font--main);
   }
+
+  .inp-chat{
+    background-color: #e1dfdf;
+    border: 1px solid #919191;
+    width: 80%;
+    min-height: 20px;
+    padding: 6px;
+    margin-right: 5px;
+  }
+  .imp-block{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #e1dfdf;
+  }
 @keyframes slideL {
     from {
       opacity: 0;

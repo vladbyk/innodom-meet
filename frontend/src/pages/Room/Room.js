@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, useCallback} from "react";
 import Video from "./Video";
 import './room.css'
-import RecordRTC, {invokeSaveAsDialog} from "recordrtc";
+import RecordRTC, {invokeSaveAsDialog, getSeekableBlob} from "recordrtc";
 import videoActive from '../../assets/icons/videoAction.svg'
 import videoMuted from '../../assets/icons/videoMuted.svg'
 import audioActive from '../../assets/icons/audioAction.svg'
@@ -9,12 +9,15 @@ import audioMuted from '../../assets/icons/audioMuted.svg'
 import sharingActive from '../../assets/icons/sharingAction.svg'
 import sharingNone from '../../assets/icons/sharingNone.svg'
 import membersIcon from '../../assets/icons/members.svg'
+import logo from '../../assets/icons/logo.svg'
+import cros from '../../assets/icons/cros.svg'
 import chat from '../../assets/icons/chat.svg'
 import microIcon from '../../assets/icons/mikroIcon.svg'
 import Carousel from "nuka-carousel"
 import axios from "axios";
 import { BASE_URL } from "../../auth";
 import Chat from "./Chat/Chat";
+import { Modal } from "react-bootstrap";
 
 const pc_config = {
     iceServers: [{
@@ -40,6 +43,8 @@ const Room = (data, exitUser) => {
     const [isDispVideo, setDispVideo] = useState(false)
     const [isSharing, setSharing] = useState(false)
     const [pcsShearing, setPcsShearing] = useState()
+    const [whoHand, setWhoHand] = useState()
+    let [isModalHand, setModalHand] = useState(false)
 
 
     const beReady = () => {
@@ -275,6 +280,15 @@ const Room = (data, exitUser) => {
                     pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
                 }
             }
+            if(type=="getHandUp"){
+                console.log('handlup',response)
+                if(data.data.role=='T'){
+                    console.log('tttt')
+                    setWhoHand(response.user_name)
+                    setModalHand(true)                      
+                    console.log(isModalHand)
+                }
+            }
         };
     };
     const exitRoom = () => {
@@ -284,6 +298,13 @@ const Room = (data, exitUser) => {
         callSocket.current.close()
         exitUser()
     }
+
+    const HandUp = () =>{
+        callSocket.current.send(JSON.stringify({
+            type:'handUp',user:data.data.id,group:data.data.group
+        }))
+    }
+
     const screenSharing = () => {
         navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
             .then((stream) => {
@@ -348,8 +369,24 @@ const Room = (data, exitUser) => {
     useEffect(() => {
       if(data.data.role=='T'){
         if (users.length > 0) {
+            // recorder.current.stopRecording(function() {
+            //     console.log('fffffffffffffffff')
+            //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
+            //         // video.src = URL.createObjectURL(seekableBlob);
+            //              axios.post(BASE_URL+'movie/create',{
+            //                 blob:seekableBlob,
+            //                 group:data.data.group,
+            //                 is_last:false
+            //               })
+            //               .then(res=>{
+            //                 console.log(res)
+            //               })
+            //               .catch(err=>console.log(err))
+            //     });
+            // }); 
+
             recorder.current.stopRecording(function () {
-                // invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
+                // invokeSaveAsDialog(recorder.current.getSeekableBlob(), 'conf.mp4');
                 const reader = new FileReader()
                 const file=recorder.current.getBlob()
                 reader.readAsDataURL(file)
@@ -378,9 +415,8 @@ const Room = (data, exitUser) => {
                 let mixed = mixStreams(streams)
                 recorder.current = RecordRTC([mixed, adminStream.current], {
                     type: 'video',
-                    mimeType: 'video/mp4',
+                    mimeType: 'video/webm',
                     disableLogs: true,
-                    timeSlice: 1000,
                     checkForInactiveTracks: false,
                     bitsPerSecond: 128000,
                     audioBitsPerSecond: 128000,
@@ -419,9 +455,8 @@ const Room = (data, exitUser) => {
                         let mixed = mixStreams(streams)
                         recorder.current = RecordRTC([mixed, stream], {
                             type: 'video',
-                            mimeType: 'video/mp4',
+                            mimeType: 'video/webm',
                             disableLogs: true,
-                            timeSlice: 1000,
                             checkForInactiveTracks: false,
                             bitsPerSecond: 128000,
                             audioBitsPerSecond: 128000,
@@ -441,12 +476,30 @@ const Room = (data, exitUser) => {
         }, [])
 
     useEffect(() => {
+
       if(data.data.role=='T'){
         const handleBeforeUnload = event => {
             event.preventDefault();
             event.returnValue = '';
+            // recorder.current.stopRecording(function() {
+            //     console.log('fffffffffffffffff')
+
+            //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
+            //         // video.src = URL.createObjectURL(seekableBlob);
+            //               axios.post(BASE_URL+'movie/create',{
+            //                 blob:seekableBlob,
+            //                 group:data.data.group,
+            //                 is_last:false
+            //               })
+            //               .then(res=>{
+            //                 console.log(res)
+            //               })
+            //               .catch(err=>console.log(err))
+            //     });
+            // });
+
             recorder.current.stopRecording(function () {
-                // invokeSaveAsDialog(recorder.current.getBlob(), 'conf.webm');
+                // getSeekableBlob(recorder.current.getBlob(),(blob)=>{invokeSaveAsDialog(blob,'conf.mp4');})
                 const reader = new FileReader()
                 const file=recorder.current.getBlob()
                 reader.readAsDataURL(file)
@@ -531,14 +584,36 @@ const Room = (data, exitUser) => {
 
             <div className="option-panel">
             <img src={membersIcon} onClick={()=>{setMembers(!isMembers)}} alt="участники"/>
-                {isSharing ? <img src={sharingActive} alt="screen sharing выкл" onClick={screenSharingStop}/> :
-                    <img src={sharingNone} alt="screen sharing вкл" onClick={screenSharing}/>}
+                {isSharing ? <img src={sharingActive} className="sharing-img" alt="screen sharing выкл" onClick={screenSharingStop}/> :
+                    <img src={sharingNone} className="sharing-img" alt="screen sharing вкл" onClick={screenSharing}/>}
                     <img src={chat} onClick={()=>{setChat(!isChat)}} alt="чат"/>
+                    {data.data.role=='S'&&
+                    <img src={chat} onClick={HandUp} alt="чат"/>
+                    }
+                    <img src={chat} onClick={()=>{setModalHand(true)
+                    console.log(isModalHand)
+                    }} alt="чат"/>
             </div>
 
             <button className="btn-exit" onClick={exitRoom}>Завершить</button>
         </div>
     </div>
+        {/* <Modal
+                    isVisible={true}
+  title={<div>
+    <img src={logo} alt="innodom"/>
+    <img src={cros} onClick={()=>setModalHand(false)} alt="x"/>
+  </div>}
+  content={
+    <div>
+        <p>{whoHand} поднял руку</p>
+      </div>
+  }
+    footer={<div>
+        <button onClick={()=>{setModalHand(false)}}>Принять</button>
+    </div>}
+    onClose={() => setModalHand(false)}
+                    /> */}
     <Chat 
     isVisible={isChat||isMembers?true:false}
     isChat={isChat}
@@ -546,6 +621,7 @@ const Room = (data, exitUser) => {
     onClose={()=>setChat(false)}
     users={users}
     />
+
     </div>
     );
 }
