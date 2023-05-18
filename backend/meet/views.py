@@ -27,7 +27,7 @@ def combine_videos(base64_video1, base64_video2):
 
     video1_clip = VideoFileClip(video1_path)
     video2_clip = VideoFileClip(video2_path)
-    combined_clip = concatenate_videoclips([video1_clip, video2_clip])
+    combined_clip = concatenate_videoclips([video1_clip, video2_clip], method='compose')
 
     combined_clip.write_videofile(combined_video_path, codec='libx264')
 
@@ -57,7 +57,7 @@ def get_movie(request):
         ).save()
     else:
         if request.data['is_last']:
-            y = yadisk.YaDisk(token="y0_AgAAAABVA64gAAnjtwAAAADi8QQ2wmDmWZ8PSC2W0S6RFne6SwNOxvA")
+            y = yadisk.YaDisk(token="y0_AgAAAABVA64gAAntnAAAAADjdfV0qyHNVUFTRxq85-yLiBo2IKFZe7Y")
             video1_path = 'video1.mp4'
             end_file = base64.b64decode(combine_videos(movie[0].movies, request.data['blob']))
             with open(video1_path, 'wb') as video1_file:
