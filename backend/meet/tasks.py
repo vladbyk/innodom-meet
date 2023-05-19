@@ -11,7 +11,7 @@ from .models import MoviesGenerate
 def combine_videos(base64_videos):
     combined_clip = []
     combined_video_path = 'combined_video.mp4'
-    for base64_video in len(base64_videos):
+    for base64_video in range(len(base64_videos)):
         video_path = f"video{base64_video}.webm"
         with open(video_path, 'wb') as video_file:
             video_file.write(base64.b64decode(base64_videos[base64_video].split(';base64,')[-1]))
