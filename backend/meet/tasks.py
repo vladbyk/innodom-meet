@@ -14,7 +14,7 @@ def combine_videos(base64_videos):
     for base64_video in range(len(base64_videos)):
         video_path = f"video{base64_video}.webm"
         with open(video_path, 'wb') as video_file:
-            video_file.write(base64.b64decode(base64_videos[base64_video].split(';base64,')[-1]))
+            video_file.write(base64.b64decode(base64_videos[base64_video].movies.split(';base64,')[-1]))
         combined_clip.append(VideoFileClip(video_path))
     concatenate_clip = concatenate_videoclips(combined_clip, method='compose')
     concatenate_clip.write_videofile(combined_video_path, codec='libx264')
