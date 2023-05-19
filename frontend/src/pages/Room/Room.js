@@ -15,9 +15,9 @@ import chat from '../../assets/icons/chat.svg'
 import microIcon from '../../assets/icons/mikroIcon.svg'
 import Carousel from "nuka-carousel"
 import axios from "axios";
-import { BASE_URL } from "../../auth";
+import {BASE_URL} from "../../auth";
 import Chat from "./Chat/Chat";
-import { Modal } from "react-bootstrap";
+import {Modal} from "react-bootstrap";
 
 const pc_config = {
     iceServers: [{
@@ -280,12 +280,12 @@ const Room = (data, exitUser) => {
                     pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
                 }
             }
-            if(type=="getHandUp"){
-                console.log('handlup',response)
-                if(data.data.role=='T'){
+            if (type == "getHandUp") {
+                console.log('handlup', response)
+                if (data.data.role == 'T') {
                     console.log('tttt')
                     setWhoHand(response.user_name)
-                    setModalHand(true)                      
+                    setModalHand(true)
                     console.log(isModalHand)
                 }
             }
@@ -299,9 +299,9 @@ const Room = (data, exitUser) => {
         exitUser()
     }
 
-    const HandUp = () =>{
+    const HandUp = () => {
         callSocket.current.send(JSON.stringify({
-            type:'handUp',user:data.data.id,group:data.data.group
+            type: 'handUp', user: data.data.id, group: data.data.group
         }))
     }
 
@@ -367,71 +367,57 @@ const Room = (data, exitUser) => {
 
 
     useEffect(() => {
-      if(data.data.role=='T'){
-        if (users.length > 0) {
-            // recorder.current.stopRecording(function() {
-            //     console.log('fffffffffffffffff')
-            //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
-            //         // video.src = URL.createObjectURL(seekableBlob);
-            //              axios.post(BASE_URL+'movie/create',{
-            //                 blob:seekableBlob,
-            //                 group:data.data.group,
-            //                 is_last:false
-            //               })
-            //               .then(res=>{
-            //                 console.log(res)
-            //               })
-            //               .catch(err=>console.log(err))
-            //     });
-            // }); 
+        if (data.data.role == 'T') {
+            if (users.length > 0) {
+                // recorder.current.stopRecording(function() {
+                //     console.log('fffffffffffffffff')
+                //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
+                //         // video.src = URL.createObjectURL(seekableBlob);
+                //              axios.post(BASE_URL+'movie/create',{
+                //                 blob:seekableBlob,
+                //                 group:data.data.group,
+                //                 is_last:false
+                //               })
+                //               .then(res=>{
+                //                 console.log(res)
+                //               })
+                //               .catch(err=>console.log(err))
+                //     });
+                // });
 
-            recorder.current.stopRecording(function () {
-                // invokeSaveAsDialog(recorder.current.getSeekableBlob(), 'conf.mp4');
-                const reader = new FileReader()
-                const file=recorder.current.getBlob()
-                reader.readAsDataURL(file)
-                reader.onload=(event)=>{
-                // console.log('false',event.target.result)
-
-                  axios.post(BASE_URL+'movie/create',{
-                  blob:event.target.result,
-                  group:data.data.group,
-                  is_last:false
-                })
-                .then(res=>{
-                  console.log(res)
-                })
-                .catch(err=>console.log(err))
-                }
-
-                recorder.current.destroy()
-                let streams = []
-                users.map(i => {
-                    let userStream = new MediaStream()
-                    i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
-                    streams.push(userStream)
-                })
-                streams.push(audioStream.current)
-                let mixed = mixStreams(streams)
-                recorder.current = RecordRTC([mixed, adminStream.current], {
-                    type: 'video',
-                    mimeType: 'video/webm',
-                    disableLogs: true,
-                    checkForInactiveTracks: false,
-                    bitsPerSecond: 128000,
-                    audioBitsPerSecond: 128000,
-                    videoBitsPerSecond: 128000,
-                    sampleRate: 96000,
-                    desiredSampRate: 16000,
-                    bufferSize: 16384,
-                    numberOfAudioChannels: 2,
-                    video: {width: window.screen.width, height: window.screen.height},
-                    frameRate: 90,
-                    bitrate: 128000
-                })
-                recorder.current.startRecording()
-            });
-        }}
+                recorder.current.stopRecording(function () {
+                    getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
+                        const reader = new FileReader()
+                        reader.readAsDataURL(seekableBlob)
+                        reader.onload = (event) => {
+                            axios.post(BASE_URL + 'movie/create', {
+                                blob: event.target.result,
+                                group: data.data.group,
+                                is_last: false
+                            })
+                                .then(res => {
+                                    console.log(res)
+                                })
+                                .catch(err => console.log(err))
+                        }
+                    })
+                    recorder.current.destroy()
+                    let streams = []
+                    users.map(i => {
+                        let userStream = new MediaStream()
+                        i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
+                        streams.push(userStream)
+                    })
+                    streams.push(audioStream.current)
+                    let mixed = mixStreams(streams)
+                    recorder.current = RecordRTC([mixed, adminStream.current], {
+                        type: 'video',
+                        video: {width: window.screen.width, height: window.screen.height},
+                    })
+                    recorder.current.startRecording()
+                });
+            }
+        }
     }, [users])
 
     let adminStream = useRef()
@@ -439,7 +425,7 @@ const Room = (data, exitUser) => {
     let recorder = useRef()
 
     useEffect(() => {
-      if(data.data.role=='T'){
+        if (data.data.role == 'T') {
             navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
                 .then(stream => {
                     let streams = []
@@ -455,150 +441,143 @@ const Room = (data, exitUser) => {
                         let mixed = mixStreams(streams)
                         recorder.current = RecordRTC([mixed, stream], {
                             type: 'video',
-                            mimeType: 'video/webm',
-                            disableLogs: true,
-                            checkForInactiveTracks: false,
-                            bitsPerSecond: 128000,
-                            audioBitsPerSecond: 128000,
-                            videoBitsPerSecond: 128000,
-                            sampleRate: 96000,
-                            desiredSampRate: 16000,
-                            bufferSize: 16384,
-                            numberOfAudioChannels: 2,
                             video: {width: window.screen.width, height: window.screen.height},
-                            frameRate: 90,
-                            bitrate: 128000
                         })
                         recorder.current.startRecording()
                     })
                 })
-              }
-        }, [])
+        }
+    }, [])
 
     useEffect(() => {
 
-      if(data.data.role=='T'){
-        const handleBeforeUnload = event => {
-            event.preventDefault();
-            event.returnValue = '';
-            // recorder.current.stopRecording(function() {
-            //     console.log('fffffffffffffffff')
+        if (data.data.role == 'T') {
+            const handleBeforeUnload = event => {
+                event.preventDefault();
+                event.returnValue = '';
+                // recorder.current.stopRecording(function() {
+                //     console.log('fffffffffffffffff')
 
-            //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
-            //         // video.src = URL.createObjectURL(seekableBlob);
-            //               axios.post(BASE_URL+'movie/create',{
-            //                 blob:seekableBlob,
-            //                 group:data.data.group,
-            //                 is_last:false
-            //               })
-            //               .then(res=>{
-            //                 console.log(res)
-            //               })
-            //               .catch(err=>console.log(err))
-            //     });
-            // });
+                //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
+                //         // video.src = URL.createObjectURL(seekableBlob);
+                //               axios.post(BASE_URL+'movie/create',{
+                //                 blob:seekableBlob,
+                //                 group:data.data.group,
+                //                 is_last:false
+                //               })
+                //               .then(res=>{
+                //                 console.log(res)
+                //               })
+                //               .catch(err=>console.log(err))
+                //     });
+                // });
 
-            recorder.current.stopRecording(function () {
-                // getSeekableBlob(recorder.current.getBlob(),(blob)=>{invokeSaveAsDialog(blob,'conf.mp4');})
-                const reader = new FileReader()
-                const file=recorder.current.getBlob()
-                reader.readAsDataURL(file)
-                reader.onload=(event)=>{
-                // console.log('true',event.target.result)
-                  axios.post(BASE_URL+'movie/create',{
-                  blob:event.target.result,
-                  group:data.data.group,
-                  is_last:true
-                })
-                .then(res=>{
-                  console.log(res)
-                })
-                .catch(err=>console.log(err))
-                }
-                
-            });
-        };
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        // window.onbeforeunload(handleBeforeUnload)
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-      }
+                recorder.current.stopRecording(function () {
+                    getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
+                        const reader = new FileReader()
+                        reader.readAsDataURL(seekableBlob)
+                        reader.onload = (event) => {
+                            axios.post(BASE_URL + 'movie/create', {
+                                blob: event.target.result,
+                                group: data.data.group,
+                                is_last: true
+                            })
+                                .then(res => {
+                                    console.log(res)
+                                })
+                                .catch(err => console.log(err))
+                        }
+                    })
+                });
+            };
+            window.addEventListener('beforeunload', handleBeforeUnload);
+            // window.onbeforeunload(handleBeforeUnload)
+            return () => {
+                window.removeEventListener('beforeunload', handleBeforeUnload);
+            };
+        }
     }, []);
 
     return (
         <div className="room">
-    <div className="room-all">
-        <div className="video-panel">
-            <div className="video-panel-upper">
-                <div className="my-video">
-                    <video muted autoPlay ref={localVideo}></video>
-                    {/* <span className="my-name-icon">{data.data.name[0].toUpperCase()}</span> */}
-                    {/* <span className="my-name"><img className="icon-mic" src={microIcon} alt="micro"/>{data.data.name}</span> */}
+            <div className="room-all">
+                <div className="video-panel">
+                    <div className="video-panel-upper">
+                        <div className="my-video">
+                            <video muted autoPlay ref={localVideo}></video>
+                            {/* <span className="my-name-icon">{data.data.name[0].toUpperCase()}</span> */}
+                            {/* <span className="my-name"><img className="icon-mic" src={microIcon} alt="micro"/>{data.data.name}</span> */}
+                        </div>
+                        <div className="users-video">
+                            {users.length > 0 &&
+                                <Carousel>
+                                    {users.length > 0 && users.map((user, index) => (<>
+                                        <Video key={index} stream={user.stream} user={user}/>
+                                    </>))}
+                                </Carousel>}
+                        </div>
+                    </div>
+                    {/* {isDispVideo&& */}
+                    <div className="display-video">
+                        <video muted autoPlay ref={localDisplayVideo}></video>
+                    </div>
+                    {/* } */}
                 </div>
-                <div className="users-video">
-                    {users.length>0&&
-                    <Carousel>
-                    {users.length > 0 && users.map((user, index) => (<>
-                        <Video key={index} stream={user.stream} user={user}/>
-                    </>))}
-                    </Carousel>}
+                <div className="panel-optional-all">
+                    <div className="media-track-panel">
+                        {isVideo ? <img src={videoActive} className="my-video-btn" alt="выкл видео" onClick={() => {
+                            const videoTracks = localVideo.current.srcObject.getVideoTracks()
+                            videoTracks.forEach((track) => {
+                                track.enabled = false
+                            })
+                            setVideo(false)
+                        }}/> : <img src={videoMuted} alt="вкл видео" className="my-video-btn" onClick={() => {
+                            const videoTracks = localVideo.current.srcObject.getVideoTracks()
+                            videoTracks.forEach((track) => {
+                                track.enabled = true
+                            })
+                            setVideo(true)
+                        }}/>}
+
+                        {isAudio ? <img src={audioActive} alt="audio выкл" onClick={() => {
+                            const audioTracks = localVideo.current.srcObject.getAudioTracks()
+                            audioTracks.forEach((track) => {
+                                track.enabled = false
+                            })
+                            setAudio(false)
+                        }}/> : <img src={audioMuted} alt="audio вкл" onClick={() => {
+                            const audioTracks = localVideo.current.srcObject.getAudioTracks()
+                            audioTracks.forEach((track) => {
+                                track.enabled = true
+                            })
+                            setAudio(true)
+                        }}/>}
+                    </div>
+
+                    <div className="option-panel">
+                        <img src={membersIcon} onClick={() => {
+                            setMembers(!isMembers)
+                        }} alt="участники"/>
+                        {isSharing ? <img src={sharingActive} className="sharing-img" alt="screen sharing выкл"
+                                          onClick={screenSharingStop}/> :
+                            <img src={sharingNone} className="sharing-img" alt="screen sharing вкл"
+                                 onClick={screenSharing}/>}
+                        <img src={chat} onClick={() => {
+                            setChat(!isChat)
+                        }} alt="чат"/>
+                        {data.data.role == 'S' &&
+                            <img src={chat} onClick={HandUp} alt="чат"/>
+                        }
+                        <img src={chat} onClick={() => {
+                            setModalHand(true)
+                            console.log(isModalHand)
+                        }} alt="чат"/>
+                    </div>
+
+                    <button className="btn-exit" onClick={exitRoom}>Завершить</button>
                 </div>
             </div>
-            {/* {isDispVideo&& */}
-            <div className="display-video">
-                <video muted autoPlay ref={localDisplayVideo}></video>
-            </div>
-            {/* } */}
-        </div>
-        <div className="panel-optional-all">
-            <div className="media-track-panel">
-                {isVideo ? <img src={videoActive} className="my-video-btn" alt="выкл видео" onClick={() => {
-                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                    videoTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setVideo(false)
-                }}/> : <img src={videoMuted} alt="вкл видео" className="my-video-btn" onClick={() => {
-                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                    videoTracks.forEach((track) => {
-                        track.enabled = true
-                    })
-                    setVideo(true)
-                }}/>}
-
-                {isAudio ? <img src={audioActive} alt="audio выкл" onClick={() => {
-                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
-                    audioTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setAudio(false)
-                }}/> : <img src={audioMuted} alt="audio вкл" onClick={() => {
-                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
-                    audioTracks.forEach((track) => {
-                        track.enabled = true
-                    })
-                    setAudio(true)
-                }}/>}
-            </div>
-
-            <div className="option-panel">
-            <img src={membersIcon} onClick={()=>{setMembers(!isMembers)}} alt="участники"/>
-                {isSharing ? <img src={sharingActive} className="sharing-img" alt="screen sharing выкл" onClick={screenSharingStop}/> :
-                    <img src={sharingNone} className="sharing-img" alt="screen sharing вкл" onClick={screenSharing}/>}
-                    <img src={chat} onClick={()=>{setChat(!isChat)}} alt="чат"/>
-                    {data.data.role=='S'&&
-                    <img src={chat} onClick={HandUp} alt="чат"/>
-                    }
-                    <img src={chat} onClick={()=>{setModalHand(true)
-                    console.log(isModalHand)
-                    }} alt="чат"/>
-            </div>
-
-            <button className="btn-exit" onClick={exitRoom}>Завершить</button>
-        </div>
-    </div>
-        {/* <Modal
+            {/* <Modal
                     isVisible={true}
   title={<div>
     <img src={logo} alt="innodom"/>
@@ -614,15 +593,15 @@ const Room = (data, exitUser) => {
     </div>}
     onClose={() => setModalHand(false)}
                     /> */}
-    <Chat 
-    isVisible={isChat||isMembers?true:false}
-    isChat={isChat}
-    isMembers={isMembers}
-    onClose={()=>setChat(false)}
-    users={users}
-    />
+            <Chat
+                isVisible={isChat || isMembers ? true : false}
+                isChat={isChat}
+                isMembers={isMembers}
+                onClose={() => setChat(false)}
+                users={users}
+            />
 
-    </div>
+        </div>
     );
 }
 
