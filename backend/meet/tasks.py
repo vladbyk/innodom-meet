@@ -29,7 +29,7 @@ def combine_videos(base64_videos):
 
     concatenate_clip.close()
 
-    for base64_video in len(base64_videos):
+    for base64_video in range(len(base64_videos)):
         video_path = f"video{base64_video}.webm"
         os.remove(video_path)
     os.remove(combined_video_path)
