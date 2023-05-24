@@ -9,6 +9,8 @@ import audioMuted from '../../assets/icons/audioMuted.svg'
 import sharingActive from '../../assets/icons/sharingAction.svg'
 import sharingNone from '../../assets/icons/sharingNone.svg'
 import membersIcon from '../../assets/icons/members.svg'
+import handUpBtn from '../../assets/icons/hand-btn.svg'
+import hand from '../../assets/icons/hand.svg'
 import logo from '../../assets/icons/logo.svg'
 import cros from '../../assets/icons/cros.svg'
 import chat from '../../assets/icons/chat.svg'
@@ -68,7 +70,7 @@ const Room = (data, exitUser) => {
             console.log(err);
         })
     };
-    const createPeerConnection = useCallback((socketID, localStream, email) => {
+    const createPeerConnection = useCallback((socketID, localStream, email, name) => {
         let pc = new RTCPeerConnection(pc_config)
         pcs = {...pcs, [socketID]: pc}
         // setPcs({...pcs,socketID:pc})
@@ -109,7 +111,7 @@ const Room = (data, exitUser) => {
             if (len === 2) {
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== socketID))
                 setUsers(oldUsers => {
-                    return [...oldUsers, {email: email, id: socketID, stream: e.streams[0]}]
+                    return [...oldUsers, {email: email, id: socketID, stream: e.streams[0],name:name}]
                 })
             } else {
                 // setDispVideo(true)
@@ -145,7 +147,7 @@ const Room = (data, exitUser) => {
                 console.log('get join room', response);
                 if (response.allUsers.length > 0) {
                     response.allUsers.map(item => {
-                        createPeerConnection(item.channel_name, localStream, item.email)
+                        createPeerConnection(item.channel_name, localStream, item.email, item.name)
                         let pc = pcs[item.channel_name]
                         if (pc) {
                             pc.createOffer({
@@ -170,7 +172,7 @@ const Room = (data, exitUser) => {
             }
             if (type == "getOffer") {
                 console.log('get sender offer', response);
-                createPeerConnection(response.channel_name_sender, localStream, response.email)
+                createPeerConnection(response.channel_name_sender, localStream, response.email, response.name)
                 // let myPcs = createPeerConnection(response.channel_name_sender,localStream,response.email)
                 let pc = pcs[response.channel_name_sender]
                 if (pc) {
@@ -286,6 +288,7 @@ const Room = (data, exitUser) => {
                     console.log('tttt')
                     setWhoHand(response.user_name)
                     setModalHand(true)
+                    setTimeout(()=>setModalHand(false),10000)
                     console.log(isModalHand)
                 }
             }
@@ -300,6 +303,8 @@ const Room = (data, exitUser) => {
     }
 
     const HandUp = () => {
+        // setModalHand(true)
+        console.log(isModalHand)
         callSocket.current.send(JSON.stringify({
             type: 'handUp', user: data.data.id, group: data.data.group
         }))
@@ -385,37 +390,37 @@ const Room = (data, exitUser) => {
                 //     });
                 // });
 
-                recorder.current.stopRecording(function () {
-                    getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
-                        const reader = new FileReader()
-                        reader.readAsDataURL(seekableBlob)
-                        reader.onload = (event) => {
-                            axios.post(BASE_URL + 'movie/create', {
-                                blob: event.target.result,
-                                group: data.data.group,
-                                is_last: false
-                            })
-                                .then(res => {
-                                    console.log(res)
-                                })
-                                .catch(err => console.log(err))
-                        }
-                    })
-                    recorder.current.destroy()
-                    let streams = []
-                    users.map(i => {
-                        let userStream = new MediaStream()
-                        i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
-                        streams.push(userStream)
-                    })
-                    streams.push(audioStream.current)
-                    let mixed = mixStreams(streams)
-                    recorder.current = RecordRTC([mixed, adminStream.current], {
-                        type: 'video',
-                        video: {width: window.screen.width, height: window.screen.height},
-                    })
-                    recorder.current.startRecording()
-                });
+                // recorder.current.stopRecording(function () {
+                //     getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
+                //         const reader = new FileReader()
+                //         reader.readAsDataURL(seekableBlob)
+                //         reader.onload = (event) => {
+                //             axios.post(BASE_URL + 'movie/create', {
+                //                 blob: event.target.result,
+                //                 group: data.data.group,
+                //                 is_last: false
+                //             })
+                //                 .then(res => {
+                //                     console.log(res)
+                //                 })
+                //                 .catch(err => console.log(err))
+                //         }
+                //     })
+                //     recorder.current.destroy()
+                //     let streams = []
+                //     users.map(i => {
+                //         let userStream = new MediaStream()
+                //         i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
+                //         streams.push(userStream)
+                //     })
+                //     streams.push(audioStream.current)
+                //     let mixed = mixStreams(streams)
+                //     recorder.current = RecordRTC([mixed, adminStream.current], {
+                //         type: 'video',
+                //         video: {width: window.screen.width, height: window.screen.height},
+                //     })
+                //     recorder.current.startRecording()
+                // });
             }
         }
     }, [users])
@@ -424,79 +429,62 @@ const Room = (data, exitUser) => {
     let audioStream = useRef()
     let recorder = useRef()
 
-    useEffect(() => {
-        if (data.data.role == 'T') {
-            navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
-                .then(stream => {
-                    let streams = []
-                    adminStream.current = stream
-                    users.map(i => {
-                        let userStream = new MediaStream()
-                        i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
-                        streams.push(userStream)
-                    })
-                    navigator.mediaDevices.getUserMedia({audio: true}).then(streamAu => {
-                        streams.push(streamAu)
-                        audioStream.current = streamAu
-                        let mixed = mixStreams(streams)
-                        recorder.current = RecordRTC([mixed, stream], {
-                            type: 'video',
-                            video: {width: window.screen.width, height: window.screen.height},
-                        })
-                        recorder.current.startRecording()
-                    })
-                })
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (data.data.role == 'T') {
+    //         navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
+    //             .then(stream => {
+    //                 let streams = []
+    //                 adminStream.current = stream
+    //                 users.map(i => {
+    //                     let userStream = new MediaStream()
+    //                     i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
+    //                     streams.push(userStream)
+    //                 })
+    //                 navigator.mediaDevices.getUserMedia({audio: true}).then(streamAu => {
+    //                     streams.push(streamAu)
+    //                     audioStream.current = streamAu
+    //                     let mixed = mixStreams(streams)
+    //                     recorder.current = RecordRTC([mixed, stream], {
+    //                         type: 'video',
+    //                         video: {width: window.screen.width, height: window.screen.height},
+    //                     })
+    //                     recorder.current.startRecording()
+    //                 })
+    //             })
+    //     }
+    // }, [])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (data.data.role == 'T') {
-            const handleBeforeUnload = event => {
-                event.preventDefault();
-                event.returnValue = '';
-                // recorder.current.stopRecording(function() {
-                //     console.log('fffffffffffffffff')
-
-                //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
-                //         // video.src = URL.createObjectURL(seekableBlob);
-                //               axios.post(BASE_URL+'movie/create',{
-                //                 blob:seekableBlob,
-                //                 group:data.data.group,
-                //                 is_last:false
-                //               })
-                //               .then(res=>{
-                //                 console.log(res)
-                //               })
-                //               .catch(err=>console.log(err))
-                //     });
-                // });
-
-                recorder.current.stopRecording(function () {
-                    getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
-                        const reader = new FileReader()
-                        reader.readAsDataURL(seekableBlob)
-                        reader.onload = (event) => {
-                            axios.post(BASE_URL + 'movie/create', {
-                                blob: event.target.result,
-                                group: data.data.group,
-                                is_last: true
-                            })
-                                .then(res => {
-                                    console.log(res)
-                                })
-                                .catch(err => console.log(err))
-                        }
-                    })
-                });
-            };
-            window.addEventListener('beforeunload', handleBeforeUnload);
-            // window.onbeforeunload(handleBeforeUnload)
-            return () => {
-                window.removeEventListener('beforeunload', handleBeforeUnload);
-            };
-        }
-    }, []);
+    //     if (data.data.role == 'T') {
+    //         const handleBeforeUnload = event => {
+    //             recorder.current.stopRecording(function () {
+    //                 getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
+    //                     const reader = new FileReader()
+    //                     reader.readAsDataURL(seekableBlob)
+    //                     reader.onload = (event) => {
+    //                         axios.post(BASE_URL + 'movie/create', {
+    //                             blob: event.target.result,
+    //                             group: data.data.group,
+    //                             is_last: true
+    //                         })
+    //                             .then(res => {
+    //                                 console.log(res)
+    //                             })
+    //                             .catch(err => console.log(err))
+    //                     }
+    //                 })
+    //             });
+    //             event.preventDefault();
+    //             event.returnValue = '';
+    //         };
+    //         window.addEventListener('beforeunload', handleBeforeUnload);
+    //         // window.onbeforeunload(handleBeforeUnload)
+    //         return () => {
+    //             window.removeEventListener('beforeunload', handleBeforeUnload);
+    //         };
+    //     }
+    // }, []);
 
     return (
         <div className="room">
@@ -562,37 +550,22 @@ const Room = (data, exitUser) => {
                                           onClick={screenSharingStop}/> :
                             <img src={sharingNone} className="sharing-img" alt="screen sharing вкл"
                                  onClick={screenSharing}/>}
-                        <img src={chat} onClick={() => {
+                        <img src={chat} className="chat-img" onClick={() => {
                             setChat(!isChat)
                         }} alt="чат"/>
                         {data.data.role == 'S' &&
-                            <img src={chat} onClick={HandUp} alt="чат"/>
+                            <img src={handUpBtn} onClick={HandUp} alt="поднять руку"/>
                         }
-                        <img src={chat} onClick={() => {
-                            setModalHand(true)
-                            console.log(isModalHand)
-                        }} alt="чат"/>
                     </div>
 
                     <button className="btn-exit" onClick={exitRoom}>Завершить</button>
                 </div>
             </div>
-            {/* <Modal
-                    isVisible={true}
-  title={<div>
-    <img src={logo} alt="innodom"/>
-    <img src={cros} onClick={()=>setModalHand(false)} alt="x"/>
-  </div>}
-  content={
-    <div>
-        <p>{whoHand} поднял руку</p>
-      </div>
-  }
-    footer={<div>
-        <button onClick={()=>{setModalHand(false)}}>Принять</button>
-    </div>}
-    onClose={() => setModalHand(false)}
-                    /> */}
+            {isModalHand&&
+            <div className="hand-up">
+              <img src={hand} alt="hand"/> {whoHand} поднял руку.
+            </div>
+            }
             <Chat
                 isVisible={isChat || isMembers ? true : false}
                 isChat={isChat}
