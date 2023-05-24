@@ -210,3 +210,13 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'user_name': event['user_name']
         }))
+
+    async def getAllMicrophoneMute(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type']
+        }))
+
+    async def getAllCameraMute(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type']
+        }))
