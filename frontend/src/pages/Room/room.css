@@ -13,7 +13,10 @@
     display: flex;
 }
 .sharing-img{
-    padding: 0px 10px;
+    margin: 0px 10px;
+}
+.chat-img{
+    margin-right: 10px;
 }
 .btn-exit{
     background: #B72525;
@@ -73,4 +76,39 @@
 }
 .video-panel{
     padding: 0px 13%;
+}
+.hand-up{
+    position: absolute;
+    top: auto;
+    left: 20px;
+    bottom: 100px;
+    right: auto;
+    background-color: gray;
+    color: white;
+    padding: 12px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+        animation-duration: 10s;
+        animation-fill-mode: both; 
+        animation-name: showHand; 
+}
+
+
+
+@keyframes showHand {
+    0% {               
+        opacity: 0;
+        transform: translate3d(0px, -100%, 0px);
+    }
+    20%,80% {
+        opacity: 1;
+        transform: none;
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(0px, 100%, 0px);
+    }
 }

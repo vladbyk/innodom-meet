@@ -16,6 +16,7 @@ const Chat = ({isVisible=false, onClose, isChat, isMembers, users}) => {
     
       useEffect(() => {
         console.log(users.length)
+        console.log('gggggg',users)
         document.addEventListener('keydown', keydownHandler);
         return () => document.removeEventListener('keydown', keydownHandler);
       });
