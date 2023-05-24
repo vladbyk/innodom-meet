@@ -42,8 +42,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'getJoinRoom',
                     'allUsers': [{'channel_name': conf_user.channel_name, 'id': conf_user.user.id,
-                                  'email': conf_user.user.email, 'name': conf_user.user.name,
-                                  'surname': conf_user.user.surname}
+                                  'email': conf_user.user.email,
+                                  'name': conf_user.user.name + " " + conf_user.user.surname,
+                                  }
                                  for
                                  conf_user in Conference.objects.filter(user__group__group=message['group']).exclude(
                             user=User.objects.get(id=message['user']))]
