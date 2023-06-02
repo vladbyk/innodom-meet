@@ -51,8 +51,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 })
         elif message['type'] == 'offer':
             user = Conference.objects.get(user__id=message['user'])
-            print({'name': user.user.name,
-                    'email': user.user.email,})
             await channel_layer.send(
                 message['channel_name'],
                 {
@@ -153,7 +151,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'sdp': event['sdp'],
             'channel_name': event['channel_name'],
-            'channel_name_sender': event['channel_name_sender']
+            'channel_name_sender': event['channel_name_sender'],
+            'name': event['name'],
+            'email': event['email'],
         }))
 
     async def getAnswer(self, event):
