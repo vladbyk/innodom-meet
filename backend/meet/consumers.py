@@ -57,7 +57,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     'type': 'getOffer',
                     'sdp': message['sdp'],
                     'channel_name': message['channel_name'],
-                    'channel_name_sender': user.channel_name
+                    'channel_name_sender': user.channel_name,
+                    'name': user.user.name,
+                    'email': user.user.email,
                 })
         elif message['type'] == 'answer':
             user = Conference.objects.get(user__id=message['user'])
