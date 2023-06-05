@@ -14,6 +14,7 @@ import hand from '../../assets/icons/hand.svg'
 import logo from '../../assets/icons/logo.svg'
 import cros from '../../assets/icons/cros.svg'
 import chat from '../../assets/icons/chat.svg'
+import complete from '../../assets/icons/complete.svg'
 import microIcon from '../../assets/icons/mikroIcon.svg'
 import Carousel from "nuka-carousel"
 import axios from "axios";
@@ -110,9 +111,12 @@ const Room = (data, exitUser) => {
             console.log(e.streams[0].getVideoTracks()[0].getSettings())
             if (len === 2) {
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== socketID))
+                console.log('проверкаааа',e)
+                console.log('проверкаааа',users)
                 setUsers(oldUsers => {
                     return [...oldUsers, {email: email, id: socketID, stream: e.streams[0],name:name}]
                 })
+
             } else {
                 // setDispVideo(true)
                 localDisplayVideo.current.srcObject = e.streams[0]
@@ -147,6 +151,7 @@ const Room = (data, exitUser) => {
                 console.log('get join room', response);
                 if (response.allUsers.length > 0) {
                     response.allUsers.map(item => {
+                        console.log('----------------',item)
                         createPeerConnection(item.channel_name, localStream, item.email, item.name)
                         let pc = pcs[item.channel_name]
                         if (pc) {
@@ -172,6 +177,8 @@ const Room = (data, exitUser) => {
             }
             if (type == "getOffer") {
                 console.log('get sender offer', response);
+                console.log('----------------',response)
+
                 createPeerConnection(response.channel_name_sender, localStream, response.email, response.name)
                 // let myPcs = createPeerConnection(response.channel_name_sender,localStream,response.email)
                 let pc = pcs[response.channel_name_sender]
@@ -195,6 +202,8 @@ const Room = (data, exitUser) => {
                                 })
                         })
                 }
+        console.log('prroorororoorororba',users)
+
             }
             if (type == "getCheckDeamon") {
                 console.log('getCheckDeamon', response)
@@ -230,6 +239,7 @@ const Room = (data, exitUser) => {
                 if (pc) {
                     pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
                 }
+
             }
             if (type == "getCandidate") {
                 console.log('get candidate', response);
@@ -240,6 +250,8 @@ const Room = (data, exitUser) => {
                     await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
                         .then(() => {
                             console.log('candidate yes')
+        console.log('prroorororoorororba',users)
+
                         })
                 }
             }
@@ -249,6 +261,7 @@ const Room = (data, exitUser) => {
                 pcs[response.channel_name].close()
                 delete pcs[response.channel_name]
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== response.channel_name))
+            
             }
             if (type == "getSharingOffer") {
                 console.log('get sharing offer', response);
@@ -292,6 +305,26 @@ const Room = (data, exitUser) => {
                     console.log(isModalHand)
                 }
             }
+            if (type == "getAllMicrophoneMute"){
+        console.log('get all micro')
+                if (data.data.role=='S'){
+                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
+                            audioTracks.forEach((track) => {
+                                track.enabled = false
+                            })
+                            setAudio(false)
+                }
+            }
+            if (type == "getAllCameraMute"){
+        console.log('get all camera')
+                if (data.data.role=='S'){
+                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
+                            videoTracks.forEach((track) => {
+                                track.enabled = false
+                            })
+                            setVideo(false)
+                }
+            }
         };
     };
     const exitRoom = () => {
@@ -300,6 +333,20 @@ const Room = (data, exitUser) => {
         }))
         callSocket.current.close()
         exitUser()
+    }
+
+    const allMicrophoneMute = () =>{
+        console.log('click all micro')
+        callSocket.current.send(JSON.stringify({
+            type:'allMicrophoneMute', user: data.data.id, group: data.data.group
+        }))
+    }
+
+    const allCameraMute = () =>{
+        console.log('click all camera')
+        callSocket.current.send(JSON.stringify({
+            type:'allCameraMute', user: data.data.id, group: data.data.group
+        }))
     }
 
     const HandUp = () => {
@@ -351,9 +398,10 @@ const Room = (data, exitUser) => {
     useEffect(() => {
         connectRoom()
     }, [createPeerConnection, pcs])
-
+let [usersForChat,setUsersForChat]=useState(users)
     useEffect(() => {
         console.log('rerender')
+        setUsersForChat(users)
     }, [users])
 
     const mixStreams = (audioStreams) => {
@@ -370,60 +418,66 @@ const Room = (data, exitUser) => {
         return media
     };
 
+// запись экрана препода
 
-    useEffect(() => {
-        if (data.data.role == 'T') {
-            if (users.length > 0) {
-                // recorder.current.stopRecording(function() {
-                //     console.log('fffffffffffffffff')
-                //     getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
-                //         // video.src = URL.createObjectURL(seekableBlob);
-                //              axios.post(BASE_URL+'movie/create',{
-                //                 blob:seekableBlob,
-                //                 group:data.data.group,
-                //                 is_last:false
-                //               })
-                //               .then(res=>{
-                //                 console.log(res)
-                //               })
-                //               .catch(err=>console.log(err))
-                //     });
-                // });
+    // useEffect(() => {
+    //     if (data.data.role == 'T') {
+    //         if (users.length > 0) {
+    //             recorder.current.stopRecording(function() {
+    //                 console.log('fffffffffffffffff')
+    //                 getSeekableBlob(recorder.current.getBlob(), function(seekableBlob) {
+    //                     // video.src = URL.createObjectURL(seekableBlob);
+    //                          axios.post(BASE_URL+'movie/create',{
+    //                             blob:seekableBlob,
+    //                             group:data.data.group,
+    //                             is_last:false
+    //                           })
+    //                           .then(res=>{
+    //                             console.log(res)
+    //                           })
+    //                           .catch(err=>console.log(err))
+    //                 });
+    //             });
 
-                // recorder.current.stopRecording(function () {
-                //     getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
-                //         const reader = new FileReader()
-                //         reader.readAsDataURL(seekableBlob)
-                //         reader.onload = (event) => {
-                //             axios.post(BASE_URL + 'movie/create', {
-                //                 blob: event.target.result,
-                //                 group: data.data.group,
-                //                 is_last: false
-                //             })
-                //                 .then(res => {
-                //                     console.log(res)
-                //                 })
-                //                 .catch(err => console.log(err))
-                //         }
-                //     })
-                //     recorder.current.destroy()
-                //     let streams = []
-                //     users.map(i => {
-                //         let userStream = new MediaStream()
-                //         i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
-                //         streams.push(userStream)
-                //     })
-                //     streams.push(audioStream.current)
-                //     let mixed = mixStreams(streams)
-                //     recorder.current = RecordRTC([mixed, adminStream.current], {
-                //         type: 'video',
-                //         video: {width: window.screen.width, height: window.screen.height},
-                //     })
-                //     recorder.current.startRecording()
-                // });
-            }
-        }
-    }, [users])
+    //             recorder.current.stopRecording(function () {
+    //                 getSeekableBlob(recorder.current.getBlob(), (seekableBlob) => {
+    //                     const reader = new FileReader()
+    //                     reader.readAsDataURL(seekableBlob)
+    //                     reader.onload = (event) => {
+    //                         axios.post(BASE_URL + 'movie/create', {
+    //                             blob: event.target.result,
+    //                             group: data.data.group,
+    //                             is_last: false
+    //                         })
+    //                             .then(res => {
+    //                                 console.log(res)
+    //                             })
+    //                             .catch(err => console.log(err))
+    //                     }
+    //                 })
+    //                 recorder.current.destroy()
+    //                 let streams = []
+    //                 users.map(i => {
+    //                     let userStream = new MediaStream()
+    //                     i.stream.getAudioTracks().forEach(track => userStream.addTrack(track))
+    //                     streams.push(userStream)
+    //                 })
+    //                 streams.push(audioStream.current)
+    //                 let mixed = mixStreams(streams)
+    //                 recorder.current = RecordRTC([mixed, adminStream.current], {
+    //                     type: 'video',
+    //                     mimeType: 'video/webm',
+    //                     // bitsPerSecond: 2000000,
+    //                     // frameRate: 60,
+    //                     // timeSlice: 5000,
+    //                     // bitrate:2000000,
+    //                     video: {width: window.screen.width, height: window.screen.height},
+    //                 })
+    //                 recorder.current.startRecording()
+    //             });
+    //         }
+    //     }
+    // }, [users])
 
     let adminStream = useRef()
     let audioStream = useRef()
@@ -446,6 +500,11 @@ const Room = (data, exitUser) => {
     //                     let mixed = mixStreams(streams)
     //                     recorder.current = RecordRTC([mixed, stream], {
     //                         type: 'video',
+    //                         mimeType: 'video/webm',
+    //                         // bitsPerSecond: 2000000,
+    //                         // frameRate: 60,
+    //                         // timeSlice: 5000,
+    //                         // bitrate:2000000,
     //                         video: {width: window.screen.width, height: window.screen.height},
     //                     })
     //                     recorder.current.startRecording()
@@ -498,11 +557,14 @@ const Room = (data, exitUser) => {
                         </div>
                         <div className="users-video">
                             {users.length > 0 &&
-                                <Carousel>
+                                // <Carousel>
+                                <div className="ddd">
                                     {users.length > 0 && users.map((user, index) => (<>
                                         <Video key={index} stream={user.stream} user={user}/>
                                     </>))}
-                                </Carousel>}
+                                </div>
+                                // </Carousel>
+                                }
                         </div>
                     </div>
                     {/* {isDispVideo&& */}
@@ -545,6 +607,7 @@ const Room = (data, exitUser) => {
                     <div className="option-panel">
                         <img src={membersIcon} onClick={() => {
                             setMembers(!isMembers)
+                            if(isChat)setChat(false)
                         }} alt="участники"/>
                         {isSharing ? <img src={sharingActive} className="sharing-img" alt="screen sharing выкл"
                                           onClick={screenSharingStop}/> :
@@ -552,13 +615,14 @@ const Room = (data, exitUser) => {
                                  onClick={screenSharing}/>}
                         <img src={chat} className="chat-img" onClick={() => {
                             setChat(!isChat)
+                            if(isMembers)setMembers(false)
                         }} alt="чат"/>
                         {data.data.role == 'S' &&
                             <img src={handUpBtn} onClick={HandUp} alt="поднять руку"/>
                         }
                     </div>
 
-                    <button className="btn-exit" onClick={exitRoom}>Завершить</button>
+                   <img onClick={exitRoom} src={complete} alt="Завершить"/>
                 </div>
             </div>
             {isModalHand&&
@@ -571,7 +635,9 @@ const Room = (data, exitUser) => {
                 isChat={isChat}
                 isMembers={isMembers}
                 onClose={() => setChat(false)}
-                users={users}
+                users={usersForChat}
+                allMicrophoneMute={allMicrophoneMute}
+                allCameraMute={allCameraMute}
             />
 
         </div>
