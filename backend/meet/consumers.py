@@ -57,7 +57,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     'type': 'getOffer',
                     'sdp': message['sdp'],
                     'channel_name': message['channel_name'],
-                    'channel_name_sender': user.channel_name
+                    'channel_name_sender': user.channel_name,
+                    'name': user.user.name,
+                    'email': user.user.email,
                 })
         elif message['type'] == 'answer':
             user = Conference.objects.get(user__id=message['user'])
@@ -129,13 +131,29 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'user_name': f"{user.user.name} {user.user.surname}",
                     }
                 )
+        elif message['type'] == 'allMicrophoneMute':
+            for user_conf in Conference.objects.filter(user__group__group=message['group']).exclude(user__role="T"):
+                await channel_layer.send(
+                    user_conf.channel_name, {
+                        'type': 'getAllMicrophoneMute'
+                    }
+                )
+        elif message['type'] == 'allCameraMute':
+            for user_conf in Conference.objects.filter(user__group__group=message['group']).exclude(user__role="T"):
+                await channel_layer.send(
+                    user_conf.channel_name, {
+                        'type': 'getAllCameraMute'
+                    }
+                )
 
     async def getOffer(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'sdp': event['sdp'],
             'channel_name': event['channel_name'],
-            'channel_name_sender': event['channel_name_sender']
+            'channel_name_sender': event['channel_name_sender'],
+            'name': event['name'],
+            'email': event['email'],
         }))
 
     async def getAnswer(self, event):
@@ -195,4 +213,14 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'user_name': event['user_name']
+        }))
+
+    async def getAllMicrophoneMute(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type']
+        }))
+
+    async def getAllCameraMute(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type']
         }))
