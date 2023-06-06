@@ -145,6 +145,32 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'type': 'getAllCameraMute'
                     }
                 )
+        elif message['type'] == 'сameraMute':
+            await channel_layer.send(
+                message['channel_name'],
+                {
+                    'type': 'getCameraMute',
+                    'camera': 'off',
+                })
+        elif message['type'] == 'microphoneMute':
+            await channel_layer.send(
+                message['channel_name'],
+                {
+                    'type': 'getMicrophoneMute',
+                    'microphone': 'off',
+                })
+
+    async def getCameraMute(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'camera': event['camera']
+        }))
+
+    async def getMicrophoneMute(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'microphone': event['camera']
+        }))
 
     async def getOffer(self, event):
         await self.send(text_data=json.dumps({
