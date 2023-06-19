@@ -170,14 +170,18 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 await channel_layer.send(
                     user_conf.channel_name, {
                         'type': 'getChat',
-                        'msg': message['msg']
+                        'msg': message['msg'],
+                        'name': user_conf.user.name,
+                        'surname': user_conf.user.surname,
                     }
                 )
 
     async def getChat(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'msg': event['msg']
+            'msg': event['msg'],
+            'name': event['name'],
+            'surname': event['surname'],
         }))
 
     async def getKick(self, event):
