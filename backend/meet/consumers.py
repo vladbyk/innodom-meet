@@ -165,6 +165,20 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'getKick',
                 })
+        elif message['type'] == 'chat':
+            for user_conf in Conference.objects.filter(user__group__group=message['group']).exclude(user__id=message['user']):
+                await channel_layer.send(
+                    user_conf.channel_name, {
+                        'type': 'getChat',
+                        'msg': message['msg']
+                    }
+                )
+
+    async def getChat(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'msg': event['msg']
+        }))
 
     async def getKick(self, event):
         await self.send(text_data=json.dumps({
