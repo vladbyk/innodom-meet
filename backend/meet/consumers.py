@@ -166,13 +166,15 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     'type': 'getKick',
                 })
         elif message['type'] == 'chat':
+            user = User.objects.get(id=message['user'])
             for user_conf in Conference.objects.filter(user__group__group=message['group']):
                 await channel_layer.send(
                     user_conf.channel_name, {
                         'type': 'getChat',
                         'msg': message['msg'],
-                        'name': user_conf.user.name,
-                        'surname': user_conf.user.surname,
+                        'user': message['user']
+                        'name': user.name,
+                        'surname': user.surname,
                     }
                 )
 
@@ -180,6 +182,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'msg': event['msg'],
+            'user': event['user'],
             'name': event['name'],
             'surname': event['surname'],
         }))
