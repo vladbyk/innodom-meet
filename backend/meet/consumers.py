@@ -172,7 +172,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     user_conf.channel_name, {
                         'type': 'getChat',
                         'msg': message['msg'],
-                        'user': message['user']
+                        'user': user.id,
                         'name': user.name,
                         'surname': user.surname,
                     }
