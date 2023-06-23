@@ -35,6 +35,114 @@
     justify-content: flex-start;
     background-color: #e1dfdf;
   }
+  .member{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 20px;
+  }
+  .memb-panel{
+    display: flex;
+    align-items: center;
+  }
+  .admin-member{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 20px;
+  }
+  .btn-admin-member{
+    padding: 5px;
+    border-radius: 20px;
+    border: 1px solid gray;
+  }
+  .chat-title{
+    display: flex;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 20px 0px;
+    padding-left: 20px;
+  }
+  .chat-title img{
+    margin-right: 20px;
+  }
+  .chat-inp-panel{
+    border-top: 2px solid #91919185;
+    padding: 15px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .chat-inp{
+    border: none;
+    background-color: #F5F5F7;
+    width: 100%;
+    margin-right: 5px;
+    /* color: #ACACAC; */
+    font-weight: 400;
+    font-size: 14px;
+    resize: none;
+    outline:none
+  }
+  .chat-msg{
+    height: 76vh;
+    padding-left: 20px;
+  }
+  .chat-inp::-webkit-scrollbar {
+    width: 5px;
+  }
+   
+  .chat-inp::-webkit-scrollbar-track {
+    background-color:none;
+    border-radius: 10px;
+  }
+   
+  .chat-inp::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color:#D9D9D9;
+  }
+  .message{
+    display: flex;
+  }
+  .dino-img{
+    display: flex;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    border: 1px solid #246CE2;
+    border-radius: 50%;
+  }
+  .msg-panel{
+    display: flex;
+    flex-direction: column;
+    width: 72%;
+    margin-left: 6px;
+  }
+  .title-msg{
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #919191;
+    font-weight: 400;
+  }
+  .user-msg{
+    background-color: #1280ff3b;
+    margin: 5px 0px;
+    padding: 7px;
+    border-radius: 20px;
+  }
+  .msg-text{
+    background-color: #3131313b;
+    margin: 5px 0px;
+    padding: 7px;
+    border-radius: 20px;
+  }
+  .member-user{
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+  }
+
 @keyframes slideL {
     from {
       opacity: 0;
