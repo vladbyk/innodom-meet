@@ -3,6 +3,11 @@
     background-color: #97979759;
     border-radius: 18px;
 }
+.only-users video{
+    height: 655px;
+    background-color: #97979759;
+    border-radius: 18px;
+}
 .room-all{
     background-color: #1A1A1A;
     min-height: 96vh;
@@ -12,8 +17,8 @@
     flex-direction: column;
     justify-content: space-between;
 }
-.ddd{
-    display: flex;
+.display-video-none{
+    display: none;
 }
 .room{
     display: flex;
