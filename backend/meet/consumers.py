@@ -99,16 +99,48 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     }
                 )
         elif message['type'] == 'sharingOffer':
+            if 'status' in message:
+                if message['status'] == 'yes':
+                    user = Conference.objects.get(user__id=message['user'])
+                    user.deamon = True
+                    user.save()
+                    await channel_layer.send(
+                        message['channel_name'], {
+                            'type': 'getSharingOffer',
+                            'channel_name': user.channel_name,
+                            'sdp': message['sdp']
+                        }
+                    )
+            else:
+                user = Conference.objects.get(user__id=message['user'])
+                user.deamon = True
+                user.save()
+                await channel_layer.send(
+                    message['channel_name'], {
+                        'type': 'getSharingOffer',
+                        'channel_name': user.channel_name,
+                        'sdp': message['sdp']
+                    }
+                )
+        elif message['type'] == 'CheckSharingOffer':
             user = Conference.objects.get(user__id=message['user'])
-            user.deamon = True
-            user.save()
-            await channel_layer.send(
-                message['channel_name'], {
-                    'type': 'getSharingOffer',
-                    'channel_name': user.channel_name,
-                    'sdp': message['sdp']
-                }
-            )
+            if user.user.role == 'T':
+                user.deamon = True
+                user.save()
+                await channel_layer.send(
+                    message['channel_name'], {
+                        'type': 'getSharingOffer',
+                        'channel_name': user.channel_name,
+                        'sdp': message['sdp']
+                    }
+                )
+            else:
+                teacher = Conference.objects.get(user__role='T', user__group__group=message['group'])
+                await channel_layer.send(
+                    teacher.channel_name, {
+                        'type': 'getCheckSharingOffer',
+                    }
+                )
         elif message['type'] == 'sharingAnswer':
             user = Conference.objects.get(user__id=message['user']).channel_name
             await channel_layer.send(
@@ -177,6 +209,11 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'surname': user.surname,
                     }
                 )
+
+    async def getCheckSharingOffer(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+        }))
 
     async def getChat(self, event):
         await self.send(text_data=json.dumps({
