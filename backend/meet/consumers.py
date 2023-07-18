@@ -111,24 +111,13 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 )
         elif message['type'] == 'CheckSharingOffer':
             user = Conference.objects.get(user__id=message['user'])
-            if user.user.role == 'T':
-                user.deamon = True
-                user.save()
-                await channel_layer.send(
-                    message['channel_name'], {
-                        'type': 'getSharingOffer',
-                        'channel_name': user.channel_name,
-                        'sdp': message['sdp']
-                    }
-                )
-            else:
-                teacher = Conference.objects.get(user__role='T', user__group__group=message['group'])
-                await channel_layer.send(
-                    teacher.channel_name, {
-                        'type': 'getCheckSharingOffer',
-                        'channel_name': user.channel_name
-                    }
-                )
+            teacher = Conference.objects.get(user__role='T', user__group__group=message['group'])
+            await channel_layer.send(
+                teacher.channel_name, {
+                    'type': 'getCheckSharingOffer',
+                    'channel_name': user.channel_name
+                }
+            )
         elif message['type'] == 'AllowSharingOffer':
             await channel_layer.send(
                 message['channel_name'], {
