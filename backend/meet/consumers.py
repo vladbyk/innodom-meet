@@ -207,7 +207,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getAllowSharingOffer(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'channel_name': event['channel_name'],
         }))
 
     async def getCheckSharingOffer(self, event):
