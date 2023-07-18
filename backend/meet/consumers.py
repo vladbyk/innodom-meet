@@ -139,7 +139,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 await channel_layer.send(
                     teacher.channel_name, {
                         'type': 'getCheckSharingOffer',
-                        'channel_name': message['channel_name']
+                        'channel_name': user.channel_name
                     }
                 )
         elif message['type'] == 'sharingAnswer':
