@@ -192,17 +192,17 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'surname': user.surname,
                     }
                 )
-        elif message['type'] == 'microphoneMute':
+        elif message['type'] == 'personalMicrophoneMute':
             for user_conf in Conference.objects.filter(user__group__group=message['group']):
                 await channel_layer.send(
                     user_conf.channel_name, {
-                        'type': 'getMicrophoneMute',
+                        'type': 'getPersonalMicrophoneMute',
                         'microphone': message['microphone'],
                         'user': message['user']
                     }
                 )
 
-    async def getMicrophoneMute(self, event):
+    async def getPersonalMicrophoneMute(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'microphone': event['microphone'],

@@ -673,12 +673,25 @@ const Room = (data, exitUser) => {
                                 track.enabled = false
                             })
                             setAudio(false)
+                            callSocket.current.send(JSON.stringify({
+                                    type: 'personalMicrophoneMute',
+                                    group: data.data.group,
+                                    user: data.data.id,
+                                    microphone: 'false'
+                                }))
                         }}/> : <img src={audioMuted} alt="audio вкл" onClick={() => {
                             const audioTracks = localVideo.current.srcObject.getAudioTracks()
                             audioTracks.forEach((track) => {
                                 track.enabled = true
                             })
                             setAudio(true)
+                            console.log("123321")
+                            callSocket.current.send(JSON.stringify({
+                                    type: 'personalMicrophoneMute',
+                                    group: data.data.group,
+                                    user: data.data.id,
+                                    microphone: 'true'
+                                }))
                         }}/>}
                     </div>
 
@@ -709,7 +722,6 @@ const Room = (data, exitUser) => {
                 </div>
             }
             <Chat
-                callSocket ={callSocket}
                 isVisible={isChat || isMembers ? true : false}
                 isChat={isChat}
                 isMembers={isMembers}
