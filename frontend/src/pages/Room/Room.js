@@ -355,8 +355,11 @@ const Room = (data, exitUser) => {
                     window.location.reload()
                 }
             }
-            if (type == "getMicrophonMute") {
+            if (type == "getPersonalMicrophoneMute") {
                 console.log('getMicrophoneMute', response)
+            }
+            if (type == "getPersonalCameraMute") {
+                console.log('getPersonalCameraMute', response)
             }
             if (type == "getChat") {
                 console.log('getChatееееееее', response)
@@ -659,12 +662,24 @@ const Room = (data, exitUser) => {
                                 track.enabled = false
                             })
                             setVideo(false)
+                            callSocket.current.send(JSON.stringify({
+                                    type: 'personalCameraMute',
+                                    group: data.data.group,
+                                    user: data.data.id,
+                                    camera: 'false'
+                                }))
                         }}/> : <img src={videoMuted} alt="вкл видео" className="my-video-btn" onClick={() => {
                             const videoTracks = localVideo.current.srcObject.getVideoTracks()
                             videoTracks.forEach((track) => {
                                 track.enabled = true
                             })
                             setVideo(true)
+                            callSocket.current.send(JSON.stringify({
+                                    type: 'personalCameraMute',
+                                    group: data.data.group,
+                                    user: data.data.id,
+                                    camera: 'true'
+                                }))
                         }}/>}
 
                         {isAudio ? <img src={audioActive} alt="audio выкл" onClick={() => {
