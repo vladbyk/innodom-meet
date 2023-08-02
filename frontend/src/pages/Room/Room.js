@@ -37,7 +37,7 @@ const Room = (data, exitUser) => {
     let localDisplayVideo = useRef()
     let myStreamSharing = useRef()
     let pcs;
-    let date=new Date()
+    let date = new Date()
     const [users, setUsers] = useState([])
     const [messages, setMessages] = useState({})
     const [isCandidate, setCandidate] = useState(false)
@@ -114,10 +114,10 @@ const Room = (data, exitUser) => {
             console.log(e.streams[0].getVideoTracks()[0].getSettings())
             if (len === 2) {
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== socketID))
-                console.log('проверкаааа',e)
-                console.log('проверкаааа',users)
+                console.log('проверкаааа', e)
+                console.log('проверкаааа', users)
                 setUsers(oldUsers => {
-                    return [...oldUsers, {email: email, id: socketID, stream: e.streams[0],name:name}]
+                    return [...oldUsers, {email: email, id: socketID, stream: e.streams[0], name: name}]
                 })
 
             } else {
@@ -154,7 +154,7 @@ const Room = (data, exitUser) => {
                 console.log('get join room', response);
                 if (response.allUsers.length > 0) {
                     response.allUsers.map(item => {
-                        console.log('----------------',item)
+                        console.log('----------------', item)
                         createPeerConnection(item.channel_name, localStream, item.email, item.name)
                         let pc = pcs[item.channel_name]
                         if (pc) {
@@ -180,7 +180,7 @@ const Room = (data, exitUser) => {
             }
             if (type == "getOffer") {
                 console.log('get sender offer', response);
-                console.log('----------------',response)
+                console.log('----------------', response)
 
                 createPeerConnection(response.channel_name_sender, localStream, response.email, response.name)
                 // let myPcs = createPeerConnection(response.channel_name_sender,localStream,response.email)
@@ -205,7 +205,7 @@ const Room = (data, exitUser) => {
                                 })
                         })
                 }
-        console.log('prroorororoorororba',users)
+                console.log('prroorororoorororba', users)
 
             }
             if (type == "getCheckDeamon") {
@@ -253,7 +253,7 @@ const Room = (data, exitUser) => {
                     await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
                         .then(() => {
                             console.log('candidate yes')
-        console.log('prroorororoorororba',users)
+                            console.log('prroorororoorororba', users)
 
                         })
                 }
@@ -264,7 +264,7 @@ const Room = (data, exitUser) => {
                 pcs[response.channel_name].close()
                 delete pcs[response.channel_name]
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== response.channel_name))
-            
+
             }
             if (type == "getSharingOffer") {
                 console.log('get sharing offer', response);
@@ -304,65 +304,73 @@ const Room = (data, exitUser) => {
                     console.log('tttt')
                     setWhoHand(response.user_name)
                     setModalHand(true)
-                    setTimeout(()=>setModalHand(false),10000)
+                    setTimeout(() => setModalHand(false), 10000)
                     console.log(isModalHand)
                 }
             }
-            if (type == "getAllMicrophoneMute"){
-        console.log('get all micro')
-                if (data.data.role=='S'){
+            if (type == "getAllMicrophoneMute") {
+                console.log('get all micro')
+                if (data.data.role == 'S') {
                     const audioTracks = localVideo.current.srcObject.getAudioTracks()
-                            audioTracks.forEach((track) => {
-                                track.enabled = false
-                            })
-                            setAudio(false)
+                    audioTracks.forEach((track) => {
+                        track.enabled = false
+                    })
+                    setAudio(false)
                 }
             }
-            if (type == "getAllCameraMute"){
-        console.log('get all camera')
-                if (data.data.role=='S'){
-                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                            videoTracks.forEach((track) => {
-                                track.enabled = false
-                            })
-                            setVideo(false)
-                }
-            }
-            if (type == "getCameraMute"){
+            if (type == "getAllCameraMute") {
                 console.log('get all camera')
-                        if (data.data.role=='S'){
-                            const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                                    videoTracks.forEach((track) => {
-                                        track.enabled = false
-                                    })
-                                    setVideo(false)
-                        }
-                    }
-            if (type == "getMicrophoneMute"){
-                        console.log('get all camera')
-                                if (data.data.role=='S'){
-                                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
-                            audioTracks.forEach((track) => {
-                                track.enabled = false
-                            })
-                            setAudio(false)
-                                }
-                            }
-            if (type == "getKick"){
-                                console.log('getKick')
-                                        if (data.data.role=='S'){
-                                        callSocket.current.close()
-                                        window.location.reload()
-                                        }
-                            }
-            if (type == "getChat"){
-                                console.log('getChatееееееее',response) 
-                                // messages.push({name:response.name+response.surname,msg:response.msg})
-                                // let msg=messages
-                                let min=date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes()
-                                let hour=date.getHours()<10?'0'+date.getHours():date.getHours()
-                                setMessages({name:response.name+response.surname,msg:response.msg,time:hour+':'+min,id:response.id})   
-                            }
+                if (data.data.role == 'S') {
+                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
+                    videoTracks.forEach((track) => {
+                        track.enabled = false
+                    })
+                    setVideo(false)
+                }
+            }
+            if (type == "getCameraMute") {
+                console.log('get all camera')
+                if (data.data.role == 'S') {
+                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
+                    videoTracks.forEach((track) => {
+                        track.enabled = false
+                    })
+                    setVideo(false)
+                }
+            }
+            if (type == "getMicrophoneMute") {
+                console.log('get all camera')
+                if (data.data.role == 'S') {
+                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
+                    audioTracks.forEach((track) => {
+                        track.enabled = false
+                    })
+                    setAudio(false)
+                }
+            }
+            if (type == "getKick") {
+                console.log('getKick')
+                if (data.data.role == 'S') {
+                    callSocket.current.close()
+                    window.location.reload()
+                }
+            }
+            if (type == "getMicrophonMute") {
+                console.log('getMicrophoneMute', response)
+            }
+            if (type == "getChat") {
+                console.log('getChatееееееее', response)
+                // messages.push({name:response.name+response.surname,msg:response.msg})
+                // let msg=messages
+                let min = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+                let hour = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+                setMessages({
+                    name: response.name + response.surname,
+                    msg: response.msg,
+                    time: hour + ':' + min,
+                    id: response.id
+                })
+            }
         };
     };
     const exitRoom = () => {
@@ -373,44 +381,46 @@ const Room = (data, exitUser) => {
         exitUser()
     }
 
-    const userKick = (id) =>{
+    const userKick = (id) => {
         console.log('kick')
         callSocket.current.send(JSON.stringify({
-            type:'kick', user: data.data.id, group: data.data.group,channel_name:id
+            type: 'kick', user: data.data.id, group: data.data.group, channel_name: id
         }))
     }
 
-    const allMicrophoneMute = () =>{
+    const allMicrophoneMute = () => {
         console.log('click all micro')
         callSocket.current.send(JSON.stringify({
-            type:'allMicrophoneMute', user: data.data.id, group: data.data.group
+            type: 'allMicrophoneMute', user: data.data.id, group: data.data.group
         }))
     }
 
-    const userCameraMute = (id) =>{
-        console.log('click camera mute',id)
+    const userCameraMute = (id) => {
+        console.log('click camera mute', id)
         callSocket.current.send(JSON.stringify({
-            type:'сameraMute', user: data.data.id, group: data.data.group, channel_name:id
+            type: 'сameraMute', user: data.data.id, group: data.data.group, channel_name: id
         }))
     }
 
-    const userMicrophoneMute = (id) =>{
-        console.log('click micro mute',id)
+
+
+    const userMicrophoneMute = (id) => {
+        console.log('click micro mute', id)
         callSocket.current.send(JSON.stringify({
-            type:'microphoneMute', user: data.data.id, group: data.data.group, channel_name:id
+            type: 'microphoneMute', user: data.data.id, group: data.data.group, channel_name: id
         }))
     }
-    const sendMessage = (id,group,msg) =>{
-        console.log('send msg',id)
+    const sendMessage = (id, group, msg) => {
+        console.log('send msg', id)
         callSocket.current.send(JSON.stringify({
-            type:'chat', user: data.data.id, group:group, msg:msg
+            type: 'chat', user: data.data.id, group: group, msg: msg
         }))
     }
 
-    const allCameraMute = () =>{
+    const allCameraMute = () => {
         console.log('click all camera')
         callSocket.current.send(JSON.stringify({
-            type:'allCameraMute', user: data.data.id, group: data.data.group
+            type: 'allCameraMute', user: data.data.id, group: data.data.group
         }))
     }
 
@@ -463,13 +473,13 @@ const Room = (data, exitUser) => {
     useEffect(() => {
         connectRoom()
     }, [createPeerConnection, pcs])
-let [usersForChat,setUsersForChat]=useState(users)
+    let [usersForChat, setUsersForChat] = useState(users)
     useEffect(() => {
         console.log('rerender')
         setUsersForChat(users)
     }, [users])
     useEffect(() => {
-        console.log('messs',messages)
+        console.log('messs', messages)
     }, [messages])
 
 
@@ -619,7 +629,7 @@ let [usersForChat,setUsersForChat]=useState(users)
             <div className="room-all">
                 <div className="video-panel">
                     <div className='video-panel-upper'>
-                    {/* <div className={localDisplayVideo.current!==undefined?'video-panel-upper':'only-users'}> */}
+                        {/* <div className={localDisplayVideo.current!==undefined?'video-panel-upper':'only-users'}> */}
                         <div className="my-video">
                             <video muted autoPlay ref={localVideo}></video>
                             {/* <span className="my-name-icon">{data.data.name[0].toUpperCase()}</span> */}
@@ -632,14 +642,14 @@ let [usersForChat,setUsersForChat]=useState(users)
                                         <Video key={index} stream={user.stream} user={user}/>
                                     </>))}
                                 </Carousel>
-                                }
+                            }
                         </div>
                     </div>
                     {/* {localDisplayVideo.current!==undefined&& */}
                     <div className="display-video">
                         <video muted autoPlay ref={localDisplayVideo}></video>
                     </div>
-                     {/* }  */}
+                    {/* }  */}
                 </div>
                 <div className="panel-optional-all">
                     <div className="media-track-panel">
@@ -675,7 +685,7 @@ let [usersForChat,setUsersForChat]=useState(users)
                     <div className="option-panel">
                         <img src={membersIcon} onClick={() => {
                             setMembers(!isMembers)
-                            if(isChat)setChat(false)
+                            if (isChat) setChat(false)
                         }} alt="участники"/>
                         {isSharing ? <img src={sharingActive} className="sharing-img" alt="screen sharing выкл"
                                           onClick={screenSharingStop}/> :
@@ -683,22 +693,23 @@ let [usersForChat,setUsersForChat]=useState(users)
                                  onClick={screenSharing}/>}
                         <img src={chat} className="chat-img" onClick={() => {
                             setChat(!isChat)
-                            if(isMembers)setMembers(false)
+                            if (isMembers) setMembers(false)
                         }} alt="чат"/>
                         {data.data.role == 'S' &&
                             <img src={handUpBtn} onClick={HandUp} alt="поднять руку"/>
                         }
                     </div>
 
-                   <img onClick={exitRoom} src={complete} alt="Завершить"/>
+                    <img onClick={exitRoom} src={complete} alt="Завершить"/>
                 </div>
             </div>
-            {isModalHand&&
-            <div className="hand-up">
-              <img src={hand} alt="hand"/> {whoHand} поднял руку.
-            </div>
+            {isModalHand &&
+                <div className="hand-up">
+                    <img src={hand} alt="hand"/> {whoHand} поднял руку.
+                </div>
             }
             <Chat
+                callSocket ={callSocket}
                 isVisible={isChat || isMembers ? true : false}
                 isChat={isChat}
                 isMembers={isMembers}

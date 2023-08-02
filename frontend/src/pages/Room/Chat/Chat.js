@@ -17,7 +17,9 @@ import dino7 from '../../../assets/dinosaur/dino7.png'
 import dino8 from '../../../assets/dinosaur/dino8.png'
 import dino9 from '../../../assets/dinosaur/dino9.png'
 
-const Chat = ({isVisible=false, 
+const Chat = ({
+                callSocket,
+                isVisible=false,
   onClose, 
   isChat, 
   isMembers, 
@@ -101,7 +103,14 @@ const Chat = ({isVisible=false,
                         <div>{item.name}</div>
                         </div>
                         <div>
-                        <img src={microUser} onClick={()=>{microphoneMute(item.id)}} alt="micro"/>
+                        <img src={microUser} onClick={()=>{
+                            microphoneMute(item.id)
+                            callSocket.current.send(JSON.stringify({
+                                    type: 'microphoneMute',
+                                    group: user.data.group,
+                                    user: user.data.id
+                                }))
+                          }} alt="micro"/>
                         <img src={cameraUser} onClick={()=>{userCameraMute(item.id)}} alt="camera"/>
                         <span onClick={()=>{userKick(item.id)}}>X</span>
                         </div>
