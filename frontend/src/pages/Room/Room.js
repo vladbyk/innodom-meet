@@ -114,13 +114,8 @@ const Room = (data, exitUser) => {
             // console.log(e.streams[0].getVideoTracks()[0].getSettings())
             if (len === 2) {
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== socketID))
-<<<<<<< HEAD
                 // console.log('проверкаааа',e)
                 // console.log('проверкаааа',users)
-=======
-                console.log('проверкаааа', e)
-                console.log('проверкаааа', users)
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
                 setUsers(oldUsers => {
                     return [...oldUsers, {email: email, id: socketID, stream: e.streams[0], name: name}]
                 })
@@ -159,11 +154,7 @@ const Room = (data, exitUser) => {
                 // console.log('get join room', response);
                 if (response.allUsers.length > 0) {
                     response.allUsers.map(item => {
-<<<<<<< HEAD
                         // console.log('----------------',item)
-=======
-                        console.log('----------------', item)
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
                         createPeerConnection(item.channel_name, localStream, item.email, item.name)
                         let pc = pcs[item.channel_name]
                         if (pc) {
@@ -188,13 +179,8 @@ const Room = (data, exitUser) => {
                 }
             }
             if (type == "getOffer") {
-<<<<<<< HEAD
                 // console.log('get sender offer', response);
                 // console.log('----------------',response)
-=======
-                console.log('get sender offer', response);
-                console.log('----------------', response)
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
 
                 createPeerConnection(response.channel_name_sender, localStream, response.email, response.name)
                 // let myPcs = createPeerConnection(response.channel_name_sender,localStream,response.email)
@@ -219,11 +205,7 @@ const Room = (data, exitUser) => {
                                 })
                         })
                 }
-<<<<<<< HEAD
         // console.log('prroorororoorororba',users)
-=======
-                console.log('prroorororoorororba', users)
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
 
             }
             if (type == "getCheckDeamon") {
@@ -270,13 +252,8 @@ const Room = (data, exitUser) => {
                 if (pc) {
                     await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
                         .then(() => {
-<<<<<<< HEAD
                             // console.log('candidate yes')
         // console.log('prroorororoorororba',users)
-=======
-                            console.log('candidate yes')
-                            console.log('prroorororoorororba', users)
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
 
                         })
                 }
@@ -339,7 +316,6 @@ const Room = (data, exitUser) => {
                     // console.log('tttt')
                     setWhoHand(response.user_name)
                     setModalHand(true)
-<<<<<<< HEAD
                     setTimeout(()=>setModalHand(false),10000)
                     let min=date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes()
                                 let hour=date.getHours()<10?'0'+date.getHours():date.getHours()
@@ -350,15 +326,6 @@ const Room = (data, exitUser) => {
             if (type == "getAllMicrophoneMute"){
         // console.log('get all micro')
                 if (data.data.role=='S'){
-=======
-                    setTimeout(() => setModalHand(false), 10000)
-                    console.log(isModalHand)
-                }
-            }
-            if (type == "getAllMicrophoneMute") {
-                console.log('get all micro')
-                if (data.data.role == 'S') {
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
                     const audioTracks = localVideo.current.srcObject.getAudioTracks()
                     audioTracks.forEach((track) => {
                         track.enabled = false
@@ -366,7 +333,6 @@ const Room = (data, exitUser) => {
                     setAudio(false)
                 }
             }
-<<<<<<< HEAD
             if (type == "getAllCameraMute"){
         // console.log('get all camera')
                 if (data.data.role=='S'){
@@ -418,64 +384,6 @@ const Room = (data, exitUser) => {
             if (type == "getPersonalCameraMute"){
                                 console.log('getPersonalCameraMute',response) 
                             }
-=======
-            if (type == "getAllCameraMute") {
-                console.log('get all camera')
-                if (data.data.role == 'S') {
-                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                    videoTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setVideo(false)
-                }
-            }
-            if (type == "getCameraMute") {
-                console.log('get all camera')
-                if (data.data.role == 'S') {
-                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                    videoTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setVideo(false)
-                }
-            }
-            if (type == "getMicrophoneMute") {
-                console.log('get all camera')
-                if (data.data.role == 'S') {
-                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
-                    audioTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setAudio(false)
-                }
-            }
-            if (type == "getKick") {
-                console.log('getKick')
-                if (data.data.role == 'S') {
-                    callSocket.current.close()
-                    window.location.reload()
-                }
-            }
-            if (type == "getPersonalMicrophoneMute") {
-                console.log('getPersonalMicrophoneMute', response)
-            }
-            if (type == "getPersonalCameraMute") {
-                console.log('getPersonalCameraMute', response)
-            }
-            if (type == "getChat") {
-                console.log('getChatееееееее', response)
-                // messages.push({name:response.name+response.surname,msg:response.msg})
-                // let msg=messages
-                let min = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-                let hour = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-                setMessages({
-                    name: response.name + response.surname,
-                    msg: response.msg,
-                    time: hour + ':' + min,
-                    id: response.id
-                })
-            }
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
         };
     };
     const exitRoom = () => {
