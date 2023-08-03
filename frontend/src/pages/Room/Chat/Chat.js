@@ -19,13 +19,9 @@ import dino7 from '../../../assets/dinosaur/dino7.png'
 import dino8 from '../../../assets/dinosaur/dino8.png'
 import dino9 from '../../../assets/dinosaur/dino9.png'
 
-<<<<<<< HEAD
 
-const Chat = ({isVisible=false, 
-=======
 const Chat = ({
-                isVisible=false,
->>>>>>> 4dd488a139d4fe3cede57abb5e07edef8c03aed2
+  isVisible=false,
   onClose, 
   isChat, 
   isMembers, 
