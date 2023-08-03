@@ -205,8 +205,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             for user_conf in Conference.objects.filter(user__group__group=message['group']):
                 await channel_layer.send(
                     user_conf.channel_name, {
-                        'type': 'getPersonalMicrophoneMute',
-                        'camera': message['microphone'],
+                        'type': 'getPersonalCameraMute',
+                        'camera': message['camera'],
                         'user': message['user']
                     }
                 )
@@ -214,7 +214,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getPersonalCameraMute(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'microphone': event['microphone'],
+            'camera': event['camera'],
             'user': event['user']
         }))
 

@@ -356,7 +356,7 @@ const Room = (data, exitUser) => {
                 }
             }
             if (type == "getPersonalMicrophoneMute") {
-                console.log('getMicrophoneMute', response)
+                console.log('getPersonalMicrophoneMute', response)
             }
             if (type == "getPersonalCameraMute") {
                 console.log('getPersonalCameraMute', response)
@@ -404,7 +404,6 @@ const Room = (data, exitUser) => {
             type: 'сameraMute', user: data.data.id, group: data.data.group, channel_name: id
         }))
     }
-
 
 
     const userMicrophoneMute = (id) => {
@@ -663,11 +662,11 @@ const Room = (data, exitUser) => {
                             })
                             setVideo(false)
                             callSocket.current.send(JSON.stringify({
-                                    type: 'personalCameraMute',
-                                    group: data.data.group,
-                                    user: data.data.id,
-                                    camera: 'false'
-                                }))
+                                type: 'personalCameraMute',
+                                group: data.data.group,
+                                user: data.data.id,
+                                camera: 'false'
+                            }))
                         }}/> : <img src={videoMuted} alt="вкл видео" className="my-video-btn" onClick={() => {
                             const videoTracks = localVideo.current.srcObject.getVideoTracks()
                             videoTracks.forEach((track) => {
@@ -675,11 +674,11 @@ const Room = (data, exitUser) => {
                             })
                             setVideo(true)
                             callSocket.current.send(JSON.stringify({
-                                    type: 'personalCameraMute',
-                                    group: data.data.group,
-                                    user: data.data.id,
-                                    camera: 'true'
-                                }))
+                                type: 'personalCameraMute',
+                                group: data.data.group,
+                                user: data.data.id,
+                                camera: 'true'
+                            }))
                         }}/>}
 
                         {isAudio ? <img src={audioActive} alt="audio выкл" onClick={() => {
@@ -689,11 +688,11 @@ const Room = (data, exitUser) => {
                             })
                             setAudio(false)
                             callSocket.current.send(JSON.stringify({
-                                    type: 'personalMicrophoneMute',
-                                    group: data.data.group,
-                                    user: data.data.id,
-                                    microphone: 'false'
-                                }))
+                                type: 'personalMicrophoneMute',
+                                group: data.data.group,
+                                user: data.data.id,
+                                microphone: 'false'
+                            }))
                         }}/> : <img src={audioMuted} alt="audio вкл" onClick={() => {
                             const audioTracks = localVideo.current.srcObject.getAudioTracks()
                             audioTracks.forEach((track) => {
@@ -702,11 +701,11 @@ const Room = (data, exitUser) => {
                             setAudio(true)
                             console.log("123321")
                             callSocket.current.send(JSON.stringify({
-                                    type: 'personalMicrophoneMute',
-                                    group: data.data.group,
-                                    user: data.data.id,
-                                    microphone: 'true'
-                                }))
+                                type: 'personalMicrophoneMute',
+                                group: data.data.group,
+                                user: data.data.id,
+                                microphone: 'true'
+                            }))
                         }}/>}
                     </div>
 
