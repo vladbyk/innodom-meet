@@ -47,7 +47,18 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                                   }
                                  for
                                  conf_user in Conference.objects.filter(user__group__group=message['group']).exclude(
-                            user=User.objects.get(id=message['user']))]
+                            user=User.objects.get(id=message['user']))],
+                    'channel_name': user.channel_name
+                })
+            await channel_layer.send(
+                user.channel_name,
+                {
+                    'type': 'getAllMicrophoneStatus',
+                    'allMicrophoneStatus': [{'user': conf_user.user.id, 'microphone': conf_user.microphone} for
+                                            conf_user in
+                                            Conference.objects.filter(user__group__group=message['group']).exclude(
+                                                user=User.objects.get(id=message['user']))]
+
                 })
         elif message['type'] == 'offer':
             user = Conference.objects.get(user__id=message['user'])
@@ -193,6 +204,13 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     }
                 )
         elif message['type'] == 'personalMicrophoneMute':
+            user = Conference.objects.get(channel_name=message['user'])
+            message['user'] = user.user.id
+            if message['microphone'] == 'true':
+                user.microphone = True
+            elif message['microphone'] == 'false':
+                user.microphone = False
+            user.save()
             for user_conf in Conference.objects.filter(user__group__group=message['group']):
                 await channel_layer.send(
                     user_conf.channel_name, {
@@ -202,6 +220,13 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     }
                 )
         elif message['type'] == 'personalCameraMute':
+            user = Conference.objects.get(channel_name=message['user'])
+            message['user'] = user.user.id
+            if message['camera'] == 'true':
+                user.microphone = True
+            elif message['camera'] == 'false':
+                user.microphone = False
+            user.save()
             for user_conf in Conference.objects.filter(user__group__group=message['group']):
                 await channel_layer.send(
                     user_conf.channel_name, {
@@ -210,6 +235,12 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                         'user': message['user']
                     }
                 )
+
+    async def getAllMicrophoneStatus(self, event):
+        await self.send(text_data=json.dumps({
+            'type': event['type'],
+            'allMicrophoneStatus': event['allMicrophoneStatus'],
+        }))
 
     async def getPersonalCameraMute(self, event):
         await self.send(text_data=json.dumps({
@@ -259,7 +290,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getMicrophoneMute(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'microphone': event['camera']
+            'microphone': event['microphone']
         }))
 
     async def getOffer(self, event):
@@ -290,7 +321,8 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
     async def getJoinRoom(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
-            'allUsers': event['allUsers']
+            'allUsers': event['allUsers'],
+            'channel_name': event['channel_name']
         }))
 
     async def getDisconnect(self, event):
