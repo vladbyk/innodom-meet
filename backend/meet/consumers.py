@@ -40,16 +40,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             await channel_layer.send(
                 user.channel_name,
                 {
-                    'type': 'getAllMicrophoneStatus',
-                    'allMicrophoneStatus': [{'user': conf_user.user.id, 'microphone': conf_user.microphone} for
-                                            conf_user in
-                                            Conference.objects.filter(user__group__group=message['group']).exclude(
-                                                user=User.objects.get(id=message['user']))]
-
-                })
-            await channel_layer.send(
-                user.channel_name,
-                {
                     'type': 'getJoinRoom',
                     'allUsers': [{'channel_name': conf_user.channel_name, 'id': conf_user.user.id,
                                   'email': conf_user.user.email,
@@ -59,6 +49,16 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                                  conf_user in Conference.objects.filter(user__group__group=message['group']).exclude(
                             user=User.objects.get(id=message['user']))],
                     'channel_name': user.channel_name
+                })
+            await channel_layer.send(
+                user.channel_name,
+                {
+                    'type': 'getAllMicrophoneStatus',
+                    'allMicrophoneStatus': [{'user': conf_user.user.id, 'microphone': conf_user.microphone} for
+                                            conf_user in
+                                            Conference.objects.filter(user__group__group=message['group']).exclude(
+                                                user=User.objects.get(id=message['user']))]
+
                 })
         elif message['type'] == 'offer':
             user = Conference.objects.get(user__id=message['user'])
