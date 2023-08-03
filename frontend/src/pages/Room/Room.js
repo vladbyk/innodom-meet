@@ -730,7 +730,7 @@ const Room = (data, exitUser) => {
                             callSocket.current.send(JSON.stringify({
                                 type: 'personalCameraMute',
                                 group: data.data.group,
-                                user: data.data.id,
+                                user: data.data.specific,
                                 camera: 'false'
                             }))
                         }}/> : <img src={videoMuted} alt="вкл видео" className="my-video-btn" onClick={() => {
@@ -742,7 +742,7 @@ const Room = (data, exitUser) => {
                             callSocket.current.send(JSON.stringify({
                                 type: 'personalCameraMute',
                                 group: data.data.group,
-                                user: data.data.id,
+                                user: data.data.specific,
                                 camera: 'true'
                             }))
                         }}/>}
