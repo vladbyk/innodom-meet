@@ -4,7 +4,7 @@ import Lobby from "../Lobby/Lobby";
 import Room from "../Room/Room";
 import './video-chat.css'
 import logo from '../../assets/logo-light.svg'
-import logodip from '../../assets/Group 81557.svg'
+// import logodip from '../../assets/Group 81557.svg'
 import heroImg from '../../assets/hero.svg'
 import { BASE_URL } from "../../auth";
 
@@ -45,7 +45,7 @@ const VideoChat = () => {
       ) : (
         <div className="innomeet">
         <div className="lobby-header">
-          <img src={logodip} alt="innomeet"/>
+          <img src={logo} alt="innomeet"/>
         </div>
         <div className="content-lobby">
           <div className="disc-lobby">

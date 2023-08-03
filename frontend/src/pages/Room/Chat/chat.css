@@ -76,6 +76,7 @@
     border: none;
     background-color: #F5F5F7;
     width: 100%;
+    min-height: 70px;
     margin-right: 5px;
     /* color: #ACACAC; */
     font-weight: 400;
@@ -86,7 +87,22 @@
   .chat-msg{
     height: 76vh;
     padding-left: 20px;
+    overflow: auto;
   }
+
+.chat-msg::-webkit-scrollbar {
+  width: 7px;
+  background-color: #F5F5F7;
+}
+
+.chat-msg::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #c1bebe;
+}
+
+.chat-msg::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
   .chat-inp::-webkit-scrollbar {
     width: 5px;
   }
@@ -130,17 +146,34 @@
     margin: 5px 0px;
     padding: 7px;
     border-radius: 20px;
+    width: fit-content;
+    word-wrap: break-word;
   }
   .msg-text{
     background-color: #3131313b;
     margin: 5px 0px;
     padding: 7px;
     border-radius: 20px;
+    width: fit-content;
+    word-wrap: break-word;
   }
   .member-user{
     padding-left: 20px;
     display: flex;
     align-items: center;
+  }
+  .none-option-members{
+    display: none;
+  }
+  .option-members{
+    background-color: #1e1e1e2c;
+    background-color: #514e4ebf;
+    position: absolute;
+    right: 20px;
+    padding: 5px;
+    color: white;
+    font-weight: 300;
+
   }
 
 @keyframes slideL {
