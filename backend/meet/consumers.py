@@ -242,7 +242,6 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
             'allMicrophoneStatus': event['allMicrophoneStatus'],
         }))
 
-
     async def getPersonalCameraMute(self, event):
         await self.send(text_data=json.dumps({
             'type': event['type'],
