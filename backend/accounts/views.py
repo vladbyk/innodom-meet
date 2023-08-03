@@ -15,7 +15,7 @@ def get_user_status(request):
         try:
             user = User.objects.get(email=request.data['email'])
             serializer = UserSerializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({serializer.data}, status=status.HTTP_200_OK)
         except django.db.models.ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
