@@ -54,7 +54,7 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                 user.channel_name,
                 {
                     'type': 'getAllMicrophoneStatus',
-                    'allMicrophoneStatus': [{'user': conf_user.user.id, 'microphone': conf_user.microphone} for
+                    'allMicrophoneStatus': [{'user': conf_user.user.id, 'microphone': conf_user.microphone, 'camera': conf_user.camera} for
                                             conf_user in
                                             Conference.objects.filter(user__group__group=message['group']).exclude(
                                                 user=User.objects.get(id=message['user']))]
