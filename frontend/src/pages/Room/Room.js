@@ -151,7 +151,9 @@ const Room = (data, exitUser) => {
             let response = JSON.parse(e.data);
             let type = response.type;
             if (type == "getJoinRoom") {
-                // console.log('get join room', response);
+                console.log('get join room', response);
+                // setMySpecific(response.name)
+                data.data.specific=response.channel_name
                 if (response.allUsers.length > 0) {
                     response.allUsers.map(item => {
                         // console.log('----------------',item)
@@ -384,6 +386,9 @@ const Room = (data, exitUser) => {
             if (type == "getPersonalCameraMute"){
                                 console.log('getPersonalCameraMute',response) 
                             }
+            if (type == "getAllMicrophoneStatus"){
+                                console.log('getAllMicrophoneStatus',response) 
+                            }
         };
     };
     const exitRoom = () => {
@@ -420,6 +425,12 @@ const Room = (data, exitUser) => {
         console.log('click micro mute', id)
         callSocket.current.send(JSON.stringify({
             type: 'microphoneMute', user: data.data.id, group: data.data.group, channel_name: id
+        }))
+        callSocket.current.send(JSON.stringify({
+            type: 'personalMicrophoneMute',
+            group: data.data.group,
+            user: id,
+            microphone: 'false'
         }))
     }
     const sendMessage = (id, group, msg) => {
@@ -741,24 +752,37 @@ const Room = (data, exitUser) => {
                             audioTracks.forEach((track) => {
                                 track.enabled = false
                             })
+                            if(data.data.role == 'T'){
+                            const displayAudioTracks = audioStream.current.srcObject.getAudioTracks()
+                                displayAudioTracks.forEach((track) => {
+                                track.enabled = false
+                            })}
                             setAudio(false)
-                            callSocket.current.send(JSON.stringify({
+                            console.log(data)
+                                callSocket.current.send(JSON.stringify({
                                 type: 'personalMicrophoneMute',
                                 group: data.data.group,
-                                user: data.data.id,
+                                user: data.data.specific,
                                 microphone: 'false'
-                            }))
+                            })) 
+                           
                         }}/> : <img src={audioMuted} alt="audio вкл" onClick={() => {
                             const audioTracks = localVideo.current.srcObject.getAudioTracks()
                             audioTracks.forEach((track) => {
                                 track.enabled = true
                             })
+                            if(data.data.role == 'T'){
+                            const displayAudioTracks = audioStream.current.srcObject.getAudioTracks()
+                                displayAudioTracks.forEach((track) => {
+                                track.enabled = false
+                            })}
                             setAudio(true)
                             console.log("123321")
+                            console.log(data)
                             callSocket.current.send(JSON.stringify({
                                 type: 'personalMicrophoneMute',
                                 group: data.data.group,
-                                user: data.data.id,
+                                user: data.data.specific,
                                 microphone: 'true'
                             }))
                         }}/>}
