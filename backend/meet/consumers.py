@@ -202,6 +202,9 @@ class VideoConferenceConsumer(AsyncWebsocketConsumer):
                     }
                 )
         elif message['type'] == 'personalCameraMute':
+            if message['user'][1] == 's':
+                user = Conference.objects.get(channel_name=message['user'])
+                message['user'] = user.user.id
             for user_conf in Conference.objects.filter(user__group__group=message['group']):
                 await channel_layer.send(
                     user_conf.channel_name, {
