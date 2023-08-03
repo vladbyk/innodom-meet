@@ -52,13 +52,13 @@ const Room = (data, exitUser) => {
     let [isModalHand, setModalHand] = useState(false)
 
 
-    console.log(localDisplayVideo)
+    // console.log(localDisplayVideo)
     const beReady = () => {
         return navigator.mediaDevices.getUserMedia({
             audio: true, video: true,
         }).then((stream) => {
             localStream = stream;
-            console.log(stream)
+            // console.log(stream)
             localVideo.current.srcObject = stream;
             const videoTracks = localVideo.current.srcObject.getVideoTracks()
             videoTracks.forEach((track) => {
@@ -78,7 +78,7 @@ const Room = (data, exitUser) => {
         let pc = new RTCPeerConnection(pc_config)
         pcs = {...pcs, [socketID]: pc}
         // setPcs({...pcs,socketID:pc})
-        console.log(pcs)
+        // console.log(pcs)
         setPcsShearing(pcs)
 
         pc.onicecandidate = (e) => {
@@ -103,19 +103,19 @@ const Room = (data, exitUser) => {
             console.log('no local stream')
         }
         pc.ontrack = (e) => {
-            console.log('otrack', socketID)
-            console.log('otrack', users)
-            console.log('otrack', e)
+            // console.log('otrack', socketID)
+            // console.log('otrack', users)
+            // console.log('otrack', e)
             let stream = e.streams[0]
             let tracks = stream.getTracks()
             let len = tracks.length
-            console.log(tracks)
-            console.log(e.streams)
-            console.log(e.streams[0].getVideoTracks()[0].getSettings())
+            // console.log(tracks)
+            // console.log(e.streams)
+            // console.log(e.streams[0].getVideoTracks()[0].getSettings())
             if (len === 2) {
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== socketID))
-                console.log('проверкаааа', e)
-                console.log('проверкаааа', users)
+                // console.log('проверкаааа',e)
+                // console.log('проверкаааа',users)
                 setUsers(oldUsers => {
                     return [...oldUsers, {email: email, id: socketID, stream: e.streams[0], name: name}]
                 })
@@ -124,17 +124,17 @@ const Room = (data, exitUser) => {
                 // setDispVideo(true)
                 localDisplayVideo.current.srcObject = e.streams[0]
             }
-            console.log(users)
+            // console.log(users)
         }
 
         return pc;
     }, []);
 
     const connectRoom = () => {
-        console.log('sok', data.data)
+        // console.log('sok', data.data)
         callSocket.current = new WebSocket(`wss://rims.by/ws/room/${data.data.group}/?user=${data.data.id}`);
         callSocket.current.onopen = () => {
-            console.log("WebSocket connection established");
+            // console.log("WebSocket connection established");
             beReady().then((bool) => {
                 callSocket.current.send(JSON.stringify({
                     type: 'joinRoom', group: data.data.group, user: data.data.id,
@@ -151,10 +151,10 @@ const Room = (data, exitUser) => {
             let response = JSON.parse(e.data);
             let type = response.type;
             if (type == "getJoinRoom") {
-                console.log('get join room', response);
+                // console.log('get join room', response);
                 if (response.allUsers.length > 0) {
                     response.allUsers.map(item => {
-                        console.log('----------------', item)
+                        // console.log('----------------',item)
                         createPeerConnection(item.channel_name, localStream, item.email, item.name)
                         let pc = pcs[item.channel_name]
                         if (pc) {
@@ -162,8 +162,8 @@ const Room = (data, exitUser) => {
                                 offerToReceiveAudio: true, offerToReceiveVideo: true,
                             })
                                 .then(async sdp => {
-                                    console.log('create off ', sdp)
-                                    console.log(item)
+                                    // console.log('create off ', sdp)
+                                    // console.log(item)
                                     await pc.setLocalDescription(new RTCSessionDescription(sdp))
                                     callSocket.current.send(JSON.stringify({
                                         type: 'offer',
@@ -179,8 +179,8 @@ const Room = (data, exitUser) => {
                 }
             }
             if (type == "getOffer") {
-                console.log('get sender offer', response);
-                console.log('----------------', response)
+                // console.log('get sender offer', response);
+                // console.log('----------------',response)
 
                 createPeerConnection(response.channel_name_sender, localStream, response.email, response.name)
                 // let myPcs = createPeerConnection(response.channel_name_sender,localStream,response.email)
@@ -205,19 +205,19 @@ const Room = (data, exitUser) => {
                                 })
                         })
                 }
-                console.log('prroorororoorororba', users)
+        // console.log('prroorororoorororba',users)
 
             }
             if (type == "getCheckDeamon") {
-                console.log('getCheckDeamon', response)
-                console.log(pcs)
-                console.log(myStreamSharing)
+                // console.log('getCheckDeamon', response)
+                // console.log(pcs)
+                // console.log(myStreamSharing)
                 let firstTrack = myStreamSharing.current.getTracks()[0]
                 try {
                     pcs[response.channel_name].addTrack(firstTrack, myStreamSharing.current)
                     pcs[response.channel_name].createOffer()
                         .then(offer => {
-                            console.log('getCheckDeamons  send soffer');
+                            // console.log('getCheckDeamons  send soffer');
                             pcs[response.channel_name].setLocalDescription(offer)
 
                             callSocket.current.send(JSON.stringify({
@@ -233,47 +233,47 @@ const Room = (data, exitUser) => {
                 }
             }
             if (type == "getAnswer") {
-                console.log('get answeer', response);
+                // console.log('get answeer', response);
                 let pc = pcs[response.channel_name]
                 setCandidate(false)
                 //возможно ченел нейм сендер
-                console.log(pc)
-                console.log(pcs)
+                // console.log(pc)
+                // console.log(pcs)
                 if (pc) {
                     pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
                 }
 
             }
             if (type == "getCandidate") {
-                console.log('get candidate', response);
+                // console.log('get candidate', response);
                 let pc = pcs[response.channel_name_sender]
-                console.log('get candidate', pc)
-                console.log('get candidate', pcs)
+                // console.log('get candidate', pc)
+                // console.log('get candidate', pcs)
                 if (pc) {
                     await pc.addIceCandidate(new RTCIceCandidate(response.candidate))
                         .then(() => {
-                            console.log('candidate yes')
-                            console.log('prroorororoorororba', users)
+                            // console.log('candidate yes')
+        // console.log('prroorororoorororba',users)
 
                         })
                 }
             }
             if (type == "getDisconnect") {
-                console.log('get disconnect', response);
-                console.log('pcs', pcs);
+                // console.log('get disconnect', response);
+                // console.log('pcs', pcs);
                 pcs[response.channel_name].close()
                 delete pcs[response.channel_name]
                 setUsers((oldUsers) => oldUsers.filter(user => user.id !== response.channel_name))
 
             }
             if (type == "getSharingOffer") {
-                console.log('get sharing offer', response);
-                console.log('pcs', pcs);
+                // console.log('get sharing offer', response);
+                // console.log('pcs', pcs);
                 let pc = pcs[response.channel_name]
                 if (pc) {
                     pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
                         .then(() => {
-                            console.log('get sharing offer');
+                            // console.log('get sharing offer');
                             pc.createAnswer({
                                 offerToReceiveAudio: false, offerToReceiveVideo: true
                             }).then(sdp => {
@@ -291,26 +291,41 @@ const Room = (data, exitUser) => {
                 }
             }
             if (type == "getSharingAnswer") {
-                console.log('get sharing answer', response);
-                console.log('pcs', pcs);
+                // console.log('get sharing answer', response);
+                // console.log('pcs', pcs);
                 let pc = pcs[response.channel_name]
                 if (pc) {
                     pc.setRemoteDescription(new RTCSessionDescription(response.sdp))
                 }
             }
+            if (type == "getCheckSharingOffer") {
+                // console.log('get check sharing offer', response); 
+                callSocket.current.send(JSON.stringify({
+                    type: 'AllowSharingOffer', 
+                    channel_name: response.channel_name
+                }))         
+            }
+            if (type == "getAllowSharingOffer") {
+                // console.log('get allow sharing offer', response); 
+                allowScreenSharing()       
+                //modal for allow 
+            }
             if (type == "getHandUp") {
-                console.log('handlup', response)
+                // console.log('handlup', response)
                 if (data.data.role == 'T') {
-                    console.log('tttt')
+                    // console.log('tttt')
                     setWhoHand(response.user_name)
                     setModalHand(true)
-                    setTimeout(() => setModalHand(false), 10000)
-                    console.log(isModalHand)
+                    setTimeout(()=>setModalHand(false),10000)
+                    let min=date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes()
+                                let hour=date.getHours()<10?'0'+date.getHours():date.getHours()
+                    setMessages({name:response.user_name,msg:'hand',time:hour+':'+min,id:response.id})   
+                    // console.log(isModalHand)
                 }
             }
-            if (type == "getAllMicrophoneMute") {
-                console.log('get all micro')
-                if (data.data.role == 'S') {
+            if (type == "getAllMicrophoneMute"){
+        // console.log('get all micro')
+                if (data.data.role=='S'){
                     const audioTracks = localVideo.current.srcObject.getAudioTracks()
                     audioTracks.forEach((track) => {
                         track.enabled = false
@@ -318,62 +333,57 @@ const Room = (data, exitUser) => {
                     setAudio(false)
                 }
             }
-            if (type == "getAllCameraMute") {
-                console.log('get all camera')
-                if (data.data.role == 'S') {
+            if (type == "getAllCameraMute"){
+        // console.log('get all camera')
+                if (data.data.role=='S'){
                     const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                    videoTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setVideo(false)
+                            videoTracks.forEach((track) => {
+                                track.enabled = false
+                            })
+                            setVideo(false)
                 }
             }
-            if (type == "getCameraMute") {
-                console.log('get all camera')
-                if (data.data.role == 'S') {
-                    const videoTracks = localVideo.current.srcObject.getVideoTracks()
-                    videoTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setVideo(false)
-                }
-            }
-            if (type == "getMicrophoneMute") {
-                console.log('get all camera')
-                if (data.data.role == 'S') {
-                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
-                    audioTracks.forEach((track) => {
-                        track.enabled = false
-                    })
-                    setAudio(false)
-                }
-            }
-            if (type == "getKick") {
-                console.log('getKick')
-                if (data.data.role == 'S') {
-                    callSocket.current.close()
-                    window.location.reload()
-                }
-            }
-            if (type == "getPersonalMicrophoneMute") {
-                console.log('getPersonalMicrophoneMute', response)
-            }
-            if (type == "getPersonalCameraMute") {
-                console.log('getPersonalCameraMute', response)
-            }
-            if (type == "getChat") {
-                console.log('getChatееееееее', response)
-                // messages.push({name:response.name+response.surname,msg:response.msg})
-                // let msg=messages
-                let min = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-                let hour = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-                setMessages({
-                    name: response.name + response.surname,
-                    msg: response.msg,
-                    time: hour + ':' + min,
-                    id: response.id
-                })
-            }
+            if (type == "getCameraMute"){
+                // console.log('get all camera')
+                        if (data.data.role=='S'){
+                            const videoTracks = localVideo.current.srcObject.getVideoTracks()
+                                    videoTracks.forEach((track) => {
+                                        track.enabled = false
+                                    })
+                                    setVideo(false)
+                        }
+                    }
+            if (type == "getMicrophoneMute"){
+                        // console.log('get all camera')
+                                if (data.data.role=='S'){
+                                    const audioTracks = localVideo.current.srcObject.getAudioTracks()
+                            audioTracks.forEach((track) => {
+                                track.enabled = false
+                            })
+                            setAudio(false)
+                                }
+                            }
+            if (type == "getKick"){
+                                // console.log('getKick')
+                                        if (data.data.role=='S'){
+                                        callSocket.current.close()
+                                        window.location.reload()
+                                        }
+                            }
+            if (type == "getChat"){
+                                // console.log('getChatееееееее',response) 
+                                // messages.push({name:response.name+response.surname,msg:response.msg})
+                                // let msg=messages
+                                let min=date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes()
+                                let hour=date.getHours()<10?'0'+date.getHours():date.getHours()
+                                setMessages({name:response.name+response.surname,msg:response.msg,time:hour+':'+min,id:response.id})   
+                            }
+            if (type == "getPersonalMicrophoneMute"){
+                                console.log('getPersonalMicrophoneMute',response) 
+                            }
+            if (type == "getPersonalCameraMute"){
+                                console.log('getPersonalCameraMute',response) 
+                            }
         };
     };
     const exitRoom = () => {
@@ -435,6 +445,27 @@ const Room = (data, exitUser) => {
     }
 
     const screenSharing = () => {
+        if(data.data.role==='T'){
+            console.log('jjj')
+        allowScreenSharing()
+    }else if(data.data.role==='S'){
+        callSocket.current.send(JSON.stringify({
+            type: 'CheckSharingOffer',
+            user: data.data.id,
+            group: data.data.group
+        }))
+                            }
+    // }
+        // else{
+        //     console.log(data)
+        //     console.log(myStreamSharing)
+        //     callSocket.current.send(JSON.stringify({
+        //         type: 'CheckSharingOffer', user: data.data.id, group: data.data.group, channel_name:data.data.id, status:'yes'
+        //     }))
+        // }
+    }
+
+    const allowScreenSharing=()=>{
         navigator.mediaDevices.getDisplayMedia({video: true, audio: false})
             .then((stream) => {
                 console.log(pcs)
@@ -457,12 +488,36 @@ const Room = (data, exitUser) => {
                                     sdp: offer,
                                     channel_name: key
                                 }))
+                            
+                            })
+                            .catch(err => console.log(err))
+                    })
+                }else if(pcs){
+                    Object.entries(pcs).map(([key, pc]) => {
+                        pc.addTrack(firstTrack, stream)
+                        pc.createOffer()
+                            .then(offer => {
+                                console.log('get sharing  send soffer');
+                                pc.setLocalDescription(offer)
+                                callSocket.current.send(JSON.stringify({
+                                    type: 'sharingOffer',
+                                    user: data.data.id,
+                                    group: data.data.group,
+                                    sdp: offer,
+                                    channel_name: key
+                                }))
+                            
                             })
                             .catch(err => console.log(err))
                     })
                 }
             })
         setDispVideo(!isDispVideo)
+    //      callSocket.current.send(JSON.stringify({
+    //                                 type: 'CheckSharingOffer',
+    //                                 user: data.data.id,
+    //                                 group: data.data.group
+    //                             }))
     }
 
     const screenSharingStop = () => {
@@ -749,6 +804,7 @@ const Room = (data, exitUser) => {
                 user={data}
                 sendMessage={sendMessage}
                 messages={messages}
+                pcs={pcs}
             />
 
         </div>
